@@ -6,6 +6,7 @@ export const Role = sequelize.define(
     {
         name: { type: DataTypes.STRING, allowNull: false },       // required
         guard_name: { type: DataTypes.STRING, allowNull: false }, // required
+        
         role_priority: DataTypes.STRING,
         description: DataTypes.STRING,
     }

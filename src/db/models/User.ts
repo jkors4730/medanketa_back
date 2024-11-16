@@ -8,6 +8,7 @@ export const User = sequelize.define(
         email: { type: DataTypes.STRING, allowNull: false }, // required
         password: { type: DataTypes.STRING, allowNull: false }, // required
         role_id: { type: DataTypes.INTEGER, allowNull: false }, // required
+        
         email_verified_at: DataTypes.DATE,
         birth_date: DataTypes.DATE,
         phone: DataTypes.STRING,

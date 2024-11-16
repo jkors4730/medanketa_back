@@ -7,9 +7,11 @@ const roleRoutes = Router();
 // CREATE
 roleRoutes.post('/', async (req: Request, res: Response) => {
  
+    const { name, guard_name } = req.body;
+
     const role = Role.build({
-        name: req.body.name,
-        guard_name: req.body.guard_name
+        name,
+        guard_name
     });
 
     await role.save();
@@ -27,7 +29,9 @@ roleRoutes.get('/', async (_req: Request, res: Response) => {
 // GET_ONE
 roleRoutes.get('/:id', async (req: Request, res: Response) => {
 
-    const role = await Role.findByPk( parseInt(req.params.id) );
+    const { id } = req.params;
+
+    const role = await Role.findByPk( parseInt(id) );
 
     if (role === null) {
         res.status(404).json('{}');
@@ -39,13 +43,16 @@ roleRoutes.get('/:id', async (req: Request, res: Response) => {
 // UPDATE
 roleRoutes.put('/:id', async (req: Request, res: Response) => {
 
-    const user = await User.findByPk<any>( parseInt(req.params.id) );
+    const { id } = req.params;
+    const { name, guard_name } = req.body;
+
+    const user = await User.findByPk<any>( parseInt(id) );
 
     if (user === null) {
         res.status(404).json('{}');
     } else {
-        user.name = req.body.name || user.name;
-        user.guard_name = req.body.guard_name || user.guard_name;
+        user.name = name || user.name;
+        user.guard_name = guard_name || user.guard_name;
 
         await user.save();
 
@@ -56,7 +63,9 @@ roleRoutes.put('/:id', async (req: Request, res: Response) => {
 // DELETE
 roleRoutes.delete('/:id', async (req: Request, res: Response) => {
 
-    const role = await Role.findByPk( parseInt(req.params.id) );
+    const { id } = req.params;
+
+    const role = await Role.findByPk( parseInt(id) );
 
     if (role === null) {
         res.status(404).send();
