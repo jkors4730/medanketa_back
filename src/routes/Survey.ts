@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Survey } from '../db/models/Survey';
+import sequelize from '../db/config';
 
 const surveyRoutes = Router();
 
@@ -21,7 +22,17 @@ surveyRoutes.post('/', async (req: Request, res: Response) => {
 
 // GET_ALL (R)
 surveyRoutes.get('/', async (_req: Request, res: Response) => {
-    const surveys = await Survey.findAll();
+
+    const surveys = await sequelize.query(`
+        SELECT
+        surveys.*,
+        users.name as user_name,
+        users.email as user_email
+        FROM surveys
+        JOIN users ON surveys.user_id = users.id`, {
+        model: Survey,
+        mapToModel: true,
+    });
 
     res.json(surveys);
 });

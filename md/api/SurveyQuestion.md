@@ -1,4 +1,4 @@
-# Survey CRUD
+# SurveyQuestion CRUD
 
 ## Create [POST]
 
