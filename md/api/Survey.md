@@ -7,16 +7,16 @@
 ```
 
 POST params (JSON-body):
-```javascript
+```js
 {
-    "user_id": "1",     // typeof number, required*
-    "image": "empty",   // typeof string, required*
-    "title": "test",    // typeof string, required*
-    "slug": "abc",      // typeof string, required*
-    "status": "true",   // typeof boolean, required*
+    "userId": 1,        // typeof <Number>, [Required*]
+    "image": "empty",   // typeof <String>, [Required*]
+    "title": "test",    // typeof <String>, [Required*]
+    "slug": "abc",      // typeof <String>, [Required*]
+    "status": true,     // typeof <Boolean>, [Required*]
 
-    "description": "test", // typeof string, optional
-    "expire_date": new Date(2020, 11, 31) // typeof Date, optional
+    "description": "test", // typeof String, [Optional]
+    "expireDate": new Date(2020, 11, 31) // typeof Date, [Optional]
 }
 ```
 
@@ -43,16 +43,16 @@ GET params: Not provided
 ```
 
 params (JSON-body):
-```javascript
+```js
 {
-    "user_id": "1",     // typeof number, optional
-    "image": "empty",   // typeof string, optional
-    "title": "test",    // typeof string, optional
-    "slug": "abc",      // typeof string, optional
-    "status": "true",   // typeof boolean, optional
+    "userId": 1,        // typeof <Number>, [Optional]
+    "image": "empty",   // typeof <String>, [Optional]
+    "title": "test",    // typeof <String>, [Optional]
+    "slug": "abc",      // typeof <String>, [Optional]
+    "status": true,     // typeof Boolean, [Optional]
 
-    "description": "test", // typeof string, optional
-    "expire_date": new Date(2020, 11, 31) // typeof Date, optional
+    "description": "test", // typeof <String>, [Optional]
+    "expireDate": new Date(2020, 11, 31) // typeof <Date>, [Optional]
 }
 ```
 

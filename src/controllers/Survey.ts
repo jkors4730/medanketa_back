@@ -1,0 +1,131 @@
+import { Request, Response } from 'express';
+import { returnError } from '../utils/error';
+import { validationResult } from 'express-validator';
+import { Survey } from '../db/models/Survey';
+import sequelize from '../db/config';
+
+class SurveyController {
+
+    async create(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { userId, image, title, slug, status, description, expireDate } = req.body;
+     
+                const survey = Survey.build({
+                    userId, image, title, slug, status, description, expireDate
+                });
+
+                console.log( 'Survey', survey.toJSON() );
+
+                await survey.save();
+
+                res.status(201).json(survey.toJSON());
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    async getAll(_req: Request, res: Response) {
+        try {
+            const surveys = await sequelize.query(`
+                SELECT
+                surveys.*,
+                users.name as userName,
+                users.email as userEmail
+                FROM surveys
+                JOIN users ON surveys.userId = users.id`, {
+                model: Survey,
+                mapToModel: true,
+            });
+        
+            res.json(surveys);
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    async getOne(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+
+                const survey = await Survey.findByPk( parseInt(id) );
+
+                if (survey === null) {
+                    returnError(null, res, [`Survey with id = ${id} not found`]);
+                } else {
+                    res.status(200).json(survey.toJSON());
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    async update(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+                const { userId, image, title, slug, status, description, expireDate } = req.body;
+
+                const survey = await Survey.findByPk<any>( parseInt(id) );
+
+                if (survey === null) {
+                    returnError(null, res, [`Survey with id = ${id} not found`]);
+                } else {
+                    survey.userId = userId || survey.userId;
+                    survey.image = image || survey.image;
+                    survey.title = title || survey.title;
+                    survey.slug = slug || survey.slug;
+                    survey.status = status || survey.status;
+                    survey.description = description || survey.description;
+                    survey.expireDate = expireDate || survey.expireDate;
+
+                    await survey.save();
+
+                    res.status(200).json(survey.toJSON());
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    async delete(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+
+                const survey = await Survey.findByPk( parseInt(id) );
+
+                if (survey === null) {
+                    returnError(null, res, [`Survey with id = ${id} not found`]);
+                } else {
+                    await survey.destroy();
+                    res.status(204).send();
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+}
+
+export const surveyController = new SurveyController();

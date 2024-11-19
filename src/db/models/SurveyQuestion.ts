@@ -2,9 +2,9 @@ import { DataTypes } from "sequelize";
 import sequelize from "../config";
 
 export const SurveyQuestion = sequelize.define(
-    'survey_question',
+    'surveyQuestion',
     {
-        survey_id: { type: DataTypes.INTEGER, allowNull: false },  // required
+        surveyId: { type: DataTypes.INTEGER, allowNull: false },  // required
         question: { type: DataTypes.STRING, allowNull: false },  // required
         type: { type: DataTypes.STRING, allowNull: false },  // required
         

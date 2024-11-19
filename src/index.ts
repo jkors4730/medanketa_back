@@ -19,7 +19,9 @@ app.use('/survey', surveyRoutes);
 app.use('/survey-question/', surveyQuestionRoutes);
 
 app.get('/', (_req: Request, res: Response) => {
-    res.send('Not allowed');
+    res.json({
+        error: 'Not allowed'
+    });
 });
 
 app.listen(process.env.PORT);

@@ -1,94 +1,44 @@
-import { Router, Request, Response } from 'express';
-import { Survey } from '../db/models/Survey';
-import sequelize from '../db/config';
+import { Router } from 'express';
+import { surveyController } from '../controllers/Survey';
+import { body, param } from 'express-validator';
 
 const surveyRoutes = Router();
 
 // CREATE (C)
-surveyRoutes.post('/', async (req: Request, res: Response) => {
-
-    const { user_id, image, title, slug, status, description, expire_date } = req.body;
-     
-    const survey = Survey.build({
-        user_id, image, title, slug, status, description, expire_date
-    });
-
-    console.log( 'Survey', survey.toJSON() );
-
-    await survey.save();
-
-    res.status(201).json(survey.toJSON());
-});
-
+surveyRoutes.post('/',
+    body('userId').isNumeric(),
+    body('image').isString().isLength({ min: 1 }),
+    body('title').isString().isLength({ min: 1 }),
+    body('slug').isString().isLength({ min: 1 }),
+    body('status').isBoolean(),
+    body('description').optional().isString().isLength({ min: 1 }),
+    body('expireDate').optional().isDate(),
+    surveyController.create
+);
 // GET_ALL (R)
-surveyRoutes.get('/', async (_req: Request, res: Response) => {
-
-    const surveys = await sequelize.query(`
-        SELECT
-        surveys.*,
-        users.name as user_name,
-        users.email as user_email
-        FROM surveys
-        JOIN users ON surveys.user_id = users.id`, {
-        model: Survey,
-        mapToModel: true,
-    });
-
-    res.json(surveys);
-});
-
+surveyRoutes.get('/', surveyController.getAll);
 // GET_ONE (R)
-surveyRoutes.get('/:id', async (req: Request, res: Response) => {
-
-    const { id } = req.params;
-
-    const survey = await Survey.findByPk( parseInt(id) );
-
-    if (survey === null) {
-        res.status(404).json('{}');
-    } else {
-        res.status(200).json(survey.toJSON());
-    }
-});
-
+surveyRoutes.get('/:id',
+    param('id').isNumeric(),
+    surveyController.getOne
+);
 // UPDATE (U)
-surveyRoutes.put('/:id', async (req: Request, res: Response) => {
+surveyRoutes.put('/:id',
+    param('id').isNumeric(),
 
-    const { id } = req.params;
-    const { user_id, image, title, slug, status, description, expire_date } = req.body;
-
-    const survey = await Survey.findByPk<any>( parseInt(id) );
-
-    if (survey === null) {
-        res.status(404).json('{}');
-    } else {
-        survey.user_id = user_id || survey.user_id;
-        survey.image = image || survey.image;
-        survey.title = title || survey.title;
-        survey.slug = slug || survey.slug;
-        survey.status = status || survey.status;
-        survey.description = description || survey.description;
-        survey.expire_date = expire_date || survey.expire_date;
-
-        await survey.save();
-
-        res.status(200).json(survey.toJSON());
-    }
-  });
-
+    body('userId').optional().isNumeric(),
+    body('image').optional().isString().isLength({ min: 1 }),
+    body('title').optional().isString().isLength({ min: 1 }),
+    body('slug').optional().isString().isLength({ min: 1 }),
+    body('status').optional().isBoolean(),
+    body('description').optional().isString().isLength({ min: 1 }),
+    body('expireDate').optional().isDate(),
+    surveyController.update
+);
 // DELETE (D)
-surveyRoutes.delete('/:id', async (req: Request, res: Response) => {
-
-    const { id } = req.params;
-
-    const survey = await Survey.findByPk( parseInt(id) );
-
-    if (survey === null) {
-        res.status(404).send();
-    } else {
-        await survey.destroy();
-        res.status(204).send();
-    }
-});
+surveyRoutes.delete('/:id',
+    param('id').isNumeric(),
+    surveyController.delete
+);
 
 export default surveyRoutes;

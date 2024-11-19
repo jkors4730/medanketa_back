@@ -7,9 +7,9 @@
 ```
 
 POST params (JSON-body):
-```javascript
+```js
 {
-    "survey_id": "1",     // typeof number, required*
+    "surveyId": "1",     // typeof number, required*
     "question": "",       // typeof string, required*
     "type": "text",       // typeof string, required*
 
@@ -41,9 +41,9 @@ GET params: Not provided
 ```
 
 params (JSON-body):
-```javascript
+```js
 {
-    "survey_id": "1",     // typeof number, optional
+    "surveyId": "1",     // typeof number, optional
     "question": "",       // typeof string, optional
     "type": "text",       // typeof string, optional
 
