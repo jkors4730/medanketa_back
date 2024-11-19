@@ -20,6 +20,9 @@ roleRoutes.get('/:id',
 // (U) UPDATE
 roleRoutes.put('/:id',
     param('id').isNumeric(),
+
+    body('name').optional().isString().isLength({ min: 1 }),
+    body('guardName').optional().isString().isLength({ min: 1 }),
     roleController.update
 );
 // DELETE

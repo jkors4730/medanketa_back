@@ -65,7 +65,21 @@ class RoleController {
             
             if ( errors.isEmpty() ) {
 
-                // TODO: implement logic
+                const { id } = req.params;
+                const { name, guardName } = req.body;
+
+                const role = await Role.findByPk<any>( parseInt(id) );
+
+                if (role === null) {
+                    returnError(null, res, [`Role with id = ${id} not found`]);
+                } else {
+                    role.name = name || role.name;
+                    role.guardName = guardName || role.guardName;
+
+                    await role.save();
+
+                    res.status(200).json(role.toJSON());
+                }
 
                 res.status(200).end();
             }

@@ -1,81 +1,40 @@
-import { Router, Request, Response } from 'express';
-import { SurveyQuestion } from '../db/models/SurveyQuestion';
+import { Router } from 'express';
+import { surveyQuestionController } from '../controllers/SurveyQuestion';
+import { body, param } from 'express-validator';
 
 const surveyQuestionRoutes = Router();
 
-// CREATE (C)
-surveyQuestionRoutes.post('/', async (req: Request, res: Response) => {
+// (C) CREATE
+surveyQuestionRoutes.post('/',
+    body('surveyId').isNumeric(),
+    body('question').isString().isLength({ min: 1 }),
+    body('type').isString().isLength({ min: 1 }),
 
-    const { survey_id, question, type, description, data } = req.body;
-     
-    const surveyQuestion = SurveyQuestion.build({
-        survey_id, question, type, description, data
-    });
+    body('description').optional().isString().isLength({ min: 1 }),
+    body('data').optional().isString().isLength({ min: 1 }),
+    surveyQuestionController.create
+);
+// (R) GET_ALL
+surveyQuestionRoutes.get('/', surveyQuestionController.getAll);
+// (R) GET_ONE
+surveyQuestionRoutes.get('/:id',
+    param('id').isNumeric(),
+    surveyQuestionController.getOne
+);
+// (U) UPDATE
+surveyQuestionRoutes.put('/:id', 
+    body('surveyId').optional().isNumeric(),
+    body('question').optional().isString().isLength({ min: 1 }),
+    body('type').optional().isString().isLength({ min: 1 }),
 
-    console.log( 'SurveyQuestion', surveyQuestion.toJSON() );
-
-    await surveyQuestion.save();
-
-    res.status(201).json(surveyQuestion.toJSON());
-});
-
-// GET_ALL (R)
-surveyQuestionRoutes.get('/', async (_req: Request, res: Response) => {
-    const surveyQuestions = await SurveyQuestion.findAll();
-
-    res.json(surveyQuestions);
-});
-
-// GET_ONE (R)
-surveyQuestionRoutes.get('/:id', async (req: Request, res: Response) => {
-
-    const { id } = req.params;
-
-    const surveyQuestion = await SurveyQuestion.findByPk( parseInt(id) );
-
-    if (surveyQuestion === null) {
-        res.status(404).json('{}');
-    } else {
-        res.status(200).json(surveyQuestion.toJSON());
-    }
-});
-
-// UPDATE (U)
-surveyQuestionRoutes.put('/:id', async (req: Request, res: Response) => {
-
-    const { id } = req.params;
-    const { survey_id, question, type, description, data } = req.body;
-
-    const surveyQuestion = await SurveyQuestion.findByPk<any>( parseInt(id) );
-
-    if (surveyQuestion === null) {
-        res.status(404).json('{}');
-    } else {
-        surveyQuestion.survey_id = survey_id || surveyQuestion.survey_id;
-        surveyQuestion.question = question || surveyQuestion.question;
-        surveyQuestion.type = type || surveyQuestion.type;
-        surveyQuestion.description = description || surveyQuestion.description;
-        surveyQuestion.data = data || surveyQuestion.data;
-
-        await surveyQuestion.save();
-
-        res.status(200).json(surveyQuestion.toJSON());
-    }
-  });
-
-// DELETE (D)
-surveyQuestionRoutes.delete('/:id', async (req: Request, res: Response) => {
-
-    const { id } = req.params;
-
-    const surveyQuestion = await SurveyQuestion.findByPk( parseInt(id) );
-
-    if (surveyQuestion === null) {
-        res.status(404).send();
-    } else {
-        await surveyQuestion.destroy();
-        res.status(204).send();
-    }
-});
+    body('description').optional().isString().isLength({ min: 1 }),
+    body('data').optional().isString().isLength({ min: 1 }),
+    surveyQuestionController.update
+);
+// (D) DELETE
+surveyQuestionRoutes.delete('/:id',
+    param('id').isNumeric(),
+    surveyQuestionController.delete
+);
 
 export default surveyQuestionRoutes;

@@ -9,12 +9,12 @@
 POST params (JSON-body):
 ```js
 {
-    "surveyId": "1",     // typeof number, required*
-    "question": "",       // typeof string, required*
-    "type": "text",       // typeof string, required*
+    "surveyId": 1,         // typeof <Number>, [Required*]
+    "question": "q",       // typeof <String>, [Required*]
+    "type": "text",        // typeof <String>, [Required*]
 
-    "description": "test", // typeof string, optional
-    "data": ""            // typeof string, optional
+    "description": "test", // typeof <String>, [Optional]
+    "data": ""             // typeof <String>, [Optional]
 }
 ```
 
@@ -43,12 +43,12 @@ GET params: Not provided
 params (JSON-body):
 ```js
 {
-    "surveyId": "1",     // typeof number, optional
-    "question": "",       // typeof string, optional
-    "type": "text",       // typeof string, optional
+    "surveyId": 1,         // typeof <Number>, [Optional]
+    "question": "q",       // typeof <String>, [Optional]
+    "type": "text",        // typeof <String>, [Optional]
 
-    "description": "test", // typeof string, optional
-    "data": ""             // typeof string, optional
+    "description": "test", // typeof <String>, [Optional]
+    "data": ""             // typeof <String>, [Optional]
 }
 ```
 
