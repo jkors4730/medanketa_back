@@ -35,10 +35,10 @@ class SurveyController {
             const surveys = await sequelize.query(`
                 SELECT
                 surveys.*,
-                users.name as userName,
-                users.email as userEmail
+                users.name as "userName",
+                users.email as "userEmail"
                 FROM surveys
-                JOIN users ON surveys.userId = users.id`, {
+                JOIN users ON surveys."userId" = users.id`, {
                 model: Survey,
                 mapToModel: true,
             });
