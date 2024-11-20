@@ -3,6 +3,7 @@ import { returnError } from '../utils/error';
 import { validationResult } from 'express-validator';
 import { Survey } from '../db/models/Survey';
 import sequelize from '../db/config';
+import { SurveyQuestion } from '../db/models/SurveyQuestion';
 
 class SurveyController {
 
@@ -11,15 +12,40 @@ class SurveyController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { userId, image, title, slug, status, description, expireDate } = req.body;
+                const { userId, image, title, slug, status, description, expireDate, questions } = req.body;
      
-                const survey = Survey.build({
+                const survey = Survey.build<any>({
                     userId, image, title, slug, status, description, expireDate
                 });
 
                 console.log( 'Survey', survey.toJSON() );
 
                 await survey.save();
+
+                let questionsArr = [];
+
+                if ( questions ) {
+
+                    for ( let q of questions ) {
+
+                        const { question, type, description, data } = q;
+                        
+                        if ( question && type ) {
+                            
+                            const surveyQuestion = SurveyQuestion.build({
+                                surveyId: survey.id, question, type, description, data
+                            });
+                            await surveyQuestion.save();
+
+                            questionsArr.push(surveyQuestion.toJSON());
+                        }
+                        else {
+                            returnError(null, res, ['You must provide required fields "question" and "type" to create SurveyQuestion'] );
+                        }
+                    }
+                }
+
+                survey.questions = questionsArr;
 
                 res.status(201).json(survey.toJSON());
             }

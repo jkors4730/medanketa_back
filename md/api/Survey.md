@@ -15,8 +15,19 @@ POST params (JSON-body):
     "slug": "abc",      // typeof <String>, [Required*]
     "status": true,     // typeof <Boolean>, [Required*]
 
-    "description": "test", // typeof String, [Optional]
-    "expireDate": new Date(2020, 11, 31) // typeof Date, [Optional]
+    "description": "test", // typeof <String>, [Optional]
+    "expireDate": new Date(2020, 11, 31) // typeof <Date>, [Optional]
+
+    // typeof Array, [Optional]
+    "questions": [
+        {
+            "question": "Новый вопрос №1", // typeof <String>, [Required* (if item provided)]
+            "type": "text",                // typeof <String>, [Required* (if item provided)]
+
+            "description": "",             // typeof <String>, [Optional]
+            "data": ""                     // typeof <String>, [Optional]
+        }
+    ]
 }
 ```
 

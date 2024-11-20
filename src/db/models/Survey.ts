@@ -12,5 +12,7 @@ export const Survey = sequelize.define(
 
         description: DataTypes.STRING,
         expireDate: DataTypes.DATE,
+        
+        questions: DataTypes.JSON,
     }
 );

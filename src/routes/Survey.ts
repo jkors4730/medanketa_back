@@ -4,7 +4,7 @@ import { body, param } from 'express-validator';
 
 const surveyRoutes = Router();
 
-// CREATE (C)
+// (C) CREATE
 surveyRoutes.post('/',
     body('userId').isNumeric(),
     body('image').isString().isLength({ min: 1 }),
@@ -13,16 +13,17 @@ surveyRoutes.post('/',
     body('status').isBoolean(),
     body('description').optional().isString().isLength({ min: 1 }),
     body('expireDate').optional().isDate(),
+    body('questions').optional().isArray(),
     surveyController.create
 );
-// GET_ALL (R)
+// (R) GET_ALL
 surveyRoutes.get('/', surveyController.getAll);
-// GET_ONE (R)
+// (R) GET_ONE
 surveyRoutes.get('/:id',
     param('id').isNumeric(),
     surveyController.getOne
 );
-// UPDATE (U)
+// (U) UPDATE
 surveyRoutes.put('/:id',
     param('id').isNumeric(),
 
@@ -35,7 +36,7 @@ surveyRoutes.put('/:id',
     body('expireDate').optional().isDate(),
     surveyController.update
 );
-// DELETE (D)
+// (D) DELETE
 surveyRoutes.delete('/:id',
     param('id').isNumeric(),
     surveyController.delete
