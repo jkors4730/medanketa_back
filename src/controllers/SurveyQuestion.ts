@@ -10,10 +10,10 @@ class SurveyQuestionController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { surveyId, question, type, description, data } = req.body;
+                const { surveyId, question, type, status, description, data } = req.body;
      
                 const surveyQuestion = SurveyQuestion.build({
-                    surveyId, question, type, description, data
+                    surveyId, question, type, status, description, data
                 });
 
                 console.log( 'SurveyQuestion', surveyQuestion.toJSON() );
@@ -69,7 +69,7 @@ class SurveyQuestionController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { surveyId, question, type, description, data } = req.body;
+                const { surveyId, question, type, status, description, data } = req.body;
 
                 const sQ = await SurveyQuestion.findByPk<any>( parseInt(id) );
 
@@ -79,6 +79,7 @@ class SurveyQuestionController {
                     sQ.surveyId = surveyId || sQ.surveyId;
                     sQ.question = question || sQ.question;
                     sQ.type = type || sQ.type;
+                    sQ.status = status || sQ.status;
                     sQ.description = description || sQ.description;
                     sQ.data = data || sQ.data;
 
