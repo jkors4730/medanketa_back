@@ -23,6 +23,7 @@ POST params (JSON-body):
         {
             "question": "Новый вопрос №1", // typeof <String>, [Required* (if item provided)]
             "type": "text",                // typeof <String>, [Required* (if item provided)]
+            "status": true,                // typeof <Boolean>,[Required* (if item provided)]
 
             "description": "",             // typeof <String>, [Optional]
             "data": ""                     // typeof <String>, [Optional]

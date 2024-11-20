@@ -12,6 +12,7 @@ POST params (JSON-body):
     "surveyId": 1,         // typeof <Number>, [Required*]
     "question": "q",       // typeof <String>, [Required*]
     "type": "text",        // typeof <String>, [Required*]
+    "status": true,        // typeof <Boolean>,[Required*]
 
     "description": "test", // typeof <String>, [Optional]
     "data": ""             // typeof <String>, [Optional]
@@ -24,7 +25,13 @@ POST params (JSON-body):
 /survey-question/
 ```
 
-GET params: Not provided
+GET (query params):
+
+```bash
+# surveyId | typeof <Number>
+# get questions by surveyId
+?surveyId=1
+```
 
 ## Get ONE [GET]
 

@@ -29,9 +29,12 @@ class SurveyQuestionController {
         catch (e: any) { returnError(e, res); }
     }
 
-    async getAll(_req: Request, res: Response) {
+    async getAll(req: Request, res: Response) {
         try {
-            const surveyQuestions = await SurveyQuestion.findAll();
+            const { surveyId } = req.query;
+            
+            const surveyQuestions = await SurveyQuestion.findAll( 
+            surveyId ? { where: { surveyId } } : {} );
 
             res.json(surveyQuestions);
         }

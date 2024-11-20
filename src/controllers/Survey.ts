@@ -28,19 +28,19 @@ class SurveyController {
 
                     for ( let q of questions ) {
 
-                        const { question, type, description, data } = q;
+                        const { question, type, status, description, data } = q;
                         
-                        if ( question && type ) {
+                        if ( question && type && status ) {
                             
                             const surveyQuestion = SurveyQuestion.build({
-                                surveyId: survey.id, question, type, description, data
+                                surveyId: survey.id, question, type, status, description, data
                             });
                             await surveyQuestion.save();
 
                             questionsArr.push(surveyQuestion.toJSON());
                         }
                         else {
-                            returnError(null, res, ['You must provide required fields "question" and "type" to create SurveyQuestion'] );
+                            returnError(null, res, ['You must provide required fields "question", "type", "status" to create SurveyQuestion'] );
                         }
                     }
                 }
