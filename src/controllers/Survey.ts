@@ -30,7 +30,9 @@ class SurveyController {
 
                         const { question, type, status, description, data } = q;
                         
-                        if ( question && type && status ) {
+                        if ( typeof question == 'string'
+                            && typeof type == 'string'
+                            && typeof status == 'boolean' ) {
                             
                             const surveyQuestion = SurveyQuestion.build({
                                 surveyId: survey.id, question, type, status, description, data

@@ -10,13 +10,13 @@ POST params (JSON-body):
 ```js
 {
     "userId": 1,        // typeof <Number>, [Required*]
-    "image": "empty",   // typeof <String>, [Required*]
-    "title": "test",    // typeof <String>, [Required*]
-    "slug": "abc",      // typeof <String>, [Required*]
+    "image": "empty",   // typeof <String>, [Required*] Min 1 symbol
+    "title": "test",    // typeof <String>, [Required*] Min 1 symbol
+    "slug": "abc",      // typeof <String>, [Required*] Min 1 symbol
     "status": true,     // typeof <Boolean>, [Required*]
 
-    "description": "test", // typeof <String>, [Optional]
-    "expireDate": new Date(2020, 11, 31) // typeof <Date>, [Optional]
+    "description": "test", // typeof <String>, [Optional] Min 1 symbol
+    "expireDate": new Date(2020, 11, 31), // typeof <Date>, [Optional]
 
     // typeof Array, [Optional]
     "questions": [
@@ -25,8 +25,8 @@ POST params (JSON-body):
             "type": "text",                // typeof <String>, [Required* (if item provided)]
             "status": true,                // typeof <Boolean>,[Required* (if item provided)]
 
-            "description": "",             // typeof <String>, [Optional]
-            "data": ""                     // typeof <String>, [Optional]
+            "description": "t",             // typeof <String>, [Optional] Min 1 symbol
+            "data": "t"                     // typeof <String>, [Optional] Min 1 symbol
         }
     ]
 }
