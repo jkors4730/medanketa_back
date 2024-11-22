@@ -88,19 +88,21 @@ class SurveyQuestionController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { surveyId, question, type, status, description, data } = req.body;
-
+                
                 const sQ = await SurveyQuestion.findByPk<any>( parseInt(id) );
 
                 if (sQ === null) {
                     returnError(null, res, [`SurveyQuestion with id = ${id} not found`]);
                 } else {
-                    sQ.surveyId = surveyId || sQ.surveyId;
-                    sQ.question = question || sQ.question;
-                    sQ.type = type || sQ.type;
-                    sQ.status = status || sQ.status;
-                    sQ.description = description || sQ.description;
-                    sQ.data = data || sQ.data;
+                    const { surveyId, question, type, status, description, data } = req.body;
+                    
+                    sQ.surveyId = typeof surveyId == 'number' ? surveyId : sQ.surveyId;
+                    sQ.question = typeof question == 'string' ? question : sQ.question;
+                    sQ.type = typeof type == 'string' ? type : sQ.type;
+                    sQ.status = typeof status == 'boolean' ? status : sQ.status;
+
+                    sQ.description = typeof description == 'string' ? description : sQ.description;
+                    sQ.data = typeof data == 'string' ? data : sQ.data;
 
                     await sQ.save();
 

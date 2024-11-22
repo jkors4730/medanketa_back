@@ -56,11 +56,12 @@ params (JSON-body):
 ```js
 {
     "surveyId": 1,         // typeof <Number>, [Optional]
-    "question": "q",       // typeof <String>, [Optional]
-    "type": "text",        // typeof <String>, [Optional]
+    "question": "q",       // typeof <String>, [Optional] Min 1 symbol
+    "type": "text",        // typeof <String>, [Optional] Min 1 symbol
+    "status": false        // typeof <Boolean>, [Optional]
 
-    "description": "test", // typeof <String>, [Optional]
-    "data": ""             // typeof <String>, [Optional]
+    "description": "test", // typeof <String>, [Optional] Min 1 symbol
+    "data": ""             // typeof <String>, [Optional] Min 1 symbol
 }
 ```
 
