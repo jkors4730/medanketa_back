@@ -9,13 +9,18 @@
 POST params (JSON-body):
 ```js
 {
-    "surveyId": 1,         // typeof <Number>, [Required*]
-    "question": "q",       // typeof <String>, [Required*] Min 1 symbol
-    "type": "text",        // typeof <String>, [Required*] Min 1 symbol
-    "status": true,        // typeof <Boolean>,[Required*]
+    // typeof Array, [Required*]
+    "questions": [
+        {
+            "surveyId": 1,         // typeof <Number>, [Required*]
+            "question": "q",       // typeof <String>, [Required*] Min 1 symbol
+            "type": "text",        // typeof <String>, [Required*] Min 1 symbol
+            "status": true,        // typeof <Boolean>,[Required*]
 
-    "description": "test", // typeof <String>, [Optional] Min 1 symbol
-    "data": ""             // typeof <String>, [Optional]
+            "description": "test", // typeof <String>, [Optional] Min 1 symbol
+            "data": ""             // typeof <String>, [Optional]
+        }
+    ]
 }
 ```
 

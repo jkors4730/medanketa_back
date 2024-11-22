@@ -10,17 +10,36 @@ class SurveyQuestionController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { surveyId, question, type, status, description, data } = req.body;
-     
-                const surveyQuestion = SurveyQuestion.build({
-                    surveyId, question, type, status, description, data
-                });
 
-                console.log( 'SurveyQuestion', surveyQuestion.toJSON() );
+                const { questions } = req.body;
+                
+                let questionsArr = [];
 
-                await surveyQuestion.save();
+                if ( questions ) {
 
-                res.status(201).json(surveyQuestion.toJSON());
+                    for ( let q of questions ) {
+
+                        const { surveyId, question, type, status, description, data } = q;
+                        
+                        if ( typeof surveyId == 'number' 
+                            && typeof question == 'string'
+                            && typeof type == 'string'
+                            && typeof status == 'boolean' ) {
+                            
+                            const surveyQuestion = SurveyQuestion.build({
+                                surveyId, question, type, status, description, data
+                            });
+                            await surveyQuestion.save();
+
+                            questionsArr.push(surveyQuestion.toJSON());
+                        }
+                        else {
+                            returnError(null, res, ['You must provide required fields "surveyId", "question", "type", "status" to create SurveyQuestion'] );
+                        }
+                    }
+                }
+
+                res.status(201).json(questionsArr);
             }
             else {
                 returnError(null, res, errors.array() );

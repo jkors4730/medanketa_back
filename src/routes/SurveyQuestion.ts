@@ -6,13 +6,7 @@ const surveyQuestionRoutes = Router();
 
 // (C) CREATE
 surveyQuestionRoutes.post('/',
-    body('surveyId').isNumeric(),
-    body('question').isString().isLength({ min: 1 }),
-    body('type').isString().isLength({ min: 1 }),
-    body('status').isBoolean(),
-
-    body('description').optional().isString().isLength({ min: 1 }),
-    body('data').optional().isString().isLength({ min: 1 }),
+    body('questions').isArray(),
     surveyQuestionController.create
 );
 // (R) GET_ALL
