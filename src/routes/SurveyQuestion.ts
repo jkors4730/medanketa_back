@@ -19,12 +19,12 @@ surveyQuestionRoutes.get('/:id',
 // (U) UPDATE
 surveyQuestionRoutes.put('/:id', 
     body('surveyId').optional().isNumeric(),
-    body('question').optional().isString().isLength({ min: 1 }),
-    body('type').optional().isString().isLength({ min: 1 }),
+    body('question').optional().isString(),
+    body('type').optional().isString(),
     body('status').optional().isBoolean(),
 
-    body('description').optional().isString().isLength({ min: 1 }),
-    body('data').optional().isString().isLength({ min: 1 }),
+    body('description').optional().isString(),
+    body('data').optional().isString(),
     surveyQuestionController.update
 );
 // (D) DELETE

@@ -21,8 +21,8 @@ roleRoutes.get('/:id',
 roleRoutes.put('/:id',
     param('id').isNumeric(),
 
-    body('name').optional().isString().isLength({ min: 1 }),
-    body('guardName').optional().isString().isLength({ min: 1 }),
+    body('name').optional().isString(),
+    body('guardName').optional().isString(),
     roleController.update
 );
 // DELETE
