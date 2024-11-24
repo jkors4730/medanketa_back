@@ -50,7 +50,7 @@ class UserController {
                 
                     res.status(201).json( user.toJSON() );
                 } else {
-                    returnError(null, res, ['User with this email already exists!']);
+                    returnError(null, res, ['Пользователь с таким email уже существует!']);
                 }
             }
             else {
@@ -157,14 +157,25 @@ class UserController {
                     const validPassword = comparePassword(password, exists.password);
 
                     if ( validPassword ) {
-                        const token = generateAuthToken(exists);
 
-                        res.send({ token });
+                        const role = await Role.findByPk<any>( parseInt(exists.roleId) );
+
+                        if ( role ) {
+                            res.send({
+                                token: generateAuthToken(exists),
+                                name: exists.name,
+                                email: exists.email,
+                                role: role.guardName
+                            });
+                        }
+                        else {
+                            returnError(null, res, ['Роль пользователя не существует!']);
+                        }
                     } else {
-                        returnError(null, res, ['User password is invalid!']);
+                        returnError(null, res, ['Неправильный пароль!']);
                     }
                 } else {
-                    returnError(null, res, ['User with this email not exists!']);
+                    returnError(null, res, ['Пользователя с таким email не существует!']);
                 }
             }
             else {
