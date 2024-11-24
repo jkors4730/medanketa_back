@@ -111,13 +111,13 @@ class SurveyController {
                 if (survey === null) {
                     returnError(null, res, [`Survey with id = ${id} not found`]);
                 } else {
-                    survey.userId = userId || survey.userId;
-                    survey.image = image || survey.image;
-                    survey.title = title || survey.title;
-                    survey.slug = slug || survey.slug;
-                    survey.status = status || survey.status;
-                    survey.description = description || survey.description;
-                    survey.expireDate = expireDate || survey.expireDate;
+                    survey.userId = typeof userId == 'number' ? userId : survey.userId;
+                    survey.image = typeof image == 'string' ? image : survey.image;
+                    survey.title = typeof title == 'string' ? title : survey.title;
+                    survey.slug = typeof slug == 'string' ? slug : survey.slug;
+                    survey.status = typeof status == 'boolean' ? status : survey.status;
+                    survey.description = typeof description == 'string' ? description : survey.description;
+                    survey.expireDate = typeof expireDate == 'string' ? expireDate : survey.expireDate;
 
                     await survey.save();
 
