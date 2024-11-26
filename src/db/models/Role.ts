@@ -4,10 +4,10 @@ import sequelize from "../config";
 export const Role = sequelize.define(
     'role',
     {
-        name: { type: DataTypes.STRING, allowNull: false },       // required
-        guardName: { type: DataTypes.STRING, allowNull: false }, // required
+        name: { type: DataTypes.STRING, allowNull: false, defaultValue: '', },       // required
+        guardName: { type: DataTypes.STRING, allowNull: false, defaultValue: '', }, // required
         
-        rolePriority: DataTypes.STRING,
-        description: DataTypes.STRING,
+        rolePriority: { type: DataTypes.STRING, defaultValue: '', },
+        description: { type: DataTypes.STRING, defaultValue: '', },
     }
 );

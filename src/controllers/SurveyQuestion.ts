@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { returnError } from '../utils/error';
@@ -13,11 +14,11 @@ class SurveyQuestionController {
 
                 const { questions } = req.body;
                 
-                let questionsArr = [];
+                const questionsArr = [];
 
                 if ( questions ) {
 
-                    for ( let q of questions ) {
+                    for ( const q of questions ) {
 
                         const { surveyId, question, type, status, description, data } = q;
                         

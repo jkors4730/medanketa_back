@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dbRoutes from './routes/db';
 import userRoutes from './routes/User';
 import roleRoutes from './routes/Role';
@@ -10,6 +11,7 @@ import surveyQuestionRoutes from './routes/SurveyQuestion';
 const app = express();
 
 app.use(cors());
+app.use(helmet());
 app.use(express.json());
 
 app.use('/db', dbRoutes);
