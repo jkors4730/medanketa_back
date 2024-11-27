@@ -48,9 +48,4 @@ surveyRoutes.delete('/:id',
     surveyController.delete
 );
 
-surveyRoutes.post('/file',
-    body('file').optional().notEmpty(),
-    surveyController.file
-);
-
 export default surveyRoutes;

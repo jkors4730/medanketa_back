@@ -6,8 +6,6 @@ import { Survey } from '../db/models/Survey';
 import sequelize from '../db/config';
 import { SurveyQuestion } from '../db/models/SurveyQuestion';
 import { QueryTypes } from 'sequelize';
-import path from 'path';
-import fs from 'fs';
 
 class SurveyController {
 
@@ -183,34 +181,6 @@ class SurveyController {
             }
         }
         catch (e: any) { returnError(e, res); }
-    }
-
-    async file(req: Request, res: Response) {
-        if ( req.files ) {
-            const file: any = req.files?.file;
-
-            if ( file ) {
-                const filePath = path.join(__dirname, '../assets/img', file.name);
-
-                const assetsDir = path.join(__dirname, '../assets');
-                const imgDir = path.join(__dirname, '../assets/img');
-
-                if (!fs.existsSync( assetsDir )) {
-                    fs.mkdirSync(assetsDir);
-
-                    if (!fs.existsSync( imgDir )) { fs.mkdirSync(imgDir); }
-                }
-
-                file.mv(filePath, (err: any) => {
-                    if (err) { console.error(err); }
-
-                    res.send('/img/' + file.name);
-                });
-            }
-        }
-        else {
-            returnError(null, res, ['You must provide required field "file"'] );
-        }
     }
 
 }
