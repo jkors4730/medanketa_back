@@ -7,13 +7,14 @@ const surveyRoutes = Router();
 // (C) CREATE
 surveyRoutes.post('/',
     body('userId').isNumeric(),
-    body('image').isString().isLength({ min: 1 }),
-    body('title').isString().isLength({ min: 1 }),
-    body('slug').isString().isLength({ min: 1 }),
+    body('image').isString().notEmpty(),
+    body('title').isString().notEmpty(),
+    body('slug').isString().notEmpty(),
     body('status').isBoolean(),
     body('description').optional().isString(),
     body('expireDate').optional().isDate(),
     body('questions').optional().isArray(),
+    body('file').optional().notEmpty(),
     surveyController.create
 );
 // (R) GET_ALL
@@ -45,6 +46,11 @@ surveyRoutes.put('/:id',
 surveyRoutes.delete('/:id',
     param('id').isNumeric(),
     surveyController.delete
+);
+
+surveyRoutes.post('/file',
+    body('file').optional().notEmpty(),
+    surveyController.file
 );
 
 export default surveyRoutes;

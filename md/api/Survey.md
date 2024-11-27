@@ -19,6 +19,7 @@ POST params (JSON-body):
 
     "description": "test", // typeof <String>, [Optional] Min 1 symbol
     "expireDate": new Date(2020, 11, 31), // typeof <Date>, [Optional]
+    "file": ""           // typeof File, [Optional]
 
     // typeof Array, [Optional]
     "questions": [

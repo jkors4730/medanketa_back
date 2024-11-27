@@ -6,8 +6,8 @@ const roleRoutes = Router();
 
 // (C) CREATE
 roleRoutes.post('/',
-    body('name').isString().isLength({ min: 1 }),
-    body('guardName').isString().isLength({ min: 1 }),
+    body('name').isString().notEmpty(),
+    body('guardName').isString().notEmpty(),
     roleController.create
 );
 // (R) GET_ALL

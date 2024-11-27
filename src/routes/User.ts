@@ -8,9 +8,9 @@ const userRoutes = Router();
 // (C) CREATE
 userRoutes.post('/',
     body('email').isEmail(),
-    body('password').isString().isLength({ min: 1 }),
-    body('name').isString().isLength({ min: 1 }),
-    body('roleName').isString().isLength({ min: 1 }),
+    body('password').isString().notEmpty(),
+    body('name').isString().notEmpty(),
+    body('roleName').isString().notEmpty(),
     userController.create
 );
 // (R) GET_ALL
@@ -23,9 +23,9 @@ userRoutes.get('/:id',
 // (U) UPDATE
 userRoutes.put('/:id',
     param('id').isNumeric(),
-    body('title').isString().isLength({ min: 1 }),
+    body('title').isString().notEmpty(),
     body('email').isEmail(),
-    body('password').isString().isLength({ min: 1 }),
+    body('password').isString().notEmpty(),
     userController.update
 );
 // (D) DELETE 
@@ -36,7 +36,7 @@ userRoutes.delete('/:id',
 
 userRoutes.post('/login',
     body('email').isEmail(),
-    body('password').isString().isLength({ min: 1 }),
+    body('password').isString().notEmpty(),
     userController.login
 );
 

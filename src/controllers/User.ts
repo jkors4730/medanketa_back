@@ -21,7 +21,7 @@ class UserController {
 
                 if ( !exists ) {
                     const mapping: Record<string, string> = {
-                        "Интервьюер": "intervuer",
+                        "Интервьюер": "interviewer",
                         "Респондент": "respondent" 
                     };
                 

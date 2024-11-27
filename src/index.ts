@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import fileUpload from 'express-fileupload';
 import dbRoutes from './routes/db';
 import userRoutes from './routes/User';
 import roleRoutes from './routes/Role';
@@ -14,6 +15,8 @@ const app = express();
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+app.use(fileUpload());
+app.use(express.static('assets'))
 
 app.use('/db', dbRoutes);
 app.use('/user', userRoutes);
