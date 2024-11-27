@@ -23,6 +23,11 @@ surveyRoutes.get('/:id',
     param('id').isNumeric(),
     surveyController.getOne
 );
+// (R) GET_BY_USER_ID (completed)
+surveyRoutes.get('/completed/user/:id',
+    param('id').isNumeric(),
+    surveyController.getByUserId
+);
 // (U) UPDATE
 surveyRoutes.put('/:id',
     param('id').isNumeric(),

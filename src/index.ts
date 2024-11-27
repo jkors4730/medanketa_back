@@ -7,6 +7,7 @@ import userRoutes from './routes/User';
 import roleRoutes from './routes/Role';
 import surveyRoutes from './routes/Survey';
 import surveyQuestionRoutes from './routes/SurveyQuestion';
+import surveyListRoutes from './routes/SurveyList';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/user', userRoutes);
 app.use('/role', roleRoutes);
 app.use('/survey', surveyRoutes);
 app.use('/survey-question/', surveyQuestionRoutes);
+app.use('/survey-list/', surveyListRoutes);
 
 app.get('/', (_req: Request, res: Response) => {
     res.json({

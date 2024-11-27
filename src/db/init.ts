@@ -2,6 +2,7 @@ import { Role } from "./models/Role";
 import { User } from "./models/User";
 import { Survey } from "./models/Survey";
 import { SurveyQuestion } from "./models/SurveyQuestion";
+import { SurveyList } from "./models/SurveyList";
 
 const isDev = process.env.NODE_ENV === 'dev';
 
@@ -10,6 +11,7 @@ export const dbSyncAll = async () => {
     await Role.sync({ alter: isDev });
     await Survey.sync({ alter: isDev });
     await SurveyQuestion.sync({ alter: isDev });
+    await SurveyList.sync({ alter: isDev });
 };
 
 export const dbDropAll = async () => {
@@ -17,4 +19,5 @@ export const dbDropAll = async () => {
     await Role.drop();
     await Survey.drop();
     await SurveyQuestion.drop();
+    await SurveyList.drop();
 };

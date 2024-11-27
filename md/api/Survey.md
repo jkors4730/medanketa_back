@@ -1,5 +1,7 @@
 # Survey CRUD
 
+Survey model and methods
+
 ## Create [POST]
 
 ```bash
@@ -47,6 +49,12 @@ GET params: Not provided
 ```
 
 GET params: Not provided
+
+## Get by userId (Completed Surveys) [GET]
+
+```bash
+/survey/completed/user/:id
+```
 
 ## Update [PUT]
 

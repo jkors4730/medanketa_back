@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { surveyQuestionController } from '../controllers/SurveyQuestion';
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 const surveyQuestionRoutes = Router();
 
@@ -10,7 +10,10 @@ surveyQuestionRoutes.post('/',
     surveyQuestionController.create
 );
 // (R) GET_ALL
-surveyQuestionRoutes.get('/', surveyQuestionController.getAll);
+surveyQuestionRoutes.get('/',
+    query('surveyId').optional().isNumeric(),
+    surveyQuestionController.getAll
+);
 // (R) GET_ONE
 surveyQuestionRoutes.get('/:id',
     param('id').isNumeric(),

@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { returnError } from '../utils/error';
 import { validationResult } from 'express-validator';
 import { Survey } from '../db/models/Survey';
 import sequelize from '../db/config';
 import { SurveyQuestion } from '../db/models/SurveyQuestion';
+import { QueryTypes } from 'sequelize';
 
 class SurveyController {
 
@@ -22,11 +24,11 @@ class SurveyController {
 
                 await survey.save();
 
-                let questionsArr = [];
+                const questionsArr = [];
 
                 if ( questions ) {
 
-                    for ( let q of questions ) {
+                    for ( const q of questions ) {
 
                         const { question, type, status, description, data } = q;
                         
@@ -96,6 +98,33 @@ class SurveyController {
             }
         }
         catch (e: any) { returnError(e, res); }
+    }
+
+    async getByUserId(req: Request, res: Response) {
+        const errors = validationResult(req);
+            
+        if ( errors.isEmpty() ) {
+            const { id } = req.params;
+
+            const surveys = await sequelize.query(`
+                SELECT surveys.*,
+                users.id as "authorId",
+                users.name as "authorName"
+                FROM surveys
+                JOIN survey_lists ON surveys."id" = survey_lists."surveyId"
+                LEFT JOIN users ON surveys."userId" = users.id
+                WHERE survey_lists."userId" = :userId`, {
+                replacements: { userId: id },
+                type: QueryTypes.SELECT,
+                model: Survey,
+                mapToModel: true,
+            });
+        
+            res.json(surveys);
+        }
+        else {
+            returnError(null, res, errors.array() );
+        }
     }
 
     async update(req: Request, res: Response) {

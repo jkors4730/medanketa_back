@@ -1,5 +1,7 @@
 # SurveyQuestion CRUD
 
+SurveyQuestion model and methods
+
 ## Create [POST]
 
 ```bash
