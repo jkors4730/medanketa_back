@@ -190,10 +190,10 @@ class SurveyController {
             const file: any = req.files?.file;
 
             if ( file ) {
-                const filePath = path.join(__dirname, '../../assets/img', file.name);
+                const filePath = path.join(__dirname, '../assets/img', file.name);
 
-                const assetsDir = path.join(__dirname, '../../assets');
-                const imgDir = path.join(__dirname, '../../assets/img');
+                const assetsDir = path.join(__dirname, '../assets');
+                const imgDir = path.join(__dirname, '../assets/img');
 
                 if (!fs.existsSync( assetsDir )) {
                     fs.mkdirSync(assetsDir);
