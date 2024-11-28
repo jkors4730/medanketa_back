@@ -6,7 +6,6 @@ const uploadRoutes = Router();
 
 // (C) CREATE
 uploadRoutes.post('/',
-    body('file').notEmpty(),
     uploadController.create
 );
 // (C) CREATE BASE64
