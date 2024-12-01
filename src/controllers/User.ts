@@ -164,6 +164,7 @@ class UserController {
                         if ( role ) {
                             res.send({
                                 token: generateAuthToken(exists),
+                                id: exists.id,
                                 name: exists.name,
                                 email: exists.email,
                                 role: role.guardName

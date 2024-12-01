@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, query } from 'express-validator';
-import { surveyListController } from '../controllers/SurveyListController';
+import { surveyListController } from '../controllers/SurveyList';
 
 const surveyListRoutes = Router();
 
