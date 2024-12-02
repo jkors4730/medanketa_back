@@ -40,7 +40,13 @@ POST params (JSON-body):
 /survey/
 ```
 
-GET params: Not provided
+GET (query params):
+
+```bash
+# userId | typeof <Number>
+# get surveys by userId
+?userId=1
+```
 
 ## Get ONE [GET]
 

@@ -60,18 +60,36 @@ class SurveyController {
         catch (e: any) { returnError(e, res); }
     }
 
-    async getAll(_req: Request, res: Response) {
+    async getAll(req: Request, res: Response) {
         try {
-            const surveys = await sequelize.query(`
-                SELECT
-                surveys.*,
-                users.name as "userName",
-                users.email as "userEmail"
-                FROM surveys
-                LEFT JOIN users ON surveys."userId" = users.id`, {
-                model: Survey,
-                mapToModel: true,
-            });
+            const { userId } = req.query;
+
+            const surveys = userId ?
+                await sequelize.query(`
+                    SELECT
+                    surveys.*,
+                    users.name as "userName",
+                    users.email as "userEmail"
+                    FROM surveys
+                    LEFT JOIN users ON surveys."userId" = users.id
+                    WHERE surveys."userId" = :userId`, {
+                    replacements: { userId: userId },
+                    type: QueryTypes.SELECT,
+                    model: Survey,
+                    mapToModel: true,
+                })
+                :
+                await sequelize.query(`
+                    SELECT
+                    surveys.*,
+                    users.name as "userName",
+                    users.email as "userEmail"
+                    FROM surveys
+                    LEFT JOIN users ON surveys."userId" = users.id`, {
+                    type: QueryTypes.SELECT,
+                    model: Survey,
+                    mapToModel: true,
+                });
         
             res.json(surveys);
         }
