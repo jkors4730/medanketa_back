@@ -8,6 +8,7 @@ const surveyListRoutes = Router();
 surveyListRoutes.post('/',
     body('userId').isNumeric(),
     body('surveyId').isNumeric(),
+    body('answers').optional().isArray(),
     surveyListController.create
 );
 // (R) GET_ALL

@@ -6,5 +6,6 @@ export const SurveyList = sequelize.define(
     {
         userId: { type: DataTypes.INTEGER, allowNull: false, },  // required
         surveyId: { type: DataTypes.INTEGER, allowNull: false, }, // required
+        answers: { type: DataTypes.JSON, defaultValue: [], },
     }
 );

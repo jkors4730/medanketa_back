@@ -13,6 +13,14 @@ POST params (JSON-body):
 {
     "userId": 1,        // typeof <Number>, [Required*]
     "surveyId": 1       // typeof <Number>, [Required*] 
+
+    // typeof Array, [Optional]
+    "answers": [
+        {
+            "id": 1,            // typeof <Number>, [Optional]
+            "answer": "text"    // typeof <String>, [Optional]
+        }
+    ]
 }
 ```
 
