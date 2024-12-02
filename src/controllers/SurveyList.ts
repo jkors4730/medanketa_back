@@ -13,15 +13,23 @@ class SurveyListController {
             if ( errors.isEmpty() ) {
                 const { userId, surveyId } = req.body;
 
-                const surveyList = SurveyList.build<any>({
-                    userId, surveyId
-                });
+                const exists = await SurveyList.findOne({ where: { surveyId: surveyId } });
+                console.log('exists', exists);
 
-                console.log( 'SurveyList', surveyList.toJSON() );
-
-                await surveyList.save();
-
-                res.status(201).json(surveyList.toJSON());
+                if ( !exists ) {
+                    const surveyList = SurveyList.build<any>({
+                        userId, surveyId
+                    });
+    
+                    console.log( 'SurveyList', surveyList.toJSON() );
+    
+                    await surveyList.save();
+    
+                    res.status(201).json(surveyList.toJSON());
+                }
+                else {
+                    returnError(null, res, [`Survey id=${surveyId} already exists in SurveyList!`] );
+                }
             }
             else {
                 returnError(null, res, errors.array() );
