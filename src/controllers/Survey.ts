@@ -72,7 +72,8 @@ class SurveyController {
                     users.email as "userEmail"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
-                    WHERE surveys."userId" = :userId`, {
+                    WHERE surveys."userId" = :userId
+                    ORDER BY surveys.id DESC`, {
                     replacements: { userId: userId },
                     type: QueryTypes.SELECT,
                     model: Survey,
@@ -85,7 +86,8 @@ class SurveyController {
                     users.name as "userName",
                     users.email as "userEmail"
                     FROM surveys
-                    LEFT JOIN users ON surveys."userId" = users.id`, {
+                    LEFT JOIN users ON surveys."userId" = users.id
+                    ORDER BY surveys.id DESC`, {
                     type: QueryTypes.SELECT,
                     model: Survey,
                     mapToModel: true,

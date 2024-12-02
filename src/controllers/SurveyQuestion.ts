@@ -54,7 +54,10 @@ class SurveyQuestionController {
             const { surveyId } = req.query;
             
             const surveyQuestions = await SurveyQuestion.findAll( 
-            surveyId ? { where: { surveyId } } : {} );
+            surveyId
+                ? { where: { surveyId }, order: [["id", "ASC"]] }
+                : { order: [["id", "ASC"]] }
+            );
 
             res.json(surveyQuestions);
         }
