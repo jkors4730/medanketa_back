@@ -11,14 +11,14 @@ class SurveyListController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { userId, surveyId, answers } = req.body;
+                const { userId, surveyId, answers, privacy } = req.body;
 
                 const exists = await SurveyList.findOne<any>({ where: { surveyId: surveyId } });
                 console.log('exists', exists);
 
                 if ( !exists ) {
                     const surveyList = SurveyList.build<any>({
-                        userId, surveyId, answers
+                        userId, surveyId, answers, privacy
                     });
     
                     console.log( 'SurveyList', surveyList.toJSON() );
@@ -30,7 +30,12 @@ class SurveyListController {
                 else if (answers) {
                     console.log(typeof answers);
                     exists.answers = answers;
-                    console.log( 'SurveyList', exists.toJSON() );
+                    await exists.save();
+
+                    res.status(200).json(exists.toJSON());
+                }
+                else if (privacy) {
+                    exists.privacy = privacy;
                     await exists.save();
 
                     res.status(200).json(exists.toJSON());

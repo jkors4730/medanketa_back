@@ -14,6 +14,8 @@ POST params (JSON-body):
     "userId": 1,        // typeof <Number>, [Required*]
     "surveyId": 1       // typeof <Number>, [Required*] 
 
+    "privacy": false    // typeof <Boolean>, [Optional] 
+
     // typeof Array, [Optional]
     "answers": [
         {

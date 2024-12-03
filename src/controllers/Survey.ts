@@ -119,10 +119,11 @@ class SurveyController {
                     mapToModel: true,
                 });
 
-                if (survey === null) {
+                if (survey === null || !Array.isArray(survey) || !survey.length) {
                     returnError(null, res, [`Survey with id = ${id} not found`]);
-                } else {
-                    res.status(200).json(survey);
+                }
+                else {
+                    res.status(200).json(survey[0]);
                 }
             }
             else {
