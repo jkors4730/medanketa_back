@@ -105,12 +105,24 @@ class SurveyController {
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
 
-                const survey = await Survey.findByPk( parseInt(id) );
+                const survey = await sequelize.query(`
+                    SELECT
+                    surveys.*,
+                    users.id as "authorId",
+                    users.name as "authorName"
+                    FROM surveys
+                    LEFT JOIN users ON surveys."userId" = users.id
+                    WHERE surveys.id = :id`, {
+                    replacements: { id: id },
+                    type: QueryTypes.SELECT,
+                    model: Survey,
+                    mapToModel: true,
+                });
 
                 if (survey === null) {
                     returnError(null, res, [`Survey with id = ${id} not found`]);
                 } else {
-                    res.status(200).json(survey.toJSON());
+                    res.status(200).json(survey);
                 }
             }
             else {
@@ -133,7 +145,8 @@ class SurveyController {
                 FROM surveys
                 JOIN survey_lists ON surveys."id" = survey_lists."surveyId"
                 LEFT JOIN users ON surveys."userId" = users.id
-                WHERE survey_lists."userId" = :userId`, {
+                WHERE survey_lists."userId" = :userId
+                AND surveys.status = true`, {
                 replacements: { userId: id },
                 type: QueryTypes.SELECT,
                 model: Survey,
