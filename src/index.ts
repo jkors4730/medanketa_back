@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
 import path from 'path';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
@@ -16,9 +15,7 @@ import uploadRoutes from './routes/Upload';
 const app = express();
 
 app.use(cors());
-app.use(helmet());
 app.use(express.static(path.join(__dirname, '/assets')));
-// app.use(express.json());
 app.use(fileUpload());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
@@ -32,6 +29,9 @@ app.use('/survey-list', surveyListRoutes);
 app.use('/upload', uploadRoutes);
 
 app.get('/', (_req: Request, res: Response) => {
+    console.log(process.env.ORIGIN1, process.env.ORIGIN2);
+    console.log(typeof process.env.ORIGIN1, typeof process.env.ORIGIN2);
+
     res.json({
         error: 'Not allowed'
     });

@@ -109,9 +109,11 @@ class SurveyController {
                     SELECT
                     surveys.*,
                     users.id as "authorId",
-                    users.name as "authorName"
+                    users.name as "authorName",
+                    survey_lists.privacy as "privacy"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
+                    LEFT JOIN survey_lists ON surveys.id = survey_lists."surveyId"
                     WHERE surveys.id = :id`, {
                     replacements: { id: id },
                     type: QueryTypes.SELECT,

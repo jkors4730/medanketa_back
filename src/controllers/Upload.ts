@@ -37,7 +37,10 @@ class UploadController {
                             });
                         }
                         else {
-                            returnError(null, res, ['File already exists!'] );
+                            res.json({
+                                file: `/img/${file.name}`,
+                                exists: true
+                            });
                         }
                     }
                     else {

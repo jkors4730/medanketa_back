@@ -34,7 +34,7 @@ class SurveyListController {
 
                     res.status(200).json(exists.toJSON());
                 }
-                else if (privacy) {
+                else if (typeof privacy == 'boolean') {
                     exists.privacy = privacy;
                     await exists.save();
 
