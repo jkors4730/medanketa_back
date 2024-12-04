@@ -110,6 +110,7 @@ class SurveyController {
                     surveys.*,
                     users.id as "authorId",
                     users.name as "authorName",
+                    survey_lists.answers as "answers",
                     survey_lists.privacy as "privacy"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id

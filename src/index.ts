@@ -29,9 +29,6 @@ app.use('/survey-list', surveyListRoutes);
 app.use('/upload', uploadRoutes);
 
 app.get('/', (_req: Request, res: Response) => {
-    console.log(process.env.ORIGIN1, process.env.ORIGIN2);
-    console.log(typeof process.env.ORIGIN1, typeof process.env.ORIGIN2);
-
     res.json({
         error: 'Not allowed'
     });
