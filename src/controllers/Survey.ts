@@ -112,7 +112,9 @@ class SurveyController {
                     users.id as "authorId",
                     users.name as "authorName",
                     ${ answers ? 'survey_lists.answers as "answers",' : '' }
-                    survey_lists.privacy as "privacy"
+                    survey_lists.privacy as "privacy",
+                    survey_lists."tsStart" as "tsStart",
+                    survey_lists."tsEnd" as "tsEnd"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
                     LEFT JOIN survey_lists ON surveys.id = survey_lists."surveyId"

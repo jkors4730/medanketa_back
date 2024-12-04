@@ -16,6 +16,9 @@ POST params (JSON-body):
 
     "privacy": false    // typeof <Boolean>, [Optional] 
 
+    "tsStart": "2024-12-04T12:15:17.416Z"  // typeof <Timestamp>, [Optional] new Date().toISOString()
+    "tsEnd": "2024-12-04T12:15:17.416Z"    // typeof <Timestamp>, [Optional] new Date().toISOString()
+
     // typeof Array, [Optional]
     "answers": [
         {

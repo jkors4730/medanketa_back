@@ -9,5 +9,8 @@ export const SurveyList = sequelize.define(
 
         privacy: { type: DataTypes.BOOLEAN, defaultValue: false, },
         answers: { type: DataTypes.JSON, defaultValue: [], },
+
+        tsStart: { type: DataTypes.DATE },
+        tsEnd: { type: DataTypes.DATE },
     }
 );
