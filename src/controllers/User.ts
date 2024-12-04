@@ -14,7 +14,7 @@ class UserController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { email, password, name, roleName } = req.body;
+                const { name, lastname, surname, email, password, roleName, phone, birthDate, region, city, workplace, specialization, position, workExperience, pdAgreement, newsletterAgreement } = req.body;
 
                 const exists = await User.findOne({ where: { email: email } });
                 console.log('exists', exists);
@@ -39,10 +39,13 @@ class UserController {
                     const hash = passwordHash(password);
                 
                     const user = User.build({
-                        name: name,
-                        email: email,
+                        name,
+                        email,
+                        lastname,
+                        surname,
                         password: hash, // store hashed password in db
-                        roleId: role.id // connect with role
+                        roleId: role.id, // connect with role
+                        phone, birthDate, region, city, workplace, specialization, position, workExperience, pdAgreement, newsletterAgreement
                     });
                 
                     console.log( 'User', user.toJSON() );

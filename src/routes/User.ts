@@ -7,10 +7,23 @@ const userRoutes = Router();
 
 // (C) CREATE
 userRoutes.post('/',
+    body('name').isString().notEmpty(),
     body('email').isEmail(),
     body('password').isString().notEmpty(),
-    body('name').isString().notEmpty(),
     body('roleName').isString().notEmpty(),
+    body('pdAgreement').isBoolean(),
+
+    body('lastname').optional().isString(),
+    body('surname').optional().isString(),
+    body('birthDate').optional().isString(),
+    body('phone').optional().isString(),
+    body('region').optional().isString(),
+    body('city').optional().isString(),
+    body('workplace').optional().isString(),
+    body('specialization').optional().isString(),
+    body('position').optional().isString(),
+    body('workExperience').optional().isNumeric(),
+    body('newsletterAgreement').optional().isBoolean(),
     userController.create
 );
 // (R) GET_ALL

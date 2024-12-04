@@ -9,8 +9,10 @@ export const User = sequelize.define(
         password: { type: DataTypes.STRING, allowNull: false, defaultValue: '', }, // required
         roleId: { type: DataTypes.INTEGER, allowNull: false }, // required
         
+        lastname: { type: DataTypes.STRING, defaultValue: '', },
+        surname: { type: DataTypes.STRING, defaultValue: '', },
         emailVerifiedAt: DataTypes.DATE,
-        birthDate: DataTypes.DATE,
+        birthDate: { type: DataTypes.STRING, defaultValue: '', },
         phone: { type: DataTypes.STRING, defaultValue: '', },
         region: { type: DataTypes.STRING, defaultValue: '', },
         city: { type: DataTypes.STRING, defaultValue: '', },
