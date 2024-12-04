@@ -24,6 +24,7 @@ surveyRoutes.get('/',
 // (R) GET_ONE
 surveyRoutes.get('/:id',
     param('id').isNumeric(),
+    query('answers').optional().isBoolean(),
     surveyController.getOne
 );
 // (R) GET_BY_USER_ID (completed)

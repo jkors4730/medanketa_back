@@ -54,7 +54,13 @@ GET (query params):
 /survey/:id
 ```
 
-GET params: Not provided
+GET (query params):
+
+```bash
+# answers | typeof <Boolean>
+# get survey answers
+?answers=true
+```
 
 ## Get by userId (Completed Surveys) [GET]
 
