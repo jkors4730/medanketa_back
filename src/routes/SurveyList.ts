@@ -6,7 +6,7 @@ const surveyListRoutes = Router();
 
 // (C) CREATE
 surveyListRoutes.post('/',
-    body('userId').isNumeric(),
+    body('userId').optional().isNumeric(),
     body('surveyId').isNumeric(),
     body('privacy').optional().isBoolean(),
     body('answers').optional().isArray(),

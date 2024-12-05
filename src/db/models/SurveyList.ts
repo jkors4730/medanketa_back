@@ -4,7 +4,7 @@ import sequelize from "../config";
 export const SurveyList = sequelize.define(
     'survey_list',
     {
-        userId: { type: DataTypes.INTEGER, allowNull: false, },  // required
+        userId: { type: DataTypes.INTEGER },  // required
         surveyId: { type: DataTypes.INTEGER, allowNull: false, }, // required
 
         privacy: { type: DataTypes.BOOLEAN, defaultValue: false, },
