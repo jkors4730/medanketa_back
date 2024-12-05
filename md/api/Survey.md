@@ -17,6 +17,7 @@ POST params (JSON-body):
     "slug": "abc",      // typeof <String>, [Required*] Min 1 symbol
     "status": true,     // typeof <Boolean>, [Required*]
 
+    "access": false,     // typeof <Boolean>, [Optional]
     "description": "test", // typeof <String>, [Optional] Min 1 symbol
     "expireDate": new Date(2020, 11, 31), // typeof <Date>, [Optional]
 
@@ -82,6 +83,7 @@ params (JSON-body):
     "title": "test",    // typeof <String>, [Optional]
     "slug": "abc",      // typeof <String>, [Optional]
     "status": true,     // typeof Boolean, [Optional]
+    "access": true,     // typeof Boolean, [Optional]
 
     "description": "test", // typeof <String>, [Optional]
     "expireDate": new Date(2020, 11, 31) // typeof <Date>, [Optional]

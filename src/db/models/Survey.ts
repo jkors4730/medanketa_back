@@ -9,7 +9,7 @@ export const Survey = sequelize.define(
         title: { type: DataTypes.STRING, allowNull: false, defaultValue: '', },    // required
         slug: { type: DataTypes.STRING, allowNull: false, defaultValue: '', },     // required
         status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }, // required
-        public: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }, // required
+        access: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }, // required
 
         description: { type: DataTypes.STRING, defaultValue: '', },
         expireDate: DataTypes.DATE,

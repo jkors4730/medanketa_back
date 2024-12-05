@@ -14,10 +14,10 @@ class SurveyController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { userId, image, title, slug, status, description, expireDate, questions } = req.body;
+                const { userId, image, title, slug, status, access, description, expireDate, questions } = req.body;
      
                 const survey = Survey.build<any>({
-                    userId, image, title, slug, status, description, expireDate
+                    userId, image, title, slug, status, access, description, expireDate
                 });
 
                 console.log( 'Survey', survey.toJSON() );
@@ -173,7 +173,7 @@ class SurveyController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { userId, image, title, slug, status, description, expireDate } = req.body;
+                const { userId, image, title, slug, status, access, description, expireDate } = req.body;
 
                 const survey = await Survey.findByPk<any>( parseInt(id) );
 
@@ -185,6 +185,7 @@ class SurveyController {
                     survey.title = typeof title == 'string' ? title : survey.title;
                     survey.slug = typeof slug == 'string' ? slug : survey.slug;
                     survey.status = typeof status == 'boolean' ? status : survey.status;
+                    survey.access = typeof access == 'boolean' ? access : survey.access;
                     survey.description = typeof description == 'string' ? description : survey.description;
                     survey.expireDate = typeof expireDate == 'string' ? expireDate : survey.expireDate;
 
