@@ -104,24 +104,16 @@ class SurveyController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { answers } = req.query;
-                const { userId } = req.query;
 
                 const survey = await sequelize.query(`
                     SELECT
                     surveys.*,
                     users.id as "authorId",
                     users.name as "authorName",
-                    ${ answers ? 'survey_lists.answers as "answers",' : '' }
-                    survey_lists.privacy as "privacy",
-                    survey_lists."tsStart" as "tsStart",
-                    survey_lists."tsEnd" as "tsEnd"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
-                    LEFT JOIN survey_lists ON surveys.id = survey_lists."surveyId"
-                    WHERE surveys.id = :id
-                    AND survey_lists."userId" = :userId`, {
-                    replacements: { id: id, userId: userId },
+                    WHERE surveys.id = :id`, {
+                    replacements: { id: id },
                     type: QueryTypes.SELECT,
                     model: Survey,
                     mapToModel: true,

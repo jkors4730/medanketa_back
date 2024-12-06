@@ -75,6 +75,18 @@ class SurveyListController {
         catch (e: any) { returnError(e, res); }
     }
 
+    async getOne(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { surveyId } = req.query;
+            
+            const surveyList = await SurveyList.findAll( { where: { userId: id, surveyId } });
+
+            res.json(surveyList.length ? surveyList[0] : {});
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
 }
 
 export const surveyListController = new SurveyListController();

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body, query } from 'express-validator';
+import { body, param, query } from 'express-validator';
 import { surveyListController } from '../controllers/SurveyList';
 
 const surveyListRoutes = Router();
@@ -18,6 +18,12 @@ surveyListRoutes.post('/',
 surveyListRoutes.get('/',
     query('userId').optional().isNumeric(),
     surveyListController.getAll
+);
+// (R) GET_ONE
+surveyListRoutes.get('/user/:id',
+    param('id').isNumeric(),
+    query('surveyId').isNumeric(),
+    surveyListController.getOne
 );
 
 export default surveyListRoutes;
