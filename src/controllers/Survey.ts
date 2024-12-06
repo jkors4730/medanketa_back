@@ -109,7 +109,7 @@ class SurveyController {
                     SELECT
                     surveys.*,
                     users.id as "authorId",
-                    users.name as "authorName",
+                    users.name as "authorName"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
                     WHERE surveys.id = :id`, {
