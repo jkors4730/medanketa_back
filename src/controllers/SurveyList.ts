@@ -31,33 +31,37 @@ class SurveyListController {
     
                     res.status(201).json(surveyList.toJSON());
                 }
-                else if (answers) {
-                    console.log(typeof answers);
-                    exists.answers = answers;
-                    await exists.save();
-
-                    res.status(200).json(exists.toJSON());
-                }
-                else if (typeof privacy == 'boolean') {
-                    exists.privacy = privacy;
-                    await exists.save();
-
-                    res.status(200).json(exists.toJSON());
-                }
-                else if (tsStart && !exists.tsStart) {
-                    exists.tsStart = tsStart;
-                    await exists.save();
-
-                    res.status(200).json(exists.toJSON());
-                }
-                else if (tsEnd && !exists.tsEnd) {
-                    exists.tsEnd = tsEnd;
-                    await exists.save();
-
-                    res.status(200).json(exists.toJSON());
-                }
                 else {
-                    returnError(null, res, [`Survey id=${surveyId} already exists in SurveyList!`] );
+                    let count = 0;
+
+                    if (answers) {
+                        count++;
+                        exists.answers = answers;
+                        await exists.save();
+                    }
+                    if (typeof privacy == 'boolean') {
+                        count++;
+                        exists.privacy = privacy;
+                        await exists.save();
+                    }
+                    if (tsStart && exists.tsStart == null) {
+                        count++;
+                        exists.tsStart = tsStart;
+                        await exists.save();
+                    }
+                    if (tsEnd && exists.tsEnd == null) {
+                        count++;
+                        console.log('here', tsEnd)
+                        exists.tsEnd = tsEnd;
+                        await exists.save();
+                    }
+
+                    if (count) {
+                        res.status(200).json(exists.toJSON());
+                    }
+                    else {
+                        returnError(null, res, [`Survey id=${surveyId} already exists in SurveyList!`] );
+                    }
                 }
             }
             else {
