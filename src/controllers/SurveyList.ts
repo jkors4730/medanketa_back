@@ -13,7 +13,11 @@ class SurveyListController {
             if ( errors.isEmpty() ) {
                 const { userId, surveyId, answers, privacy, tsStart, tsEnd } = req.body;
 
-                const exists = await SurveyList.findOne<any>({ where: { surveyId: surveyId } });
+                const exists = await SurveyList.findOne<any>({
+                    where: {
+                        surveyId: surveyId,
+                        userId: userId
+                    } });
                 console.log('exists', exists);
 
                 if ( !exists ) {
