@@ -105,6 +105,7 @@ class SurveyController {
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
                 const { answers } = req.query;
+                const { userId } = req.query;
 
                 const survey = await sequelize.query(`
                     SELECT
@@ -118,8 +119,9 @@ class SurveyController {
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
                     LEFT JOIN survey_lists ON surveys.id = survey_lists."surveyId"
-                    WHERE surveys.id = :id`, {
-                    replacements: { id: id },
+                    WHERE surveys.id = :id
+                    AND survey_lists."userId" = :userId`, {
+                    replacements: { id: id, userId: userId },
                     type: QueryTypes.SELECT,
                     model: Survey,
                     mapToModel: true,
