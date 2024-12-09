@@ -3,15 +3,14 @@ import { User } from "./models/User";
 import { Survey } from "./models/Survey";
 import { SurveyQuestion } from "./models/SurveyQuestion";
 import { SurveyList } from "./models/SurveyList";
-
-const isDev = process.env.NODE_ENV === 'dev';
+import { applyTestDB } from "./mock";
 
 export const dbSyncAll = async () => {
-    await User.sync({ alter: isDev });
-    await Role.sync({ alter: isDev });
-    await Survey.sync({ alter: isDev });
-    await SurveyQuestion.sync({ alter: isDev });
-    await SurveyList.sync({ alter: isDev });
+    await User.sync({ alter: true });
+    await Role.sync({ alter: true });
+    await Survey.sync({ alter: true });
+    await SurveyQuestion.sync({ alter: true });
+    await SurveyList.sync({ alter: true });
 };
 
 export const dbDropAll = async () => {
@@ -20,4 +19,11 @@ export const dbDropAll = async () => {
     await Survey.drop();
     await SurveyQuestion.drop();
     await SurveyList.drop();
+};
+
+export const dbTestAll = async () => {
+    await dbDropAll();
+    await dbSyncAll();
+
+    await applyTestDB();
 };

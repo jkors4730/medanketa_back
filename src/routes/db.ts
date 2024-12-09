@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { dbDropAll, dbSyncAll } from '../db/init';
+import { dbDropAll, dbSyncAll, dbTestAll } from '../db/init';
 
 const dbRoutes = Router();
 
@@ -15,6 +15,11 @@ dbRoutes.get('/create', async (_req: Request, res: Response) => {
 dbRoutes.get('/drop', async (_req: Request, res: Response) => {
     await dbDropAll();
     res.end('/drop');
+});
+
+dbRoutes.get('/test', async (_req: Request, res: Response) => {
+    await dbTestAll();
+    res.end('/test');
 });
 
 export default dbRoutes;

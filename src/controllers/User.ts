@@ -169,6 +169,7 @@ class UserController {
                                 token: generateAuthToken(exists),
                                 id: exists.id,
                                 name: exists.name,
+                                lastname: exists.lastname,
                                 email: exists.email,
                                 role: role.guardName
                             });

@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { returnError } from '../utils/error';
 import { validationResult } from 'express-validator';
 import { SurveyList } from '../db/models/SurveyList';
+import md5 from 'md5';
 
 class SurveyListController {
 
@@ -15,13 +16,13 @@ class SurveyListController {
 
                 const exists = await SurveyList.findOne<any>({
                     where: {
-                        surveyId: surveyId,
-                        userId: userId
+                        uIndex: md5( String(surveyId) + String(userId) )
                     } });
                 console.log('exists', exists);
 
                 if ( !exists ) {
                     const surveyList = SurveyList.build<any>({
+                        uIndex: md5( String(surveyId) + String(userId) ),
                         userId, surveyId, answers, privacy, tsStart, tsEnd
                     });
     
@@ -37,30 +38,23 @@ class SurveyListController {
                     if (answers) {
                         count++;
                         exists.answers = answers;
-                        await exists.save();
                     }
                     if (typeof privacy == 'boolean') {
                         count++;
                         exists.privacy = privacy;
-                        await exists.save();
                     }
                     if (tsStart && exists.tsStart == null) {
                         count++;
                         exists.tsStart = tsStart;
-                        await exists.save();
                     }
                     if (tsEnd && exists.tsEnd == null) {
                         count++;
-                        console.log('here', tsEnd)
                         exists.tsEnd = tsEnd;
-                        await exists.save();
                     }
 
                     if (count) {
+                        await exists.save();
                         res.status(200).json(exists.toJSON());
-                    }
-                    else {
-                        returnError(null, res, [`Survey id=${surveyId} already exists in SurveyList!`] );
                     }
                 }
             }
@@ -88,7 +82,7 @@ class SurveyListController {
             const { id } = req.params;
             const { surveyId } = req.query;
             
-            const surveyList = await SurveyList.findAll( { where: { userId: id, surveyId } });
+            const surveyList = await SurveyList.findAll( { where: { uIndex: md5( String(surveyId) + String(id) ), } });
 
             res.json(surveyList.length ? surveyList[0] : {});
         }

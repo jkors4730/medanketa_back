@@ -68,7 +68,7 @@ class SurveyController {
                 await sequelize.query(`
                     SELECT
                     surveys.*,
-                    users.name as "userName",
+                    CONCAT(users.name, ' ', users.lastname) as "userName",
                     users.email as "userEmail"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
@@ -83,7 +83,7 @@ class SurveyController {
                 await sequelize.query(`
                     SELECT
                     surveys.*,
-                    users.name as "userName",
+                    CONCAT(users.name, ' ', users.lastname) as "userName",
                     users.email as "userEmail"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
@@ -109,7 +109,7 @@ class SurveyController {
                     SELECT
                     surveys.*,
                     users.id as "authorId",
-                    users.name as "authorName"
+                    CONCAT(users.name, ' ', users.lastname) as "authorName"
                     FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
                     WHERE surveys.id = :id`, {
@@ -142,7 +142,7 @@ class SurveyController {
             const surveys = await sequelize.query(`
                 SELECT surveys.*,
                 users.id as "authorId",
-                users.name as "authorName"
+                CONCAT(users.name, ' ', users.lastname) as "authorName"
                 FROM surveys
                 JOIN survey_lists ON surveys."id" = survey_lists."surveyId"
                 LEFT JOIN users ON surveys."userId" = users.id
