@@ -166,7 +166,7 @@ class SurveyController {
 
         try {
             const data = await sequelize.query<any>(`
-            SELECT
+            SELECT DISTINCT
             u.id as "userId",
             u.name as "userName",
             u.lastname as "userLastname",
