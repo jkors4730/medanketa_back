@@ -172,6 +172,8 @@ class SurveyController {
             u.lastname as "userLastname",
             TO_CHAR(sl1."tsEnd", 'DD.MM.YYYY') as "dateEnd",
             (sl1."tsEnd" - sl1."tsStart") as time,
+            sl1."tsStart" as "tsStart", 
+            sl1."tsEnd" as "tsEnd",
             (SELECT
             ( SELECT json_array_length(sl2.answers)::float /
             (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id)::float
