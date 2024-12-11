@@ -161,6 +161,39 @@ class SurveyController {
         }
     }
 
+    async getUsersBySurveyId(req: Request, res: Response) {
+        const { id } = req.params;
+
+        try {
+            const data = await sequelize.query<any>(`
+            SELECT
+            u.id as "userId",
+            u.name as "userName",
+            u.lastname as "userLastname",
+            TO_CHAR(sl1."tsEnd", 'DD.MM.YYYY') as "dateEnd",
+            (sl1."tsEnd" - sl1."tsStart") as time,
+            (SELECT
+            ( SELECT json_array_length(sl2.answers)::float /
+            (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id)::float
+                FROM survey_lists as sl2
+                WHERE sl2."surveyId" = :id
+                AND sl2."userId" = sl1."userId"
+            ) * 100 as complete)
+            FROM survey_lists as sl1
+            LEFT JOIN users as u
+            ON sl1."userId" = u.id
+            LEFT JOIN survey_questions as sq
+            ON sl1."surveyId" = sq."surveyId"
+            WHERE sl1."surveyId" = :id;`, {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            });
+
+            res.status(200).json( data );
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
     async update(req: Request, res: Response) {
         try {
             const errors = validationResult(req);

@@ -33,6 +33,9 @@ surveyRoutes.get('/completed/user/:id',
     param('id').isNumeric(),
     surveyController.getByUserId
 );
+surveyRoutes.get('/answers/:id',
+    surveyController.getUsersBySurveyId
+);
 // (U) UPDATE
 surveyRoutes.put('/:id',
     param('id').isNumeric(),

@@ -13,6 +13,7 @@ import surveyListRoutes from './routes/SurveyList';
 import uploadRoutes from './routes/Upload';
 import statsRoutes from './routes/Stats';
 import dictsRoutes from './routes/Dicts';
+import regRoutes from './routes/Reg';
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/survey-list', surveyListRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/stats', statsRoutes);
 app.use('/dicts', dictsRoutes);
+app.use('/reg', regRoutes);
 
 app.get('/', (_req: Request, res: Response) => {
     res.json({

@@ -5,7 +5,7 @@ const endpoint = `http://localhost:${process.env.PORT}/user`;
 
 describe('Users', () => {
 
-
+    //#region Get All 
     test('Get All (status is 200)', async () => {
         const res = await axios.get(endpoint);
 
@@ -17,8 +17,9 @@ describe('Users', () => {
 
         expect(res.data).toBeInstanceOf(Array);
     });
+    //#endregion
 
-    test('Get All (status is 200)', async () => {
+    test('Get One (status is 200)', async () => {
         const res = await axios.get(`${endpoint}/1`);
 
         expect(res.status).toBe(200);
