@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { param } from 'express-validator';
+import { param, query } from 'express-validator';
 import { dictsController } from '../controllers/Dicts';
 
 const dictsRoutes = Router();
@@ -12,6 +12,7 @@ dictsRoutes.get('/',
 // (R) GET_ONE
 dictsRoutes.get('/:id',
     param('id').isNumeric(),
+    query('q').isString(),
     dictsController.getById
 );
 

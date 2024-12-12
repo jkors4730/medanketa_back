@@ -23,6 +23,11 @@ class DictsController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
+                const { q } = req.query;
+
+                const find = (str: string, query: string) => {
+                    return str.toLowerCase().includes( String(query)?.toLowerCase() );
+                }
 
                 const arr: string[] = [];
 
@@ -31,13 +36,22 @@ class DictsController {
                 );
 
                 rd.on('line', (line) => {
-                    arr.push(line);
+                    if ( q ) {
+                        if ( find(line, String(q)) ) {
+                            arr.push(line);
+                        } else {
+                            arr.push(line);
+                        }
+                    }
+                    else {
+                        arr.push(line);
+                    }
                 });
 
                 rd.on('close', () => {
                     res.status(200).json( 
-                        arr.length > 100 ?
-                        arr.slice(0, 100) : arr
+                        arr.length > 500 ?
+                        arr.slice(0, 500) : arr
                     );
                 });
             }
