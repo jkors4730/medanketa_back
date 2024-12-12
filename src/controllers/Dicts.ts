@@ -39,8 +39,6 @@ class DictsController {
                     if ( q ) {
                         if ( find(line, String(q)) ) {
                             arr.push(line);
-                        } else {
-                            arr.push(line);
                         }
                     }
                     else {
