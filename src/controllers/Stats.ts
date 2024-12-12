@@ -63,15 +63,12 @@ class StatsController {
                 });
                 const finish = fCount.length ? +fCount[0].count : 0;
 
-                // tsStart && tsEnd
-                const tsData = await sequelize.query<any>(`SELECT "tsStart", "tsEnd" FROM survey_lists WHERE "surveyId" = :id`, {
+                const time = await sequelize.query<any>(`SELECT ("tsEnd" - "tsStart") as time FROM survey_lists WHERE "surveyId" = :id`, {
                     replacements: { id: id },
                     type: QueryTypes.SELECT
                 });
-                const tsStart = tsData.length ? +tsData[0].tsStart : '';
-                const tsEnd = tsData.length ? +tsData[0].tsEnd : '';
 
-                const finishTime = (+new Date(tsEnd)) - (+new Date(tsStart))
+                const finishTime = time.length ? time[0].time : {};
 
                 res.status(200).json({
                     questions, // Общее количество вопросов в анкете

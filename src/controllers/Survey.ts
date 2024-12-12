@@ -167,7 +167,7 @@ class SurveyController {
         try {
             const data = await sequelize.query<any>(`
             SELECT DISTINCT
-            u.id as "userId",
+            sl1."userId" as "userId",
             u.name as "userName",
             u.lastname as "userLastname",
             TO_CHAR(sl1."tsEnd", 'DD.MM.YYYY') as "dateEnd",
@@ -186,7 +186,8 @@ class SurveyController {
             ON sl1."userId" = u.id
             LEFT JOIN survey_questions as sq
             ON sl1."surveyId" = sq."surveyId"
-            WHERE sl1."surveyId" = :id;`, {
+            WHERE sl1."surveyId" = :id
+            AND sl1."tsEnd" IS NOT NULL`, {
                 replacements: { id: id },
                 type: QueryTypes.SELECT
             });

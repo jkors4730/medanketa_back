@@ -35,11 +35,7 @@ class DictsController {
                 });
 
                 rd.on('close', () => {
-                    res.status(200).json(
-                        arr.length > 50
-                        ? arr.slice(0, 50)
-                        : arr
-                    );
+                    res.status(200).json( arr );
                 });
             }
             else {
