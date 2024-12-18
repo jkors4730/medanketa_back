@@ -50,11 +50,29 @@ class StatsController {
                 const openAndUnanswer = ouaCount.length ? +ouaCount[0].count : 0;
 
                 // openAndAllAnswersCount - Количество пользователей, которые открыли анкету и ответили на все вопросы анкеты
-                const oAllACount = await sequelize.query<any>(`SELECT COUNT("userId") as count FROM survey_lists WHERE "surveyId" = :id AND "tsStart" IS NOT null AND json_array_length(answers) = :questions`, {
+                const oAllA = await sequelize.query<any>(`SELECT answers FROM survey_lists WHERE "surveyId" = :id AND "tsStart" IS NOT null`, {
                     replacements: { id: id, questions: questions },
                     type: QueryTypes.SELECT
                 });
-                const openAndAllAnswers = oAllACount.length ? +oAllACount[0].count : 0;
+                
+
+                let tempCount = 0;
+                let fillCount = 0;
+
+                for ( const item of oAllA ) {
+                    for ( const a of item.answers ) {
+                        if ( a.answer ) {
+                            tempCount++;
+                        }
+                    }
+                    if ( fillCount == questions ) {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        tempCount = 0;
+                        fillCount++;
+                    }
+                }
+
+                const openAndAllAnswers = fillCount;
 
                 // finishCount - Количество пользователей, которые завершили анкету
                 // const fCount = await sequelize.query<any>(`SELECT COUNT("userId") as count FROM survey_lists WHERE "surveyId" = :id AND "tsEnd" IS NOT null`, {
@@ -72,22 +90,24 @@ class StatsController {
 
                 //#region Get Charts Data
                 async function getChart1() {
-                    // answers count by user
-                    // [{"count":2},{"count":2}...]
-                    const answers = await sequelize.query<any>(`SELECT json_array_length(answers) as count FROM survey_lists WHERE "surveyId" = :id`, {
+                    const answers = await sequelize.query<any>(`SELECT answers FROM survey_lists WHERE "surveyId" = :id`, {
                         replacements: { id: id },
                         type: QueryTypes.SELECT
                     });
 
-                    let usersSum = 0;
-                    let countSum = 0;
+                    let fillCount = 0;
 
-                    for (const item of answers) {
-                        countSum += item.count;
-                        usersSum++;
+                    for ( const item of answers ) {
+                        for ( const a of item.answers ) {
+                            if ( a.answer ) {
+                                fillCount++;
+                            }
+                        }
                     }
 
-                    return Math.round((countSum / (questions * usersSum ) ) * 100);
+                    const complete = ( fillCount / questions ) * 100;
+
+                    return Math.round( complete );
                 }
 
                 async function getChart2() {
@@ -103,20 +123,24 @@ class StatsController {
                 }
 
                 async function getChart5() {
-                    const answers = await sequelize.query<any>(`SELECT json_array_length(answers) as count FROM survey_lists WHERE "surveyId" = :id`, {
+                    const answers = await sequelize.query<any>(`SELECT answers FROM survey_lists WHERE "surveyId" = :id`, {
                         replacements: { id: id },
                         type: QueryTypes.SELECT
                     });
 
-                    let usersSum = 0;
-                    let countSum = 0;
+                    let fillCount = 0;
 
-                    for (const item of answers) {
-                        countSum += questions - item.count;
-                        usersSum++;
+                    for ( const item of answers ) {
+                        for ( const a of item.answers ) {
+                            if ( a.answer ) {
+                                fillCount++;
+                            }
+                        }
                     }
 
-                    return Math.round((countSum / (questions * usersSum ) ) * 100);
+                    const complete = ( fillCount / questions ) * 100;
+
+                    return Math.round( 100 - complete );
                 }
                 //#endregion
 
@@ -182,6 +206,8 @@ class StatsController {
                         answers: assoc.has(q.id) ? Object.fromEntries(assoc.get(q.id)) : {}
                     } );
                 }
+
+                console.log(map);
 
                 const result = [];
 

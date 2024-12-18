@@ -173,14 +173,7 @@ class SurveyController {
             TO_CHAR(sl1."tsEnd", 'DD.MM.YYYY') as "dateEnd",
             (sl1."tsEnd" - sl1."tsStart") as time,
             sl1."tsStart" as "tsStart", 
-            sl1."tsEnd" as "tsEnd",
-            (SELECT
-            ( SELECT json_array_length(sl2.answers)::float /
-            (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id)::float
-                FROM survey_lists as sl2
-                WHERE sl2."surveyId" = :id
-                AND sl2."userId" = sl1."userId"
-            ) * 100 as complete)
+            sl1."tsEnd" as "tsEnd"
             FROM survey_lists as sl1
             LEFT JOIN users as u
             ON sl1."userId" = u.id
@@ -192,7 +185,30 @@ class SurveyController {
                 type: QueryTypes.SELECT
             });
 
-            res.status(200).json( data );
+            const answers = await sequelize.query<any>(`SELECT answers FROM survey_lists WHERE "surveyId" = :id`, {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            });
+
+            const qCount = await sequelize.query<any>(`SELECT COUNT(*) as count FROM survey_questions WHERE "surveyId" = :id`, {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            });
+            const questions = qCount.length ? +qCount[0].count : 0;
+
+            let fillCount = 0;
+
+            for ( const item of answers ) {
+                for ( const a of item.answers ) {
+                    if ( a.answer ) {
+                        fillCount++;
+                    }
+                }
+            }
+
+            const complete = ( fillCount / questions ) * 100;
+
+            res.status(200).json( [ { ...data[0], complete } ] );
         }
         catch (e: any) { returnError(e, res); }
     }
