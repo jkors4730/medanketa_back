@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { returnError } from '../utils/error';
 import { SurveyQuestion } from '../db/models/SurveyQuestion';
+import { saveSurveyData } from '../utils/common';
 
 class SurveyQuestionController {
 
@@ -27,10 +28,11 @@ class SurveyQuestionController {
                             && typeof type == 'string'
                             && typeof status == 'boolean' ) {
                             
-                            const surveyQuestion = SurveyQuestion.build({
+                            const surveyQuestion = await SurveyQuestion.create<any>({
                                 surveyId, question, type, status, description, data
                             });
-                            await surveyQuestion.save();
+
+                            await saveSurveyData( data, surveyQuestion.id );
 
                             questionsArr.push(surveyQuestion.toJSON());
                         }

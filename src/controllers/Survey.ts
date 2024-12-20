@@ -6,6 +6,7 @@ import { Survey } from '../db/models/Survey';
 import sequelize from '../db/config';
 import { SurveyQuestion } from '../db/models/SurveyQuestion';
 import { QueryTypes } from 'sequelize';
+import { saveSurveyData } from '../utils/common';
 
 class SurveyController {
 
@@ -36,10 +37,13 @@ class SurveyController {
                             && typeof type == 'string'
                             && typeof status == 'boolean' ) {
                             
-                            const surveyQuestion = SurveyQuestion.build({
+                            const surveyQuestion = SurveyQuestion.build<any>({
                                 surveyId: survey.id, question, type, status, description, data
                             });
+
                             await surveyQuestion.save();
+
+                            await saveSurveyData( data, surveyQuestion.id );
 
                             questionsArr.push(surveyQuestion.toJSON());
                         }
@@ -259,7 +263,25 @@ class SurveyController {
                 if (survey === null) {
                     returnError(null, res, [`Survey with id = ${id} not found`]);
                 } else {
+                    const sq_id_arr = await sequelize.query<any>(`DELETE FROM survey_questions WHERE "surveyId" = :id RETURNING id`, {
+                        replacements: { id: id },
+                        type: QueryTypes.SELECT
+                    });
+
+                    for ( const item of sq_id_arr ) {
+                        await sequelize.query(`DELETE FROM survey_data WHERE sq_id = :id`, {
+                            replacements: { id: item.id },
+                            type: QueryTypes.DELETE
+                        });
+                    }
+
+                    await sequelize.query(`DELETE FROM survey_lists WHERE "surveyId" = :id`, {
+                        replacements: { id: id },
+                        type: QueryTypes.DELETE
+                    });
+
                     await survey.destroy();
+
                     res.status(204).send();
                 }
             }

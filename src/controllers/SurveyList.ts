@@ -4,6 +4,7 @@ import { returnError } from '../utils/error';
 import { validationResult } from 'express-validator';
 import { SurveyList } from '../db/models/SurveyList';
 import md5 from 'md5';
+import { saveSurveyAnswers } from '../utils/common';
 
 class SurveyListController {
 
@@ -21,14 +22,12 @@ class SurveyListController {
                 console.log('exists', exists);
 
                 if ( !exists ) {
-                    const surveyList = SurveyList.build<any>({
+                    const surveyList = await SurveyList.create<any>({
                         uIndex: md5( String(surveyId) + String(userId) ),
                         userId, surveyId, answers, privacy, tsStart, tsEnd
                     });
-    
-                    console.log( 'SurveyList', surveyList.toJSON() );
-    
-                    await surveyList.save();
+
+                    await saveSurveyAnswers(surveyList.id, answers);
     
                     res.status(201).json(surveyList.toJSON());
                 }
@@ -38,6 +37,8 @@ class SurveyListController {
                     if (answers) {
                         count++;
                         exists.answers = answers;
+
+                        await saveSurveyAnswers(exists.id, answers);
                     }
                     if (typeof privacy == 'boolean') {
                         count++;
