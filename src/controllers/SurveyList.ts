@@ -27,7 +27,7 @@ class SurveyListController {
                         userId, surveyId, answers, privacy, tsStart, tsEnd
                     });
 
-                    await saveSurveyAnswers(surveyList.id, answers);
+                    await saveSurveyAnswers(surveyId, userId, surveyList.id, answers);
     
                     res.status(201).json(surveyList.toJSON());
                 }
@@ -38,7 +38,7 @@ class SurveyListController {
                         count++;
                         exists.answers = answers;
 
-                        await saveSurveyAnswers(exists.id, answers);
+                        await saveSurveyAnswers(surveyId, userId, exists.id, answers);
                     }
                     if (typeof privacy == 'boolean') {
                         count++;

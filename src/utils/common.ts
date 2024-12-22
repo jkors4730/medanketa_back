@@ -9,7 +9,7 @@ interface Answer {
 
 export const saveSurveyData = async ( data: string, qid: number ) => {
     try {
-        if ( data ) {
+        if ( data && typeof data === 'string' ) {
             const parsed = JSON.parse( data );
             
             for ( const item of parsed.answers ) {
@@ -22,7 +22,7 @@ export const saveSurveyData = async ( data: string, qid: number ) => {
             }
         }
         else {
-            // infoblock
+            // type: infoblock
             await SurveyData.create({
                 sq_id: qid
             });
@@ -31,17 +31,38 @@ export const saveSurveyData = async ( data: string, qid: number ) => {
     catch (e: any) { console.error(e); }
 };
 
-export const saveSurveyAnswers = async ( sl_id: number, answers: Answer[] ) => {
+export const saveSurveyAnswers = async ( surveyId: number, userId: number, sl_id: number, answers: Answer[] ) => {
     try {
         if ( Array.isArray(answers) ) {
             for ( const item of answers ) {
                 await SurveyAnswer.create( {
+                    surveyId,
+                    userId,
                     sl_id,
                     sq_id: item.id,
                     answer: item.answer,
                 } );
             }
         }
+    }
+    catch (e: any) { console.error(e); }
+};
+
+export const returnFromArr = (arr: any, key: string) => {
+    try {
+        return Array.isArray(arr) && arr.length
+            ?
+                arr[0]?.[key]
+                ? arr[0]?.[key]
+                : null
+            : null;
+        }
+    catch (e: any) { console.error(e); }
+};
+
+export const returnNumFromArr = (arr: any, key: string) => {
+    try {
+        return Number(returnFromArr(arr, key));
     }
     catch (e: any) { console.error(e); }
 };
