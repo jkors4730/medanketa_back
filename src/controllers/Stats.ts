@@ -192,16 +192,16 @@ class StatsController {
                 const arr = await sequelize.query<any>(`--sql
                     SELECT DISTINCT sq.id,
                     sq.question,
-                    ROUND( ( ( (SELECT COUNT(DISTINCT "userId") FROM survey_answers WHERE answer = '' AND "surveyId" = :id) /
-                               (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id)::float ) * 100)::numeric, 2 )::float as missed_rate
+                    ROUND( ( ( COUNT(sa."userId")::float /
+                    (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id)::float ) * 100)::numeric, 2 )::float as missed_rate
                 FROM survey_answers sa
-                        JOIN survey_questions sq
-                            ON sa.sq_id = sq.id
+                JOIN survey_questions sq
+                ON sa.sq_id = sq.id
                 WHERE
                     answer = ''
-                AND sa."surveyId" = :id
-                GROUP BY sq.id
-                ORDER BY missed_rate DESC;`,
+                    AND sa."surveyId" = :id
+                    GROUP BY sq.id
+                    ORDER BY missed_rate DESC`,
                 {
                     replacements: { id: id },
                     type: QueryTypes.SELECT
