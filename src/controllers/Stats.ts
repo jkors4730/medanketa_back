@@ -106,15 +106,15 @@ class StatsController {
                             SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
                             FROM survey_answers
                             WHERE answer != ''
-                            AND "surveyId" = :id
+                                AND "surveyId" = :id
                             GROUP BY "userId"
                             HAVING COUNT(*) = (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id) LIMIT 1 )::float
-                            /
-                            -- кол-во уникальных юзеров, которые открыли анкету
+                                /
+                            -- кол-во уникальных юзеров, которые завершили анкету
                             ( SELECT COUNT(DISTINCT "userId")
                             FROM survey_lists
-                            WHERE "tsStart" IS NOT NULL
-                            AND "surveyId" = :id )::float * 100)::numeric, 2) as all_answers`,
+                            WHERE "tsEnd" IS NOT NULL
+                                AND "surveyId" = :id )::float * 100)::numeric, 2) as all_answers`,
                             {
                                 replacements: { id: id },
                                 type: QueryTypes.SELECT
@@ -126,17 +126,25 @@ class StatsController {
                 async function getChart5(id: any) {
                     return returnNumFromArr(
                         await sequelize.query<any>(`--sql
-                            SELECT
-                            AVG( ROUND(((
-                                -- (кол-во вопросов всего) - (кол-во пропущенных вопросов)
-                            ((SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id) -
-                                (SELECT COUNT(*) FROM survey_answers WHERE answer = '' AND "userId" = sa."userId"))::float /
-                                -- (кол-во вопросов всего) * (кол-во ответивших юзеров)
-                            ((SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id) *
-                                (SELECT COUNT(DISTINCT "userId") FROM survey_answers WHERE "surveyId" = :id))::float
-                            ) * 100)::numeric, 2) ) as missed_rate
-                        FROM survey_answers as sa
-                        WHERE "surveyId" = :id;`,
+                            SELECT DISTINCT
+                            100 - ROUND( AVG( (
+                            ( SELECT COUNT(sl_id)::float
+                                FROM survey_answers
+                                WHERE answer != ''
+                                AND "userId" = sl."userId"
+                                AND "surveyId" = :id ) /
+                            (
+                            ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
+                            ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE answer != ''
+                                AND "userId" = sl."userId"
+                                AND "surveyId" = :id)
+                            )::float) * 100)::numeric, 2) as missed_rate
+                            FROM survey_answers sa
+                                    JOIN survey_lists sl
+                                        ON sa.sl_id = sl.id
+                                    LEFT JOIN users u
+                                            ON sl."userId" = u.id
+                            WHERE sl."surveyId" = :id`,
                             {
                                 replacements: { id: id },
                                 type: QueryTypes.SELECT
@@ -230,15 +238,17 @@ class StatsController {
                 const { id } = req.params;
 
                 const arr = await sequelize.query<any>(`--sql
-                SELECT sq.question,
+                SELECT sq.id,
+                    sq.question,
+                    sq.type,
                     sa.answer,
                     COUNT(*)::int as count
                     FROM survey_answers sa
-                    JOIN survey_questions sq
-                    ON sa.sq_id = sq.id
+                            JOIN survey_questions sq
+                                ON sa.sq_id = sq.id
                     WHERE answer != ''
-                        AND sa."surveyId" = :id
-                    GROUP BY question, answer
+                    AND sa."surveyId" = :id
+                    GROUP BY sq.id, question, answer
                     ORDER BY count DESC`,
                 {
                     replacements: { id: id },
