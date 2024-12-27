@@ -237,25 +237,32 @@ class StatsController {
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
 
-                const arr = await sequelize.query<any>(`--sql
+                const data = await sequelize.query<any>(`--sql
                 SELECT sq.id,
                     sq.question,
                     sq.type,
+                    sd."value",
+                    sd."sortId",
+                    sa."userId",
                     sa.answer,
-                    COUNT(*)::int as count
-                    FROM survey_answers sa
-                            JOIN survey_questions sq
-                                ON sa.sq_id = sq.id
-                    WHERE answer != ''
-                    AND sa."surveyId" = :id
-                    GROUP BY sq.id, question, answer
-                    ORDER BY count DESC`,
+                    sac.count
+                FROM survey_questions sq
+                    LEFT JOIN ( SELECT * FROM survey_data ) as sd
+                                ON sq.id = sd.sq_id
+                    LEFT JOIN ( SELECT * FROM survey_answers WHERE "surveyId" = :id ) as sa
+                                ON sd.id = sa.sq_id
+                    LEFT JOIN ( SELECT answer,
+                                        COUNT(*) as count FROM survey_answers WHERE "surveyId" = :id
+                                GROUP BY answer ) as sac
+                                ON sac.answer = sa.answer
+                WHERE sq."surveyId" = :id
+                ORDER BY sq.id`,
                 {
                     replacements: { id: id },
                     type: QueryTypes.SELECT
                 });
 
-                res.status(200).json( arr );
+                res.status(200).json( data );
             }
             else {
                 returnError(null, res, errors.array() );
