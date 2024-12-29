@@ -6,6 +6,42 @@ import { QueryTypes } from 'sequelize';
 import sequelize from '../db/config';
 import { returnFromArr, returnNumFromArr } from '../utils/common';
 
+interface StatsQuestion {
+    id?: number;
+    question?: string;
+    type?: string;
+    surveyId?: number;
+    data?: string;
+}
+
+interface StatsAnswer {
+    id?: number;
+    sq_id?: number;
+    user_id?: string;
+    answer?: string;
+    count?: number;
+}
+
+interface StatsDMapped {
+    id?: number;
+    value?: string; 
+    sortId?: number; 
+}
+
+interface StatsAMapped {
+    id?: number;
+    answer?: string; 
+    count?: number; 
+}
+
+interface StatsQAMapped {
+    id?: number;
+    question?: string;
+    type?: string;
+    data: StatsDMapped[],
+    answers: Map<string, StatsAMapped>;
+}
+
 class StatsController {
 
     /**
@@ -236,33 +272,89 @@ class StatsController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-
-                const data = await sequelize.query<any>(`--sql
-                SELECT sq.id,
-                    sq.question,
-                    sq.type,
-                    sd."value",
-                    sd."sortId",
-                    sa."userId",
-                    sa.answer,
-                    sac.count
-                FROM survey_questions sq
-                    LEFT JOIN ( SELECT * FROM survey_data ) as sd
-                                ON sq.id = sd.sq_id
-                    LEFT JOIN ( SELECT * FROM survey_answers WHERE "surveyId" = :id ) as sa
-                                ON sd.id = sa.sq_id
-                    LEFT JOIN ( SELECT answer,
-                                        COUNT(*) as count FROM survey_answers WHERE "surveyId" = :id
-                                GROUP BY answer ) as sac
-                                ON sac.answer = sa.answer
-                WHERE sq."surveyId" = :id
-                ORDER BY sq.id`,
+                // получаем вопросы
+                const questions = await sequelize.query<StatsQuestion>(`--sql
+                SELECT id,
+                    question,
+                    type,
+                    "surveyId",
+                    data
+                FROM survey_questions
+                WHERE "surveyId" = :id`,
+                {
+                    replacements: { id: id },
+                    type: QueryTypes.SELECT
+                });
+                // получаем ответы
+                const answers = await sequelize.query<StatsAnswer>(`--sql
+                SELECT id,
+                    sq_id,
+                    "userId",
+                    answer,
+                    (SELECT COUNT(*) as count FROM survey_answers WHERE answer = sa.answer AND "surveyId" = :id)::numeric
+                FROM survey_answers sa
+                WHERE "surveyId" = :id`,
                 {
                     replacements: { id: id },
                     type: QueryTypes.SELECT
                 });
 
-                res.status(200).json( data );
+                const mappedQS = new Map<number, StatsQAMapped>();
+
+                for ( const q of questions ) {
+                    const qData = [] as StatsDMapped[];
+                    // парсим варианты ответов из вопроса
+                    if ( q.data ) {
+                        const data = JSON.parse(q.data);
+
+                        if ( data.answers && Array.isArray(data.answers) ) {
+                            for ( const item of data.answers ) {
+                                qData.push( item as StatsDMapped );
+                            }
+                        }
+                    }
+                    // мапим вопросы по id (для дальнейшей работы с ответами)
+                    mappedQS.set(Number(q.id), {
+                        id: q.id,
+                        question: q.question,
+                        type: q.type,
+                        data: qData,
+                        answers: new Map<string, StatsAMapped>(),
+                    } as StatsQAMapped);
+                }
+
+                for ( const a of answers ) {
+                    const base = mappedQS.get(Number(a.sq_id));
+
+                    // проверяем наличие вопрос в мапе
+                    if ( base ) {
+                        const key = a.answer || '';
+                        // проверяем наличие ответа в мапе
+                        const baseA = base.answers.has(key) ? base.answers.get(key) : null;
+
+                        base.answers.set(key, {
+                            id: a.sq_id,
+                            answer: a.answer,
+                            // счётчик либо суммируется, либо ставится в первый раз 
+                            count: baseA ? Number(baseA.count) + Number(a.count) : Number(a.count),
+                        } as StatsAMapped);
+
+                        mappedQS.set(Number(a.sq_id), base);
+                    }
+                }
+
+                // перегоняем мапы в сериализуемый массив для отправки через res.json()
+                const resArr = [];
+                const arr = Array.from(mappedQS.values());
+
+                for ( const item of arr ) {
+                    resArr.push({
+                        ...item,
+                        answers: Array.from(item.answers.values())
+                    });
+                }
+
+                res.status(200).json( resArr );
             }
             else {
                 returnError(null, res, errors.array() );
