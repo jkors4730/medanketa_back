@@ -309,7 +309,7 @@ class StatsController {
 
                         if ( data.answers && Array.isArray(data.answers) ) {
                             for ( const item of data.answers ) {
-                                qData.push( item as StatsDMapped );
+                                qData.push( {...item, id: q.id } as StatsDMapped );
                             }
                         }
                     }
