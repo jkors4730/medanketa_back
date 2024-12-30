@@ -287,11 +287,15 @@ class StatsController {
                 });
                 // получаем ответы
                 const answers = await sequelize.query<StatsAnswer>(`--sql
-                SELECT id,
+                    SELECT id,
                     sq_id,
                     "userId",
                     answer,
-                    (SELECT COUNT(*) as count FROM survey_answers WHERE answer = sa.answer AND "surveyId" = :id)::numeric
+                    (SELECT COUNT(*) as count
+                     FROM survey_answers
+                     WHERE sq_id = sa.sq_id
+                        AND answer = sa.answer
+                        AND "surveyId" = :id)::numeric
                 FROM survey_answers sa
                 WHERE "surveyId" = :id`,
                 {
