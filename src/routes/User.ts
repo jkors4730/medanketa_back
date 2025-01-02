@@ -50,7 +50,17 @@ userRoutes.delete('/:id',
 userRoutes.post('/login',
     body('email').isEmail(),
     body('password').isString().notEmpty(),
-    userController.login
+    async (req: Request, res: Response) => {
+        await userController.login(req, res, false);
+    }
+);
+
+userRoutes.post('/admin',
+    body('email').isEmail(),
+    body('password').isString().notEmpty(),
+    async (req: Request, res: Response) => {
+        await userController.login(req, res, true);
+    }
 );
 
 userRoutes.get('/protected', authMiddleware, async (req: Request, res: Response) => {

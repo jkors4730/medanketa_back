@@ -16,8 +16,10 @@ export const dbSyncAll = async () => {
     await SurveyList.sync({ alter: true });
     await SurveyData.sync({ alter: true });
     await SurveyAnswer.sync({ alter: true });
-    await adminRoleMigration();
-    await adminEntryMigration();
+    //#region Миграции
+    await adminRoleMigration(); // создаём роль админа
+    await adminEntryMigration(); // создаём учётную запись админа
+    //#endregion
 };
 
 export const dbDropAll = async () => {

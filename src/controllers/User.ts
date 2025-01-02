@@ -6,6 +6,7 @@ import { comparePassword, passwordHash } from '../utils/hash';
 import { returnError } from '../utils/error';
 import { generateAuthToken } from '../utils/jwt';
 import { validationResult } from 'express-validator';
+import { Op } from 'sequelize';
 
 class UserController {
 
@@ -147,14 +148,22 @@ class UserController {
         catch (e: any) { returnError(e, res); }
     }
 
-    async login(req: Request, res: Response) {
+    async login(req: Request, res: Response, admin = false) {
         try {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
                 const { email, password } = req.body;
     
-                const exists = await User.findOne<any>({ where: { email: email } });
+                const adminRole = await Role.findOne<any>({
+                where: {
+                    guardName: 'admin'
+                } });
+                
+                const exists = await User.findOne<any>({ where: {
+                    email: email,
+                    roleId: { [!admin ? Op.not : Op.eq]: adminRole.id }
+                } });
                 console.log('exists', exists?.toJSON());
 
                 if ( exists ) {

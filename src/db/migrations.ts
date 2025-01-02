@@ -2,6 +2,7 @@
 import 'dotenv/config';
 import { Role } from "./models/Role";
 import { User } from "./models/User";
+import { passwordHash } from '../utils/hash';
 
 export const adminRoleMigration = async () => {
     const exists = await Role.findOne<any>({
@@ -10,12 +11,10 @@ export const adminRoleMigration = async () => {
     } });
 
     if (!exists) {
-        const adminRole = Role.build({
+        await Role.create({
             name: 'Админ',
             guardName: 'admin'
         });
-        
-        await adminRole.save();
     }
 };
 
@@ -31,11 +30,17 @@ export const adminEntryMigration = async () => {
     } });
 
     if ( adminRole && !exists ) {
+        const password = passwordHash(
+            process.env.ADMIN_PASS
+            ? process.env.ADMIN_PASS
+            : 'admin'
+        );
+
         await User.create({
             name: 'Admin',
             lastname: 'Admin',
             email: process.env.ADMIN_LOGIN,
-            password: process.env.ADMIN_PASS,
+            password: password,
             roleId: adminRole.id,
         });
     }
