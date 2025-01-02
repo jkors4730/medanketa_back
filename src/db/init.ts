@@ -6,7 +6,7 @@ import { SurveyList } from "./models/SurveyList";
 import { applyTestDB } from "./mock";
 import { SurveyData } from "./models/SurveyData";
 import { SurveyAnswer } from "./models/SurveyAnswer";
-import { adminRoleMigration } from "./migrations";
+import { adminEntryMigration, adminRoleMigration } from "./migrations";
 
 export const dbSyncAll = async () => {
     await User.sync({ alter: true });
@@ -17,6 +17,7 @@ export const dbSyncAll = async () => {
     await SurveyData.sync({ alter: true });
     await SurveyAnswer.sync({ alter: true });
     await adminRoleMigration();
+    await adminEntryMigration();
 };
 
 export const dbDropAll = async () => {
