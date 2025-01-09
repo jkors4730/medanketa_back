@@ -218,11 +218,14 @@ class SurveyController {
                 ( SELECT COUNT(sl_id)::float
                         FROM survey_answers
                         WHERE answer != ''
+                        AND answer != '[]'
                         AND "userId" = sl."userId"
                         AND "surveyId" = :id ) /
                 (
                     ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE answer != ''
+                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers
+                        WHERE answer != ''
+                        AND answer != '[]'
                         AND "userId" = sl."userId"
                         AND "surveyId" = :id)
                 )::float) * 100)::numeric, 2) as complete
