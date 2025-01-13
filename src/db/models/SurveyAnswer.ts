@@ -9,5 +9,6 @@ export const SurveyAnswer = sequelize.define(
         surveyId: { type: DataTypes.INTEGER, allowNull: false },  // required
         userId: { type: DataTypes.BIGINT, allowNull: false },  // required
         answer: { type: DataTypes.TEXT },
+        isSkip: { type: DataTypes.BOOLEAN, defaultValue: false },
     }
 );

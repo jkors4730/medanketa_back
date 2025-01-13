@@ -65,12 +65,12 @@ class StatsController {
                                 ROUND( AVG( (
                                     ( SELECT COUNT(sl_id)::float
                                     FROM survey_answers
-                                    WHERE answer != ''
+                                    WHERE "isSkip" = false
                                         AND "userId" = sl."userId"
                                         AND "surveyId" = :id ) /
                                     (
                                         ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                                        ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE answer != ''
+                                        ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE "isSkip" = false
                                             AND "userId" = sl."userId"
                                             AND "surveyId" = :id)
                                         )::float) * 100)::numeric, 2) as complete
@@ -94,7 +94,7 @@ class StatsController {
                             -- кол-во уникальных юзеров, которые ответили на вопросы
                             SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
                             FROM survey_answers
-                            WHERE answer != ''
+                            WHERE "isSkip" = false
                                 AND "surveyId" = :id )::float
                             /
                             -- кол-во уникальных юзеров, которые открыли анкету
@@ -141,7 +141,7 @@ class StatsController {
                             -- кол-во уникальных юзеров, которые ответили на все вопросы
                             SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
                             FROM survey_answers
-                            WHERE answer != ''
+                            WHERE "isSkip" = false
                                 AND "surveyId" = :id
                             GROUP BY "userId"
                             HAVING COUNT(*) = (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id) LIMIT 1 )::float
@@ -166,12 +166,12 @@ class StatsController {
                             100 - ROUND( AVG( (
                             ( SELECT COUNT(sl_id)::float
                                 FROM survey_answers
-                                WHERE answer != ''
+                                WHERE "isSkip" = false
                                 AND "userId" = sl."userId"
                                 AND "surveyId" = :id ) /
                             (
                             ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                            ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE answer != ''
+                            ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE "isSkip" = false
                                 AND "userId" = sl."userId"
                                 AND "surveyId" = :id)
                             )::float) * 100)::numeric, 2) as missed_rate
@@ -242,7 +242,7 @@ class StatsController {
                 JOIN survey_questions sq
                 ON sa.sq_id = sq.id
                 WHERE
-                    answer = ''
+                    sa."isSkip" = true
                     AND sa."surveyId" = :id
                     GROUP BY sq.id
                     ORDER BY missed_rate DESC`,

@@ -5,6 +5,7 @@ import { SurveyData } from "../db/models/SurveyData";
 interface Answer {
     id?: number;
     answer?: string;
+    isSkip?: boolean;
 }
 
 export const saveSurveyData = async ( data: string, qid: number ) => {
@@ -35,12 +36,21 @@ export const saveSurveyAnswers = async ( surveyId: number, userId: number, sl_id
     try {
         if ( Array.isArray(answers) ) {
             for ( const item of answers ) {
+                console.log('[answer_item]', item);
+
+                let answer = String(item.answer);
+
+                if ( typeof item.answer === 'object' ) {
+                    answer = '';
+                }
+
                 await SurveyAnswer.create( {
                     surveyId,
                     userId,
                     sl_id,
                     sq_id: item.id,
-                    answer: item.answer,
+                    answer: answer,
+                    isSkip: item.isSkip
                 } );
             }
         }
