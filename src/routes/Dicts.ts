@@ -16,4 +16,9 @@ dictsRoutes.get('/:id',
     dictsController.getById
 );
 
+dictsRoutes.get('/user/:id',
+    param('id').isNumeric(),
+    dictsController.getByUser
+);
+
 export default dictsRoutes

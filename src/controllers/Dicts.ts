@@ -60,6 +60,37 @@ class DictsController {
         catch (e: any) { returnError(e, res); }
     }
 
+    async getByUser(_req: Request, res: Response) {
+        try {
+            const dicts = [
+                {
+                    name: 'МКБ-10',
+                    date: '28.01.2025',
+                    active: true,
+                    edit: true,
+                    remove: true,
+                },
+                {
+                    name: 'МКБ-10 (1)',
+                    date: '28.01.2025',
+                    active: true,
+                    edit: true,
+                    remove: true,
+                },
+                {
+                    name: 'МКБ-10 (2)',
+                    date: '28.01.2025',
+                    active: true,
+                    edit: true,
+                    remove: true,
+                },
+            ];
+
+            res.status(200).json( dicts );
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
 }
 
 export const dictsController = new DictsController();
