@@ -5,7 +5,12 @@ import { returnError } from '../utils/error';
 import { QueryTypes } from 'sequelize';
 import sequelize from '../db/config';
 import { returnFromArr, returnNumFromArr } from '../utils/common';
+import fs from 'fs';
+import path from 'path';
+import iconv from 'iconv-lite';
+import { Survey } from '../db/models/Survey';
 
+//#region Interfaces
 interface StatsQuestion {
     id?: number;
     question?: string;
@@ -42,6 +47,178 @@ interface StatsQAMapped {
     answers: Map<string, StatsAMapped>;
 }
 
+interface Time {
+    seconds?: number;
+    minutes?: number;
+    hours?: number;
+}
+//#endregion
+
+//#region Functions
+async function getChart1(id: any) {
+    return returnNumFromArr(
+        await sequelize.query<any>(`--sql
+            SELECT DISTINCT
+                ROUND( AVG( (
+                    ( SELECT COUNT(sl_id)::float
+                    FROM survey_answers
+                    WHERE "isSkip" = false
+                        AND "userId" = sl."userId"
+                        AND "surveyId" = :id ) /
+                    (
+                        ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
+                        ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE "isSkip" = false
+                            AND "userId" = sl."userId"
+                            AND "surveyId" = :id)
+                        )::float) * 100)::numeric, 2) as complete
+            FROM survey_answers sa
+                    JOIN survey_lists sl
+                        ON sa.sl_id = sl.id
+                    LEFT JOIN users u
+                            ON sl."userId" = u.id
+            WHERE sl."surveyId" = :id`,
+            {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            }),
+            'complete'
+        );
+}
+
+async function getChart2(id: any) {
+    return returnNumFromArr(
+        await sequelize.query<any>(`--sql
+            -- кол-во уникальных юзеров, которые ответили на вопросы
+            SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
+            FROM survey_answers
+            WHERE "isSkip" = false
+                AND "surveyId" = :id )::float
+            /
+            -- кол-во уникальных юзеров, которые открыли анкету
+            ( SELECT COUNT(DISTINCT "userId")
+            FROM survey_lists
+            WHERE "tsStart" IS NOT NULL
+            AND "surveyId" = :id )::float * 100)::numeric, 2) as response_rate`,
+            {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            }),
+            'response_rate'
+        );
+}
+
+async function getChart3(id: any) {
+    return returnNumFromArr(
+        await sequelize.query<any>(`--sql
+            -- кол-во уникальных юзеров, которые открыли анкету,
+            -- но не ответили ни на один вопрос
+            SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
+            FROM survey_lists
+            WHERE "tsStart" IS NOT NULL
+            AND "tsEnd" IS NULL
+            AND json_array_length(answers) = 0
+            AND "surveyId" = :id )::float
+            /
+            -- кол-во уникальных юзеров, которые открыли анкету
+            ( SELECT COUNT(DISTINCT "userId")
+            FROM survey_lists
+            WHERE "tsStart" IS NOT NULL
+                AND "surveyId" = :id )::float * 100)::numeric, 2) as cancel_rate`,
+            {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            }),
+            'cancel_rate'
+        );
+}
+
+async function getChart4(id: any) {
+    return returnNumFromArr(
+        await sequelize.query<any>(`--sql
+            -- кол-во уникальных юзеров, которые ответили на все вопросы
+            SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
+            FROM survey_answers
+            WHERE "isSkip" = false
+                AND "surveyId" = :id
+            GROUP BY "userId"
+            HAVING COUNT(*) = (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id) LIMIT 1 )::float
+                /
+            -- кол-во уникальных юзеров, которые завершили анкету
+            ( SELECT COUNT(DISTINCT "userId")
+            FROM survey_lists
+            WHERE "tsEnd" IS NOT NULL
+                AND "surveyId" = :id )::float * 100)::numeric, 2) as all_answers`,
+            {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            }),
+            'all_answers'
+        );
+}
+
+async function getChart5(id: any) {
+    return returnNumFromArr(
+        await sequelize.query<any>(`--sql
+            SELECT DISTINCT
+            100 - ROUND( AVG( (
+            ( SELECT COUNT(sl_id)::float
+                FROM survey_answers
+                WHERE "isSkip" = false
+                AND "userId" = sl."userId"
+                AND "surveyId" = :id ) /
+            (
+            ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
+            ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE "isSkip" = false
+                AND "userId" = sl."userId"
+                AND "surveyId" = :id)
+            )::float) * 100)::numeric, 2) as missed_rate
+            FROM survey_answers sa
+                    JOIN survey_lists sl
+                        ON sa.sl_id = sl.id
+                    LEFT JOIN users u
+                            ON sl."userId" = u.id
+            WHERE sl."surveyId" = :id`,
+            {
+                replacements: { id: id },
+                type: QueryTypes.SELECT
+            }),
+            'missed_rate'
+        );
+}
+
+async function getFinishTime(id: any) {
+    return returnFromArr( await sequelize.query<any>(`--sql
+        SELECT AVG("tsEnd" - "tsStart") as finish_time
+        FROM survey_lists
+        WHERE "surveyId" = :id`,
+        {
+            replacements: { id: id },
+            type: QueryTypes.SELECT
+        }),
+        'finish_time'
+    );
+}
+
+function getTime(time: Time):string {
+    let str = '';
+
+    if (time.seconds) {
+        if (time.seconds) {
+            str = `${time.seconds} сек`;
+        }
+        if (time.minutes) {
+            str = `${time.minutes} мин ${str}`;
+        }
+        if (time.hours) {
+            str = `${time.hours} час ${str}`;
+        }
+    } else {
+        str = 'мало данных';
+    }
+
+    return str;
+};
+//#endregion
 class StatsController {
 
     /**
@@ -56,152 +233,6 @@ class StatsController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-
-                //#region Get Charts Data
-                async function getChart1(id: any) {
-                    return returnNumFromArr(
-                        await sequelize.query<any>(`--sql
-                            SELECT DISTINCT
-                                ROUND( AVG( (
-                                    ( SELECT COUNT(sl_id)::float
-                                    FROM survey_answers
-                                    WHERE "isSkip" = false
-                                        AND "userId" = sl."userId"
-                                        AND "surveyId" = :id ) /
-                                    (
-                                        ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                                        ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE "isSkip" = false
-                                            AND "userId" = sl."userId"
-                                            AND "surveyId" = :id)
-                                        )::float) * 100)::numeric, 2) as complete
-                            FROM survey_answers sa
-                                    JOIN survey_lists sl
-                                        ON sa.sl_id = sl.id
-                                    LEFT JOIN users u
-                                            ON sl."userId" = u.id
-                            WHERE sl."surveyId" = :id`,
-                            {
-                                replacements: { id: id },
-                                type: QueryTypes.SELECT
-                            }),
-                            'complete'
-                        );
-                }
-
-                async function getChart2(id: any) {
-                    return returnNumFromArr(
-                        await sequelize.query<any>(`--sql
-                            -- кол-во уникальных юзеров, которые ответили на вопросы
-                            SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
-                            FROM survey_answers
-                            WHERE "isSkip" = false
-                                AND "surveyId" = :id )::float
-                            /
-                            -- кол-во уникальных юзеров, которые открыли анкету
-                            ( SELECT COUNT(DISTINCT "userId")
-                            FROM survey_lists
-                            WHERE "tsStart" IS NOT NULL
-                            AND "surveyId" = :id )::float * 100)::numeric, 2) as response_rate`,
-                            {
-                                replacements: { id: id },
-                                type: QueryTypes.SELECT
-                            }),
-                            'response_rate'
-                        );
-                }
-
-                async function getChart3(id: any) {
-                    return returnNumFromArr(
-                        await sequelize.query<any>(`--sql
-                            -- кол-во уникальных юзеров, которые открыли анкету,
-                            -- но не ответили ни на один вопрос
-                            SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
-                            FROM survey_lists
-                            WHERE "tsStart" IS NOT NULL
-                            AND "tsEnd" IS NULL
-                            AND json_array_length(answers) = 0
-                            AND "surveyId" = :id )::float
-                            /
-                            -- кол-во уникальных юзеров, которые открыли анкету
-                            ( SELECT COUNT(DISTINCT "userId")
-                            FROM survey_lists
-                            WHERE "tsStart" IS NOT NULL
-                                AND "surveyId" = :id )::float * 100)::numeric, 2) as cancel_rate`,
-                            {
-                                replacements: { id: id },
-                                type: QueryTypes.SELECT
-                            }),
-                            'cancel_rate'
-                        );
-                }
-
-                async function getChart4(id: any) {
-                    return returnNumFromArr(
-                        await sequelize.query<any>(`--sql
-                            -- кол-во уникальных юзеров, которые ответили на все вопросы
-                            SELECT ROUND( ( ( SELECT COUNT(DISTINCT "userId")
-                            FROM survey_answers
-                            WHERE "isSkip" = false
-                                AND "surveyId" = :id
-                            GROUP BY "userId"
-                            HAVING COUNT(*) = (SELECT COUNT(*) FROM survey_questions WHERE "surveyId" = :id) LIMIT 1 )::float
-                                /
-                            -- кол-во уникальных юзеров, которые завершили анкету
-                            ( SELECT COUNT(DISTINCT "userId")
-                            FROM survey_lists
-                            WHERE "tsEnd" IS NOT NULL
-                                AND "surveyId" = :id )::float * 100)::numeric, 2) as all_answers`,
-                            {
-                                replacements: { id: id },
-                                type: QueryTypes.SELECT
-                            }),
-                            'all_answers'
-                        );
-                }
-
-                async function getChart5(id: any) {
-                    return returnNumFromArr(
-                        await sequelize.query<any>(`--sql
-                            SELECT DISTINCT
-                            100 - ROUND( AVG( (
-                            ( SELECT COUNT(sl_id)::float
-                                FROM survey_answers
-                                WHERE "isSkip" = false
-                                AND "userId" = sl."userId"
-                                AND "surveyId" = :id ) /
-                            (
-                            ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                            ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers WHERE "isSkip" = false
-                                AND "userId" = sl."userId"
-                                AND "surveyId" = :id)
-                            )::float) * 100)::numeric, 2) as missed_rate
-                            FROM survey_answers sa
-                                    JOIN survey_lists sl
-                                        ON sa.sl_id = sl.id
-                                    LEFT JOIN users u
-                                            ON sl."userId" = u.id
-                            WHERE sl."surveyId" = :id`,
-                            {
-                                replacements: { id: id },
-                                type: QueryTypes.SELECT
-                            }),
-                            'missed_rate'
-                        );
-                }
-
-                async function getFinishTime(id: any) {
-                    return returnFromArr( await sequelize.query<any>(`--sql
-                        SELECT AVG("tsEnd" - "tsStart") as finish_time
-                        FROM survey_lists
-                        WHERE "surveyId" = :id`,
-                        {
-                            replacements: { id: id },
-                            type: QueryTypes.SELECT
-                        }),
-                        'finish_time'
-                    );
-                }
-                //#endregion
 
                 res.status(200).json({
                     chart1: await getChart1(id),
@@ -360,6 +391,61 @@ class StatsController {
                 }
 
                 res.status(200).json( resArr );
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    /**
+     * Получить статистику в CSV
+     * 
+     * @param {number} id surveyId
+     * @throws {Error} e
+    */
+    async getCsvBySurvey(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+
+                const survey = await Survey.findByPk<any>(id);
+
+                if ( survey ) {
+                    const filesDir = path.join(__dirname, '../assets/files');
+                    const filePath = `${filesDir}/${Date.now()}.csv`;
+                    fs.mkdirSync(filesDir, { recursive: true });
+
+                    const stats = {
+                        chart1: await getChart1(id),
+                        chart2: await getChart2(id),
+                        chart3: await getChart3(id),
+                        chart4: await getChart4(id),
+                        chart5: await getChart5(id),
+    
+                        finishTime: await getFinishTime(id)
+                    };
+
+                    const fileContent = 
+`Статистика анкеты ${survey.title}
+/questionary/${survey.id}
+Средний процент завершения анкеты;${stats.chart1}%
+Средний процент откликов;${stats.chart2}%
+Средний процент отказов;${stats.chart3}%
+Средний процент успешного завершения анкет;${stats.chart4}%
+Среднее время прохождения анкет;${getTime(stats.finishTime)}
+Средний процент пропущенных вопросов;${stats.chart5}%`;
+
+                    fs.writeFileSync(filePath, iconv.encode(fileContent, 'win1251'));
+
+                    res.download(filePath);
+                }
+                else {
+                    returnError(null, res, [`Survey with id = ${id} not found`] );
+                }
             }
             else {
                 returnError(null, res, errors.array() );

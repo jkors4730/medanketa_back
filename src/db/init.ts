@@ -7,15 +7,20 @@ import { applyTestDB } from "./mock";
 import { SurveyData } from "./models/SurveyData";
 import { SurveyAnswer } from "./models/SurveyAnswer";
 import { adminEntryMigration, adminRoleMigration } from "./migrations";
+import { Dict } from "./models/Dict";
+import { DictValue } from "./models/DictValue";
 
 export const dbSyncAll = async () => {
-    await User.sync({ alter: true });
-    await Role.sync({ alter: true });
-    await Survey.sync({ alter: true });
-    await SurveyQuestion.sync({ alter: true });
-    await SurveyList.sync({ alter: true });
-    await SurveyData.sync({ alter: true });
-    await SurveyAnswer.sync({ alter: true });
+    const common = { alter: true };
+    await User.sync(common);
+    await Role.sync(common);
+    await Survey.sync(common);
+    await SurveyQuestion.sync(common);
+    await SurveyList.sync(common);
+    await SurveyData.sync(common);
+    await SurveyAnswer.sync(common);
+    await Dict.sync(common);
+    await DictValue.sync(common);
     //#region Миграции
     await adminRoleMigration(); // создаём роль админа
     await adminEntryMigration(); // создаём учётную запись админа
