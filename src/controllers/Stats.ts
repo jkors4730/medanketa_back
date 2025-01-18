@@ -411,6 +411,7 @@ class StatsController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
+                const { win } = req.query;
 
                 const survey = await Survey.findByPk<any>(id);
 
@@ -439,7 +440,9 @@ class StatsController {
 Среднее время прохождения анкет;${getTime(stats.finishTime)}
 Средний процент пропущенных вопросов;${stats.chart5}%`;
 
-                    fs.writeFileSync(filePath, iconv.encode(fileContent, 'win1251'));
+                    const isWin = win === 'true';
+
+                    fs.writeFileSync(filePath, iconv.encode(fileContent, isWin ? 'win1251' : 'utf8'));
 
                     res.download(filePath);
                 }

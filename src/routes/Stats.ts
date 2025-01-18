@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { param } from 'express-validator';
+import { param, query } from 'express-validator';
 import { statsController } from '../controllers/Stats';
 
 const statsRoutes = Router();
@@ -25,6 +25,7 @@ statsRoutes.get('/survey/questions/:id',
 // (R) GET_STATS_CSV
 statsRoutes.get('/survey/csv/:id',
     param('id').isNumeric(),
+    query('win').optional().isBoolean(),
     statsController.getCsvBySurvey
 );
 
