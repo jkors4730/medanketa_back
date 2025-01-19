@@ -1,65 +1,79 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { returnError } from '../utils/error';
-import fs from 'fs';
-import readline from 'readline';
-import path from 'path';
+import { validationResult } from 'express-validator';
+import { Region } from '../db/models/Region';
+import { City } from '../db/models/City';
+import { Spec } from '../db/models/Spec';
 
 class RegController {
 
-    async getRegions(_req: Request, res: Response) {
+    /**
+     * Получить список регионов
+     * 
+     * @route {path} /reg/regions
+     * 
+     * @throws {Error} e
+    */
+    async getRegions(req: Request, res: Response) {
         try {
-            const arr: string[] = [];
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const regions = await Region.findAll();
 
-            const rd = readline.createInterface(
-                fs.createReadStream(path.join(__dirname, `../../reg/regions.txt`)), process.stdout
-            );
-
-            rd.on('line', (line) => {
-                arr.push(line);
-            });
-
-            rd.on('close', () => {
-                res.status(200).json(arr);
-            });
+                res.json( regions.map( i => i.toJSON()?.title ) );
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
         }
         catch (e: any) { returnError(e, res); }
     }
-
-    async getCities(_req: Request, res: Response) {
+    /**
+     * Получить список городов
+     * 
+     * @route {path} /reg/cities
+     * 
+     * @throws {Error} e
+    */
+    async getCities(req: Request, res: Response) {
         try {
-            const arr: string[] = [];
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const cities = await City.findAll();
 
-            const rd = readline.createInterface(
-                fs.createReadStream(path.join(__dirname, `../../reg/cities.txt`)), process.stdout
-            );
-
-            rd.on('line', (line) => {
-                arr.push(line);
-            });
-
-            rd.on('close', () => {
-                res.status(200).json(arr);
-            });
+                res.json( cities.map( i => i.toJSON()?.title ) );
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
         }
         catch (e: any) { returnError(e, res); }
     }
-
-    async getSpec(_req: Request, res: Response) {
+    /**
+     * Получить список специальностей
+     * 
+     * @route {path} /reg/spec
+     * 
+     * @throws {Error} e
+    */
+    async getSpec(req: Request, res: Response) {
         try {
-            const arr: string[] = [];
-
-            const rd = readline.createInterface(
-                fs.createReadStream(path.join(__dirname, `../../reg/spec.txt`)), process.stdout
-            );
-
-            rd.on('line', (line) => {
-                arr.push(line);
-            });
-
-            rd.on('close', () => {
-                res.status(200).json(arr);
-            });
+            try {
+                const errors = validationResult(req);
+                
+                if ( errors.isEmpty() ) {
+                    const specs = await Spec.findAll();
+    
+                    res.json( specs.map( i => i.toJSON()?.title ) );
+                }
+                else {
+                    returnError(null, res, errors.array() );
+                }
+            }
+            catch (e: any) { returnError(e, res); }
         }
         catch (e: any) { returnError(e, res); }
     }

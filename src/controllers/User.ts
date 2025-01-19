@@ -7,6 +7,7 @@ import { returnError } from '../utils/error';
 import { generateAuthToken } from '../utils/jwt';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
+import { ROLE_ADMIN, ROLE_INT, ROLE_RESP } from '../utils/common';
 
 class UserController {
 
@@ -22,8 +23,8 @@ class UserController {
 
                 if ( !exists ) {
                     const mapping: Record<string, string> = {
-                        "Интервьюер": "interviewer",
-                        "Респондент": "respondent" 
+                        "Интервьюер": ROLE_INT,
+                        "Респондент": ROLE_RESP 
                     };
                 
                     // find or create role
@@ -157,7 +158,7 @@ class UserController {
     
                 const adminRole = await Role.findOne<any>({
                 where: {
-                    guardName: 'admin'
+                    guardName: ROLE_ADMIN
                 } });
                 
                 const exists = await User.findOne<any>({ where: {

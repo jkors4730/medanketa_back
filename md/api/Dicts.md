@@ -1,4 +1,4 @@
-# Dicts CRUD
+# Dicts API
 
 Dicts model and methods
 
@@ -29,5 +29,7 @@ GET (query params):
 ```bash
 /dicts/user/:id
 ```
+
+GET (query params):
 
 GET params: Not provided

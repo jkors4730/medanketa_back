@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
- import { passwordHash } from "../utils/hash";
+ import { ROLE_INT, ROLE_RESP } from "../utils/common";
+import { passwordHash } from "../utils/hash";
 import { Role } from "./models/Role";
 import { Survey } from "./models/Survey";
 import { SurveyQuestion } from "./models/SurveyQuestion";
@@ -9,12 +10,12 @@ export const applyTestDB = async () => {
 
     //#region ROLES
     const interviewer = await Role.create<any>({
-        guardName: 'interviewer',
+        guardName: ROLE_INT,
         name: 'Интервьюер',
     });
 
     const respondent = await Role.create<any>({
-        guardName: 'respondent',
+        guardName: ROLE_RESP,
         name: 'Респондент',
     });
     //#endregion

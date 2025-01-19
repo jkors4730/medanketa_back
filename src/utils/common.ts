@@ -2,6 +2,10 @@
 import { SurveyAnswer } from "../db/models/SurveyAnswer";
 import { SurveyData } from "../db/models/SurveyData";
 
+export const ROLE_RESP = 'respondent';
+export const ROLE_INT = 'interviewer';
+export const ROLE_ADMIN = 'admin';
+
 interface Answer {
     id?: number;
     answer?: string;

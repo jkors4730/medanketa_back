@@ -3,17 +3,18 @@ import 'dotenv/config';
 import { Role } from "./models/Role";
 import { User } from "./models/User";
 import { passwordHash } from '../utils/hash';
+import { ROLE_ADMIN } from '../utils/common';
 
 export const adminRoleMigration = async () => {
     const exists = await Role.findOne<any>({
     where: {
-        guardName: 'admin'
+        guardName: ROLE_ADMIN
     } });
 
     if (!exists) {
         await Role.create({
             name: 'Админ',
-            guardName: 'admin'
+            guardName: ROLE_ADMIN
         });
     }
 };
@@ -21,7 +22,7 @@ export const adminRoleMigration = async () => {
 export const adminEntryMigration = async () => {
     const adminRole = await Role.findOne<any>({
     where: {
-        guardName: 'admin'
+        guardName: ROLE_ADMIN
     } });
 
     const exists = await User.findOne<any>({
@@ -33,7 +34,7 @@ export const adminEntryMigration = async () => {
         const password = passwordHash(
             process.env.ADMIN_PASS
             ? process.env.ADMIN_PASS
-            : 'admin'
+            : ROLE_ADMIN
         );
 
         await User.create({

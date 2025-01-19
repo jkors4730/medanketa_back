@@ -8,6 +8,7 @@ import { User } from '../db/models/User';
 import { Role } from '../db/models/Role';
 import { Dict } from '../db/models/Dict';
 import { DictValue } from '../db/models/DictValue';
+import { ROLE_ADMIN } from '../utils/common';
 
 class DictsController {
     // TODO: make 'create' function
@@ -95,7 +96,6 @@ class DictsController {
 
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { common } = req.query;
 
                 const user = await User.findByPk<any>(id);
 
@@ -103,7 +103,7 @@ class DictsController {
                     const role = await Role.findByPk<any>(user.roleId);
 
                     if (role) {
-                        if (role.guardName === 'admin') {
+                        if (role.guardName === ROLE_ADMIN) {
                             const dicts = await Dict.findAll({
                                 where: {
                                     common: true
@@ -117,7 +117,7 @@ class DictsController {
                                 where: {
                                   [Op.or]: {
                                     user_id:  user.id,
-                                    common: common === 'true',
+                                    common: true,
                                   },
                                 },
                             });

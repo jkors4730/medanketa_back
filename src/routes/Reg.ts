@@ -13,7 +13,7 @@ regRoutes.get('/cities',
     regController.getCities
 );
 
-// (R) GET_ALL (CITIES)
+// (R) GET_ALL (SPECS)
 regRoutes.get('/spec',
     regController.getSpec
 );
