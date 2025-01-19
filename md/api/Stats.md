@@ -1,4 +1,4 @@
-# Survey CRUD
+# Stats API
 
 Stats model and methods
 

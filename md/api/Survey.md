@@ -9,6 +9,7 @@ Survey model and methods
 ```
 
 POST params (JSON-body):
+
 ```js
 {
     "userId": 1,        // typeof <Number>, [Required*]
@@ -76,6 +77,7 @@ GET (query params):
 ```
 
 params (JSON-body):
+
 ```js
 {
     "userId": 1,        // typeof <Number>, [Optional]

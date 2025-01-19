@@ -18,6 +18,7 @@ dictsRoutes.get('/:id',
 
 dictsRoutes.get('/user/:id',
     param('id').isNumeric(),
+    query('common').isBoolean().optional(),
     dictsController.getByUser
 );
 
