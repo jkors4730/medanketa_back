@@ -2,6 +2,24 @@
 
 Dicts model and methods
 
+## Create [POST]
+
+```bash
+/dicts
+```
+
+POST params (JSON-body):
+
+```js
+{
+    
+    "title": "empty",   // typeof <String>, [Required*] Min 1 symbol
+    "common": true,      // typeof <Boolean>, [Required*]
+    "status": true,     // typeof <Boolean>, [Required*]
+    "userId": 1,        // typeof <Number>, [Required*]
+}
+```
+
 ## GetAll [GET]
 
 ```bash

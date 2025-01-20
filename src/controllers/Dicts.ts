@@ -11,7 +11,35 @@ import { DictValue } from '../db/models/DictValue';
 import { ROLE_ADMIN } from '../utils/common';
 
 class DictsController {
-    // TODO: make 'create' function
+    /**
+     * Создать справочник
+     * 
+     * @body {string} title
+     * @body {boolean} common
+     * @body {boolean} status
+     * @body {number} userId
+     * 
+     * @throws {Error} e
+    */
+    async create(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { title, common, status, userId } = req.body;
+        
+                const dict = await Dict.create<any>({
+                    title, common, status, userId
+                });
+
+                res.status(201).json(dict.toJSON());
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
 
     /**
      * Получить список справочников
@@ -59,7 +87,7 @@ class DictsController {
                         SELECT DISTINCT value
                         FROM dict_values
                         WHERE value ILIKE :query
-                        AND dict_id = :dict_id LIMIT 500`,
+                        AND "dictId" = :dict_id LIMIT 500`,
                     {
                         replacements: {
                             dict_id: id,
