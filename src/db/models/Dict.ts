@@ -6,7 +6,8 @@ export const Dict = sequelize.define(
     {
         title: { type: DataTypes.STRING, allowNull: false, defaultValue: '', },       // required
         common: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false, },  // required
-        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true, },  // required
+        status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true, },   // required
+        description: { type: DataTypes.STRING, defaultValue: '', },
         userId: { type: DataTypes.INTEGER },
     }
 );

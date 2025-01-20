@@ -15,6 +15,7 @@ class DictsController {
      * Создать справочник
      * 
      * @body {string} title
+     * @body {string} description
      * @body {boolean} common
      * @body {boolean} status
      * @body {number} userId
@@ -26,10 +27,10 @@ class DictsController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { title, common, status, userId } = req.body;
+                const { title, description, common, status, userId } = req.body;
         
                 const dict = await Dict.create<any>({
-                    title, common, status, userId
+                    title, description, common, status, userId
                 });
 
                 res.status(201).json(dict.toJSON());
@@ -65,29 +66,6 @@ class DictsController {
             else {
                 returnError(null, res, errors.array() );
             }
-    }
-
-    /**
-     * Получить список справочников
-     * 
-     * @route {path} /dicts
-     * 
-     * @throws {Error} e
-    */
-    async getAll(req: Request, res: Response) {
-        try {
-            const errors = validationResult(req);
-
-            if ( errors.isEmpty() ) {
-                const dicts = await Dict.findAll();
-
-                res.status(200).json( dicts.map( d => d.toJSON() ) );
-            }
-            else {
-                returnError(null, res, errors.array() );
-            }
-        }
-        catch (e: any) { returnError(e, res); }
     }
     
     /**
@@ -194,6 +172,87 @@ class DictsController {
         catch (e: any) { returnError(e, res); }
     }
 
+    /**
+     * Обновить справочник
+     * 
+     * * @route {path} /dicts/:id
+     * 
+     * @param {number} id dictId
+     * 
+     * @body {number} title
+     * @body {boolean} common
+     * @body {boolean} status
+     * @body {number} userId
+     * @throws {Error} e
+    */
+    async update(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+                const { title, common, status, userId } = req.body;
+
+                const dict = await Dict.findByPk<any>( id );
+
+                if (dict === null) {
+                    returnError(null, res, [`Dict with id = ${id} not found`]);
+                } else {
+                    dict.title = typeof title == 'string' ? title : dict.title;
+                    dict.common = typeof common == 'boolean' ? common : dict.common;
+                    dict.status = typeof status == 'boolean' ? status : dict.status;
+                    dict.userId = typeof userId == 'number' ? userId : dict.userId;
+
+                    await dict.save();
+
+                    res.status(200).json(dict.toJSON());
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    /**
+     * Удалить справочник
+     * 
+     * @param {number} id surveyId
+     * 
+     * @throws {Error} e
+    */
+    async delete(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+
+                const dict = await Dict.findByPk( id );
+
+                if (dict === null) {
+                    returnError(null, res, [`Dict with id = ${id} not found`]);
+                } else {
+                    // удалить связанные значения
+                    await sequelize.query<any>(`--sql
+                    DELETE FROM dict_values WHERE "dictId" = :id`,
+                    {
+                        replacements: { id: id },
+                        type: QueryTypes.SELECT
+                    });
+
+                    await dict.destroy();
+
+                    res.status(204).send();
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
 }
 
 export const dictsController = new DictsController();
