@@ -18,11 +18,17 @@ dictsRoutes.get('/',
     dictsController.getAll
 );
 
-// (R) GET_ONE
+// (R) GET_VALUES_FILTER
 dictsRoutes.get('/:id',
     param('id').isNumeric(),
+    dictsController.getOne
+);
+
+// (R) GET_VALUES_FILTER
+dictsRoutes.get('/values/:id',
+    param('id').isNumeric(),
     query('q').isString(),
-    dictsController.getById
+    dictsController.getValuesById
 );
 
 // (R) GET_BY_USER

@@ -42,6 +42,32 @@ class DictsController {
     }
 
     /**
+     * Получить справочник по id
+     * 
+     * @route {path} /dicts/:id
+     * 
+     * @throws {Error} e
+    */
+    async getOne(req: Request, res: Response) {
+        const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+
+                const dict = await Dict.findByPk( id );
+
+                if (dict === null) {
+                    returnError(null, res, [`Dict with id = ${id} not found`]);
+                } else {
+                    res.status(200).json(dict.toJSON());
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+    }
+
+    /**
      * Получить список справочников
      * 
      * @route {path} /dicts
@@ -67,14 +93,14 @@ class DictsController {
     /**
      * Получить значения из справочника по id и query
      * 
-     * @route {path} /dicts/:id
+     * @route {path} /dicts/values/:id
      * 
      * @param {number} id
      * @query {string} q
      * 
      * @throws {Error} e
     */
-    async getById(req: Request, res: Response) {
+    async getValuesById(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
             
