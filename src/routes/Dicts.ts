@@ -11,6 +11,7 @@ dictsRoutes.post('/',
     body('common').isBoolean(),
     body('status').isBoolean(),
     body('userId').isNumeric(),
+    body('values').optional().isArray(),
     dictsController.create
 );
 // (R) GET_VALUES_FILTER

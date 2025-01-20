@@ -9,5 +9,6 @@ export const Dict = sequelize.define(
         status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true, },   // required
         description: { type: DataTypes.STRING, defaultValue: '', },
         userId: { type: DataTypes.INTEGER },
+        values: { type: DataTypes.JSON },
     }
 );

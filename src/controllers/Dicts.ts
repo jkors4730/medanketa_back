@@ -19,6 +19,7 @@ class DictsController {
      * @body {boolean} common
      * @body {boolean} status
      * @body {number} userId
+     * @body {JSON} values
      * 
      * @throws {Error} e
     */
@@ -27,11 +28,35 @@ class DictsController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { title, description, common, status, userId } = req.body;
+                const { title, description, common, status, userId, values } = req.body;
         
                 const dict = await Dict.create<any>({
                     title, description, common, status, userId
                 });
+
+                const valuesArr = [];
+
+                if ( Array.isArray( values ) ) {
+
+                    for ( const v of values ) {
+
+                        const { value, sortId } = v;
+                        
+                        if ( typeof value == 'string'
+                            && typeof sortId == 'number' ) {
+                            
+                            const dictValue = await DictValue.create<any>({
+                                dictId: dict.id, value, sortId
+                            });
+                            valuesArr.push(dictValue.toJSON());
+                        }
+                        else {
+                            returnError(null, res, ['You must provide required fields "value", "sortId" to create DictValue'] );
+                        }
+                    }
+                }
+
+                dict.values = valuesArr;
 
                 res.status(201).json(dict.toJSON());
             }
