@@ -144,7 +144,7 @@ class DictsController {
                             const dicts = await Dict.findAll({
                                 where: {
                                   [Op.or]: {
-                                    user_id:  user.id,
+                                    userId:  user.id,
                                     common: true,
                                   },
                                 },
