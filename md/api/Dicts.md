@@ -13,17 +13,26 @@ POST params (JSON-body):
 ```js
 {
     
-    "title": "empty",   // typeof <String>, [Required*] Min 1 symbol
-    "common": true,      // typeof <Boolean>, [Required*]
-    "status": true,     // typeof <Boolean>, [Required*]
-    "userId": 1,        // typeof <Number>, [Required*]
+    "title": "empty",      // typeof <String>, [Required*] Min 1 symbol
+    "description": "desc", // typeof <String>, [Required*] Min 1 symbol
+    "common": true,        // typeof <Boolean>, [Required*]
+    "status": true,        // typeof <Boolean>, [Required*]
+    "userId": 1,           // typeof <Number>, [Required*]
+
+    // typeof Array, [Optional]
+    "values": "answers": [
+        {
+            "value": "text",  // typeof <String>, [Optional]
+            "sortId": 1       // typeof <Number>, [Optional]
+        }
+    ]
 }
 ```
 
-## GetAll [GET]
+## Get Dict By Id [GET]
 
 ```bash
-/dicts
+/dicts/:id
 ```
 
 GET params: Not provided
@@ -31,7 +40,7 @@ GET params: Not provided
 ## Get Values by Id and Query [GET]
 
 ```bash
-/dicts/:id
+/dicts/values/:id
 ```
 
 GET (query params):
@@ -49,5 +58,30 @@ GET (query params):
 ```
 
 GET (query params):
+
+GET params: Not provided
+
+## Update [PUT]
+
+```bash
+/dicts/:id
+```
+
+params (JSON-body):
+
+```js
+{
+    "title": "test",    // typeof <String>, [Optional]
+    "common": true,     // typeof Boolean, [Optional]
+    "status": true,     // typeof Boolean, [Optional]
+    "userId": 1,        // typeof Number, [Optional]
+}
+```
+
+## Delete [DELETE]
+
+```bash
+/dicts/:id
+```
 
 GET params: Not provided

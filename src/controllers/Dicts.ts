@@ -14,6 +14,8 @@ class DictsController {
     /**
      * Создать справочник
      * 
+     * * @route {path} /dicts
+     * 
      * @body {string} title
      * @body {string} description
      * @body {boolean} common

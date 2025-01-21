@@ -9,6 +9,7 @@ List of completed surveys (by userId)
 ```
 
 POST params (JSON-body):
+
 ```js
 {
     "userId": 1,        // typeof <Number>, [Required*]
