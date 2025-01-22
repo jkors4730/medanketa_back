@@ -71,10 +71,11 @@ params (JSON-body):
 
 ```js
 {
-    "title": "test",    // typeof <String>, [Optional]
-    "common": true,     // typeof Boolean, [Optional]
-    "status": true,     // typeof Boolean, [Optional]
-    "userId": 1,        // typeof Number, [Optional]
+    "title": "test",       // typeof <String>, [Optional]
+    "description": "test", // typeof <String>, [Optional]
+    "common": true,        // typeof Boolean, [Optional]
+    "status": true,        // typeof Boolean, [Optional]
+    "userId": 1,           // typeof Number, [Optional]
 }
 ```
 

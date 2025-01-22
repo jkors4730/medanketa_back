@@ -206,7 +206,8 @@ class DictsController {
      * 
      * @param {number} id dictId
      * 
-     * @body {number} title
+     * @body {string} title
+     * @body {string} title
      * @body {boolean} common
      * @body {boolean} status
      * @body {number} userId
@@ -218,7 +219,7 @@ class DictsController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { title, common, status, userId } = req.body;
+                const { title, description, common, status, userId } = req.body;
 
                 const dict = await Dict.findByPk<any>( id );
 
@@ -226,6 +227,7 @@ class DictsController {
                     returnError(null, res, [`Dict with id = ${id} not found`]);
                 } else {
                     dict.title = typeof title == 'string' ? title : dict.title;
+                    dict.description = typeof description == 'string' ? description : dict.description;
                     dict.common = typeof common == 'boolean' ? common : dict.common;
                     dict.status = typeof status == 'boolean' ? status : dict.status;
                     dict.userId = typeof userId == 'number' ? userId : dict.userId;
