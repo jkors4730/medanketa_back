@@ -166,7 +166,10 @@ class DictsController {
                             const dicts = await Dict.findAll({
                                 where: {
                                     common: true
-                                }
+                                },
+                                order: [
+                                    ['id', 'DESC']
+                                ],
                             });
 
                             res.status(200).json( dicts.map( d => d.toJSON() ) );
@@ -174,11 +177,14 @@ class DictsController {
                         else {
                             const dicts = await Dict.findAll({
                                 where: {
-                                  [Op.or]: {
-                                    userId:  user.id,
-                                    common: true,
-                                  },
+                                    [Op.or]: {
+                                        userId:  user.id,
+                                        common: true,
+                                    },
                                 },
+                                order: [
+                                    ['id', 'DESC']
+                                ],
                             });
 
                             res.status(200).json( dicts.map( d => d.toJSON() ) );
@@ -206,7 +212,6 @@ class DictsController {
      * 
      * @param {number} id dictId
      * 
-     * @body {string} title
      * @body {string} title
      * @body {boolean} common
      * @body {boolean} status

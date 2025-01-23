@@ -12,8 +12,9 @@ import surveyQuestionRoutes from './routes/SurveyQuestion';
 import surveyListRoutes from './routes/SurveyList';
 import uploadRoutes from './routes/Upload';
 import statsRoutes from './routes/Stats';
-import dictsRoutes from './routes/Dicts';
+import dictRoutes from './routes/Dict';
 import regRoutes from './routes/Reg';
+import dictValueRoutes from './routes/DictValue';
 
 const app = express();
 
@@ -31,7 +32,8 @@ app.use('/survey-question', surveyQuestionRoutes);
 app.use('/survey-list', surveyListRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/stats', statsRoutes);
-app.use('/dicts', dictsRoutes);
+app.use('/dicts', dictRoutes);
+app.use('/dict-values', dictValueRoutes);
 app.use('/reg', regRoutes);
 
 app.get('/', (_req: Request, res: Response) => {
