@@ -29,6 +29,8 @@ dictRoutes.get('/values/:id',
 dictRoutes.get('/user/:id',
     param('id').isNumeric(),
     query('common').isBoolean().optional(),
+    query('page').optional().isNumeric(),
+    query('size').optional().isNumeric(),
     dictsController.getByUser
 );
 // (U) UPDATE

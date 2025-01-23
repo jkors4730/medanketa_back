@@ -50,20 +50,23 @@ class DictValuesController {
     async getOne(req: Request, res: Response) {
         const errors = validationResult(req);
             
-            if ( errors.isEmpty() ) {
-                const { id } = req.params;
+        if ( errors.isEmpty() ) {
+            const { id } = req.params;
 
-                const dictValue = await DictValue.findByPk( id );
+            const dictValue = await DictValue.findOne({
+                where: { id },
+                attributes: ['value', 'dictId', 'sortId']
+            });
 
-                if (dictValue === null) {
-                    returnError(null, res, [`DictValue with id = ${id} not found`]);
-                } else {
-                    res.status(200).json(dictValue.toJSON());
-                }
+            if (dictValue === null) {
+                returnError(null, res, [`DictValue with id = ${id} not found`]);
+            } else {
+                res.status(200).json(dictValue.toJSON());
             }
-            else {
-                returnError(null, res, errors.array() );
-            }
+        }
+        else {
+            returnError(null, res, errors.array() );
+        }
     }
     
     /**
@@ -73,6 +76,8 @@ class DictValuesController {
      * 
      * @param {number} dictId
      * @query {string} q
+     * @query {number} page
+     * @query {number} size
      * 
      * @throws {Error} e
     */
@@ -83,24 +88,48 @@ class DictValuesController {
             if ( errors.isEmpty() ) {
                 try {
                     const { id } = req.params;
-                    const { q } = req.query;
+                    const { q, page, size } = req.query;
+
+                    const mPage = page ? Number(page) : 1;
+                    const mSize = size ? Number(size) : 20;
 
                     const data = await sequelize.query<any>(`--sql
-                        SELECT DISTINCT value
+                        SELECT DISTINCT id, value, "sortId"
                         FROM dict_values
                         WHERE value ILIKE :query
-                        AND "dictId" = :dict_id LIMIT 500`,
+                        AND "dictId" = :dict_id
+                        OFFSET :offset
+                        LIMIT :limit`,
                     {
                         replacements: {
                             dict_id: id,
-                            query: q ? `%${q}%` : ''
+                            query: q ? `%${q}%` : '%%',
+                            offset: mPage > 1 ? (mSize * (Number(page) - 1)) : 0,
+                            limit: mSize
                         },
                         type: QueryTypes.SELECT,
                         model: DictValue,
                         mapToModel: true,
                     });
+
+                    const dataCount = await sequelize.query<any>(`--sql
+                        SELECT COUNT(DISTINCT value)
+                        FROM dict_values
+                        WHERE value ILIKE :query
+                        AND "dictId" = :dict_id`,
+                    {
+                        replacements: {
+                            dict_id: id,
+                            query: q ? `%${q}%` : '%%'
+                        },
+                        type: QueryTypes.SELECT
+                    });
                     
-                    res.status(200).json( data.map( d => d.value ) );
+                    res.status(200).json( {
+                        items: data,
+                        page: page,
+                        total: dataCount[0].count
+                    } );
                 }
                 catch (e: any) { returnError(e, res); }
             }
@@ -114,7 +143,7 @@ class DictValuesController {
     /**
      * Обновить значение справочника
      * 
-     * * @route {path} /dict-values/:id
+     * @route {path} /dict-values/:id
      * 
      * @param {number} id valueId
      * 
@@ -154,6 +183,8 @@ class DictValuesController {
 
     /**
      * Удалить значение
+     * 
+     * @route {path} /dict-values/:id
      * 
      * @param {number} id valueId
      * 

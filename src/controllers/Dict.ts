@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { returnError } from '../utils/error';
 import sequelize from '../db/config';
-import { Op, QueryTypes } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import { User } from '../db/models/User';
 import { Role } from '../db/models/Role';
 import { Dict } from '../db/models/Dict';
@@ -155,6 +155,10 @@ class DictsController {
 
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
+                const { page, size } = req.query;
+
+                const mPage = page ? Number(page) : 1;
+                const mSize = size ? Number(size) : 20;
 
                 const user = await User.findByPk<any>(id);
 
@@ -163,31 +167,73 @@ class DictsController {
 
                     if (role) {
                         if (role.guardName === ROLE_ADMIN) {
-                            const dicts = await Dict.findAll({
-                                where: {
-                                    common: true
+                            const data = await sequelize.query<any>(`--sql
+                                SELECT id, title, common, status, "userId", description
+                                FROM dicts
+                                WHERE common = true
+                                ORDER BY id DESC
+                                OFFSET :offset
+                                LIMIT :limit`,
+                            {
+                                replacements: {
+                                    offset: mPage > 1 ? (mSize * (Number(page) - 1)) : 0,
+                                    limit: mSize
                                 },
-                                order: [
-                                    ['id', 'DESC']
-                                ],
+                                type: QueryTypes.SELECT,
+                                model: Dict,
+                                mapToModel: true,
                             });
 
-                            res.status(200).json( dicts.map( d => d.toJSON() ) );
+                            const dataCount = await sequelize.query<any>(`--sql
+                                SELECT COUNT(*) as count
+                                FROM dicts
+                                WHERE common = true`,
+                            {
+                                replacements: { id },
+                                type: QueryTypes.SELECT
+                            });
+
+                            res.status(200).json( {
+                                items: data,
+                                page: page,
+                                total: dataCount[0].count
+                            } );
                         }
                         else {
-                            const dicts = await Dict.findAll({
-                                where: {
-                                    [Op.or]: {
-                                        userId:  user.id,
-                                        common: true,
-                                    },
+                            const data = await sequelize.query<any>(`--sql
+                                SELECT id, title, common, status, "userId", description
+                                FROM dicts
+                                WHERE "userId" = :id
+                                OR common = true
+                                ORDER BY id DESC
+                                OFFSET :offset
+                                LIMIT :limit`,
+                            {
+                                replacements: {
+                                    id: id,
+                                    offset: mPage > 1 ? (mSize * (Number(page) - 1)) : 0,
+                                    limit: mSize
                                 },
-                                order: [
-                                    ['id', 'DESC']
-                                ],
+                                type: QueryTypes.SELECT,
+                                model: Dict,
+                                mapToModel: true,
                             });
 
-                            res.status(200).json( dicts.map( d => d.toJSON() ) );
+                            const dataCount = await sequelize.query<any>(`--sql
+                                SELECT COUNT(*) as count
+                                FROM dicts
+                                WHERE "userId" = :id
+                                OR common = true`,
+                            {
+                                replacements: { id },
+                                type: QueryTypes.SELECT
+                            });
+
+                            res.status(200).json( {
+                                items: data,
+                                page: page,
+                                total: dataCount[0].count
+                            } );
                         }
                     }
                     else {
@@ -252,7 +298,9 @@ class DictsController {
     /**
      * Удалить справочник
      * 
-     * @param {number} id surveyId
+     * @route {path} /dicts/:id
+     * 
+     * @param {number} id dictId
      * 
      * @throws {Error} e
     */

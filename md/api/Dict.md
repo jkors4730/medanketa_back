@@ -1,4 +1,4 @@
-# Dicts API
+# Dict API
 
 Dicts model and methods
 
@@ -20,7 +20,7 @@ POST params (JSON-body):
     "userId": 1,           // typeof <Number>, [Required*]
 
     // typeof Array, [Optional]
-    "values": "answers": [
+    "values": [
         {
             "value": "text",  // typeof <String>, [Optional]
             "sortId": 1       // typeof <Number>, [Optional]
@@ -59,7 +59,11 @@ GET (query params):
 
 GET (query params):
 
-GET params: Not provided
+```bash
+# page - typeof <Number>
+# size - typeof <Number>
+?page=1&size=20
+```
 
 ## Update [PUT]
 

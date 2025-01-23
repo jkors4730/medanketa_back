@@ -7,7 +7,7 @@ const dictValueRoutes = Router();
 // (C) CREATE
 dictValueRoutes.post('/',
     body('value').isString().notEmpty(),
-    body('number').isNumeric(),
+    body('dictId').isNumeric(),
     body('sortId').optional().isNumeric(),
     dictValuesController.create
 );
@@ -19,7 +19,9 @@ dictValueRoutes.get('/:id',
 // (R) GET_BY_DICT
 dictValueRoutes.get('/dict/:id',
     param('id').isNumeric(),
-    query('q').isString(),
+    query('q').optional().isString(),
+    query('page').optional().isNumeric(),
+    query('size').optional().isNumeric(),
     dictValuesController.getByDictId
 );
 // (U) UPDATE
