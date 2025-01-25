@@ -94,7 +94,7 @@ class DictValuesController {
                     const mSize = size ? Number(size) : 20;
 
                     const data = await sequelize.query<any>(`--sql
-                        SELECT DISTINCT id, value, "sortId"
+                        SELECT id, value, "sortId"
                         FROM dict_values
                         WHERE value ILIKE :query
                         AND "dictId" = :dict_id
@@ -113,7 +113,7 @@ class DictValuesController {
                     });
 
                     const dataCount = await sequelize.query<any>(`--sql
-                        SELECT COUNT(DISTINCT value)
+                        SELECT COUNT(*) as count
                         FROM dict_values
                         WHERE value ILIKE :query
                         AND "dictId" = :dict_id`,

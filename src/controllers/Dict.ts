@@ -168,7 +168,7 @@ class DictsController {
                     if (role) {
                         if (role.guardName === ROLE_ADMIN) {
                             const data = await sequelize.query<any>(`--sql
-                                SELECT id, title, common, status, "userId", description
+                                SELECT SELECT id, title, description, common, status, "userId", "createdAt", "updatedAt"
                                 FROM dicts
                                 WHERE common = true
                                 ORDER BY id DESC
@@ -201,7 +201,7 @@ class DictsController {
                         }
                         else {
                             const data = await sequelize.query<any>(`--sql
-                                SELECT id, title, common, status, "userId", description
+                                SELECT SELECT id, title, description, common, status, "userId", "createdAt", "updatedAt"
                                 FROM dicts
                                 WHERE "userId" = :id
                                 OR common = true
