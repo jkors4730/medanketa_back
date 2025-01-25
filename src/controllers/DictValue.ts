@@ -98,6 +98,7 @@ class DictValuesController {
                         FROM dict_values
                         WHERE value ILIKE :query
                         AND "dictId" = :dict_id
+                        ORDER BY id DESC
                         OFFSET :offset
                         LIMIT :limit`,
                     {
@@ -153,6 +154,47 @@ class DictValuesController {
      * @throws {Error} e
     */
     async update(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id } = req.params;
+                const { value, dictId, sortId } = req.body;
+
+                const dictValue = await DictValue.findByPk<any>( id );
+
+                if (dictValue === null) {
+                    returnError(null, res, [`DictValue with id = ${id} not found`]);
+                } else {
+                    dictValue.value = typeof value == 'string' ? value : dictValue.value;
+                    dictValue.dictId = typeof dictId == 'number' ? dictId : dictValue.dictId;
+                    dictValue.sortId = typeof sortId == 'number' ? sortId : dictValue.sortId;
+
+                    await dictValue.save();
+
+                    res.status(200).json(dictValue.toJSON());
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    /**
+     * Обновить несколько значений справочника
+     * 
+     * @route {path} /dict-values/bulk
+     * 
+     * @param {number} id valueId
+     * 
+     * @body {string} value
+     * @body {number} dictId
+     * @body {number} sortId
+     * @throws {Error} e
+    */
+    async updateBulk(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
             
