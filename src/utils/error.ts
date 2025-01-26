@@ -7,7 +7,8 @@ export const returnError = (
     messages: any[] = [],
     status: number = 404
 ) => {
-    return res.status( status ).json({
-        error: messages.length ? messages : err?.message
-    });
+    const error = messages.length ? messages : err?.message;
+    console.error(error);
+
+    return res.status( status ).json({ error });
 };

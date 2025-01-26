@@ -27,6 +27,8 @@ export const dbSyncAll = async () => {
     await Region.sync(opt);
     await City.sync(opt);
     await Spec.sync(opt);
+
+    // TODO: Миграции должны накатываться итеративно
     //#region Миграции
     await adminRoleMigration(); // создаём роль админа
     await adminEntryMigration(); // создаём учётную запись админа
