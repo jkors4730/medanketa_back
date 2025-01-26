@@ -187,11 +187,7 @@ class DictValuesController {
      * 
      * @route {path} /dict-values/bulk
      * 
-     * @param {number} id valueId
-     * 
-     * @body {string} value
-     * @body {number} dictId
-     * @body {number} sortId
+     * @body {Array} values
      * @throws {Error} e
     */
     async updateBulk(req: Request, res: Response) {
@@ -199,21 +195,31 @@ class DictValuesController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { id } = req.params;
-                const { value, dictId, sortId } = req.body;
+                const { values } = req.body;
 
-                const dictValue = await DictValue.findByPk<any>( id );
+                if ( Array.isArray( values ) ) {
 
-                if (dictValue === null) {
-                    returnError(null, res, [`DictValue with id = ${id} not found`]);
-                } else {
-                    dictValue.value = typeof value == 'string' ? value : dictValue.value;
-                    dictValue.dictId = typeof dictId == 'number' ? dictId : dictValue.dictId;
-                    dictValue.sortId = typeof sortId == 'number' ? sortId : dictValue.sortId;
+                    const valuesArr = [];
 
-                    await dictValue.save();
+                    for ( const v of values ) {
 
-                    res.status(200).json(dictValue.toJSON());
+                        const { value, dictId, sortId } = v;
+                        
+                        if ( typeof value == 'string'
+                            && typeof dictId == 'number'
+                            && typeof sortId == 'number' ) {
+                            
+                            const dictValue = await DictValue.create<any>({
+                                dictId, value, sortId
+                            });
+                            valuesArr.push(dictValue.toJSON());
+                        }
+                        else {
+                            returnError(null, res, ['You must provide required fields "value", "dictId", "sortId" to create DictValue'] );
+                        }
+                    }
+
+                    res.status(201).json(valuesArr);
                 }
             }
             else {

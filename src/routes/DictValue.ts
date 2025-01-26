@@ -24,6 +24,11 @@ dictValueRoutes.get('/dict/:id',
     query('size').optional().isNumeric(),
     dictValuesController.getByDictId
 );
+// (U) UPDATE_BULK
+dictValueRoutes.put('/bulk',
+    body('values').isArray(),
+    dictValuesController.updateBulk
+);
 // (U) UPDATE
 dictValueRoutes.put('/:id',
     param('id').isNumeric(),

@@ -16,14 +16,17 @@ export const saveSurveyData = async ( data: string, qid: number ) => {
     try {
         if ( data && typeof data === 'string' ) {
             const parsed = JSON.parse( data );
-            
-            for ( const item of parsed.answers ) {
-                await SurveyData.create({
-                    sq_id: qid,
-                    uid: item.id,
-                    sortId: item.sortId,
-                    value: item.value,
-                });
+
+            if ( parsed.answers && Array.isArray(parsed.answers) ) {
+                
+                for ( const item of parsed.answers ) {
+                    await SurveyData.create({
+                        sq_id: qid,
+                        uid: item.id,
+                        sortId: item.sortId,
+                        value: item.value,
+                    });
+                }
             }
         }
         else {

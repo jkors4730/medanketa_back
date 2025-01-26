@@ -58,6 +58,27 @@ params (JSON-body):
 }
 ```
 
+## Update (Bulk) [PUT]
+
+```bash
+/dict-values
+```
+
+params (JSON-body):
+
+```js
+{
+    // typeof <Array>, [Required*]
+    "values": [
+        {
+            "value": "test1", // typeof <String>, [Required*]
+            "dictId": 1,      // typeof <Number>, [Required*]
+            "sortId": 0       // typeof <Number>, [Required*]
+        }
+    ]
+}
+```
+
 ## Delete [DELETE]
 
 ```bash
