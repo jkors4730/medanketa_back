@@ -61,7 +61,7 @@ params (JSON-body):
 ## Update (Bulk) [PUT]
 
 ```bash
-/dict-values
+/dict-values/bulk
 ```
 
 params (JSON-body):
@@ -71,6 +71,7 @@ params (JSON-body):
     // typeof <Array>, [Required*]
     "values": [
         {
+            "id": 1           // typeof <Number>, [Required*]
             "value": "test1", // typeof <String>, [Required*]
             "dictId": 1,      // typeof <Number>, [Required*]
             "sortId": 0       // typeof <Number>, [Required*]

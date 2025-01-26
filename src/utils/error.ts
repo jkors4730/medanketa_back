@@ -8,7 +8,7 @@ export const returnError = (
     status: number = 404
 ) => {
     const error = messages.length ? messages : err?.message;
-    console.error(error);
+    console.error(`[${new Date().toLocaleString()}] ${error}`);
 
     return res.status( status ).json({ error });
 };

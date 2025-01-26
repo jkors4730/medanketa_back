@@ -203,19 +203,20 @@ class DictValuesController {
 
                     for ( const v of values ) {
 
-                        const { value, dictId, sortId } = v;
-                        
-                        if ( typeof value == 'string'
-                            && typeof dictId == 'number'
-                            && typeof sortId == 'number' ) {
-                            
-                            const dictValue = await DictValue.create<any>({
-                                dictId, value, sortId
-                            });
-                            valuesArr.push(dictValue.toJSON());
-                        }
-                        else {
-                            returnError(null, res, ['You must provide required fields "value", "dictId", "sortId" to create DictValue'] );
+                        const { id, value, dictId, sortId } = v;
+
+                        const dictValue = await DictValue.findByPk<any>( id );
+
+                        if (dictValue === null) {
+                            returnError(null, res, [`DictValue with id = ${id} not found`]);
+                        } else {
+                            dictValue.value = typeof value == 'string' ? value : dictValue.value;
+                            dictValue.dictId = typeof dictId == 'number' ? dictId : dictValue.dictId;
+                            dictValue.sortId = typeof sortId == 'number' ? sortId : dictValue.sortId;
+
+                            await dictValue.save();
+
+                            valuesArr.push( dictValue.toJSON() );
                         }
                     }
 
