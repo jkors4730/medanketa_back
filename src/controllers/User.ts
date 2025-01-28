@@ -82,7 +82,9 @@ class UserController {
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
 
-                const user = await User.findByPk( parseInt(id) );
+                const user = await User.findByPk<any>( id, {
+                    attributes: { exclude: ['password'] }
+                } );
 
                 if (user === null) {
                     returnError(null, res, [`User with id = ${id} not found`]);
@@ -103,16 +105,29 @@ class UserController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { title, email, password } = req.body;
+                const { name, lastname, surname, email, password, roleName, phone, birthDate, region, city, workplace, specialization, position, workExperience, pdAgreement, newsletterAgreement } = req.body;
 
                 const user = await User.findByPk<any>( parseInt(id) );
 
                 if (user === null) {
                     returnError(null, res, [`User with id = ${id} not found`]);
                 } else {
-                    user.name = title || user.title;
-                    user.email = email || user.email;
-                    user.password = password || user.password;
+                    user.name = typeof name == 'string' ? name : user.name;
+                    user.lastname = typeof lastname == 'string' ? lastname : user.lastname;
+                    user.surname = typeof surname == 'string' ? surname : user.surname;
+                    user.email = typeof email == 'string' ? email : user.email;
+                    user.password = typeof password == 'string' ? password : user.password;
+                    user.roleName = typeof roleName == 'string' ? roleName : user.roleName;
+                    user.phone = typeof phone == 'string' ? phone : user.phone;
+                    user.birthDate = typeof birthDate == 'string' ? birthDate : user.birthDate;
+                    user.region = typeof region == 'string' ? region : user.region;
+                    user.city = typeof city == 'string' ? city : user.city;
+                    user.workplace = typeof workplace == 'string' ? workplace : user.workplace;
+                    user.specialization = typeof specialization == 'string' ? specialization : user.specialization;
+                    user.position = typeof position == 'string' ? position : user.position;
+                    user.workExperience = typeof workExperience == 'number' ? workExperience : user.workExperience;
+                    user.pdAgreement = typeof pdAgreement == 'boolean' ? pdAgreement : user.pdAgreement;
+                    user.newsletterAgreement = typeof newsletterAgreement == 'boolean' ? newsletterAgreement : user.newsletterAgreement;
 
                     await user.save();
 
