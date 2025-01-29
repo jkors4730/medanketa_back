@@ -16,7 +16,7 @@ class UserController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { name, lastname, surname, email, password, roleName, phone, birthDate, region, city, workplace, specialization, position, workExperience, pdAgreement, newsletterAgreement } = req.body;
+                const { name, lastName, surname, email, password, roleName, phone, birthDate, region, city, workPlace, specialization, position, workExperience, pdAgreement, newsletterAgreement } = req.body;
 
                 const exists = await User.findOne({ where: { email: email } });
                 console.log('exists', exists);
@@ -43,11 +43,11 @@ class UserController {
                     const user = User.build({
                         name,
                         email,
-                        lastname,
+                        lastName,
                         surname,
                         password: hash, // store hashed password in db
                         roleId: role.id, // connect with role
-                        phone, birthDate, region, city, workplace, specialization, position, workExperience, pdAgreement, newsletterAgreement
+                        phone, birthDate, region, city, workPlace, specialization, position, workExperience, pdAgreement, newsletterAgreement
                     });
                 
                     console.log( 'User', user.toJSON() );
@@ -105,7 +105,7 @@ class UserController {
             
             if ( errors.isEmpty() ) {
                 const { id } = req.params;
-                const { name, lastname, surname, email, password, roleName, phone, birthDate, region, city, workplace, specialization, position, workExperience, pdAgreement, newsletterAgreement } = req.body;
+                const { name, lastName, surname, email, password, roleName, phone, birthDate, region, city, workPlace, specialization, position, workExperience, pdAgreement, newsletterAgreement } = req.body;
 
                 const user = await User.findByPk<any>( parseInt(id) );
 
@@ -113,7 +113,7 @@ class UserController {
                     returnError(null, res, [`User with id = ${id} not found`]);
                 } else {
                     user.name = typeof name == 'string' ? name : user.name;
-                    user.lastname = typeof lastname == 'string' ? lastname : user.lastname;
+                    user.lastName = typeof lastName == 'string' ? lastName : user.lastName;
                     user.surname = typeof surname == 'string' ? surname : user.surname;
                     user.email = typeof email == 'string' ? email : user.email;
                     user.password = typeof password == 'string' ? password : user.password;
@@ -122,7 +122,7 @@ class UserController {
                     user.birthDate = typeof birthDate == 'string' ? birthDate : user.birthDate;
                     user.region = typeof region == 'string' ? region : user.region;
                     user.city = typeof city == 'string' ? city : user.city;
-                    user.workplace = typeof workplace == 'string' ? workplace : user.workplace;
+                    user.workPlace = typeof workPlace == 'string' ? workPlace : user.workPlace;
                     user.specialization = typeof specialization == 'string' ? specialization : user.specialization;
                     user.position = typeof position == 'string' ? position : user.position;
                     user.workExperience = typeof workExperience == 'number' ? workExperience : user.workExperience;
@@ -194,7 +194,7 @@ class UserController {
                                 token: generateAuthToken(exists),
                                 id: exists.id,
                                 name: exists.name,
-                                lastname: exists.lastname,
+                                lastName: exists.lastName,
                                 email: exists.email,
                                 role: role.guardName
                             });

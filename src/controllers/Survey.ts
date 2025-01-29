@@ -87,7 +87,7 @@ class SurveyController {
                 await sequelize.query(`--sql
                 SELECT
                     surveys.*,
-                    CONCAT(users.name, ' ', users.lastname) as "userName",
+                    CONCAT(users.name, ' ', users."lastName") as "userName",
                     users.email as "userEmail"
                 FROM surveys
                         LEFT JOIN users ON surveys."userId" = users.id
@@ -103,7 +103,7 @@ class SurveyController {
                 await sequelize.query(`--sql
                 SELECT
                     surveys.*,
-                    CONCAT(users.name, ' ', users.lastname) as "userName",
+                    CONCAT(users.name, ' ', users."lastName") as "userName",
                     users.email as "userEmail"
                 FROM surveys
                         LEFT JOIN users ON surveys."userId" = users.id
@@ -136,7 +136,7 @@ class SurveyController {
                 SELECT
                     surveys.*,
                     users.id as "authorId",
-                    CONCAT(users.name, ' ', users.lastname) as "authorName"
+                    CONCAT(users.name, ' ', users."lastName") as "authorName"
                 FROM surveys
                         LEFT JOIN users ON surveys."userId" = users.id
                 WHERE surveys.id = :id`,
@@ -176,7 +176,7 @@ class SurveyController {
             const surveys = await sequelize.query(`--sql
             SELECT surveys.*,
                 users.id as "authorId",
-                CONCAT(users.name, ' ', users.lastname) as "authorName"
+                CONCAT(users.name, ' ', users."lastName") as "authorName"
             FROM surveys
                     JOIN survey_lists ON surveys."id" = survey_lists."surveyId"
                     LEFT JOIN users ON surveys."userId" = users.id
@@ -209,7 +209,7 @@ class SurveyController {
             SELECT DISTINCT
             sl."userId" as "userId",
             u.name as "userName",
-            u.lastname as "userLastname",
+            u."lastName" as "userLastName",
             TO_CHAR(sl."tsEnd", 'DD.MM.YYYY') as "dateEnd",
             (sl."tsEnd" - sl."tsStart") as time,
             sl."tsStart",
