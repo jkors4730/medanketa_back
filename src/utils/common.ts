@@ -12,6 +12,12 @@ interface Answer {
     isSkip?: boolean;
 }
 
+interface Paginator {
+    items: any[];
+    page: number;
+    total: number;
+}
+
 export const saveSurveyData = async ( data: string, qid: number ) => {
     try {
         if ( data && typeof data === 'string' ) {
@@ -83,3 +89,11 @@ export const returnNumFromArr = (arr: any, key: string) => {
     }
     catch (e: any) { console.error(e); }
 };
+
+export const pagination = (items: any[], page: number, total: number): Paginator => {
+    return {
+        items,
+        page: Number(page),
+        total: Number(total)
+    };
+}

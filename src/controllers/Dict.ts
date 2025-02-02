@@ -8,7 +8,7 @@ import { User } from '../db/models/User';
 import { Role } from '../db/models/Role';
 import { Dict } from '../db/models/Dict';
 import { DictValue } from '../db/models/DictValue';
-import { ROLE_ADMIN } from '../utils/common';
+import { pagination, ROLE_ADMIN } from '../utils/common';
 
 class DictsController {
     /**
@@ -40,7 +40,7 @@ class DictsController {
 
                 if ( Array.isArray( values ) ) {
 
-                    for ( const v of values ) {
+                    for ( const v of values.reverse() ) {
 
                         const { value, sortId } = v;
                         
@@ -193,11 +193,9 @@ class DictsController {
                                 type: QueryTypes.SELECT
                             });
 
-                            res.status(200).json( {
-                                items: data,
-                                page: page,
-                                total: dataCount[0].count
-                            } );
+                            res.status(200).json(
+                                pagination(data, mPage, dataCount[0].count)
+                            );
                         }
                         else {
                             const data = await sequelize.query<any>(`--sql
@@ -229,11 +227,9 @@ class DictsController {
                                 type: QueryTypes.SELECT
                             });
 
-                            res.status(200).json( {
-                                items: data,
-                                page: page,
-                                total: dataCount[0].count
-                            } );
+                            res.status(200).json(
+                                pagination(data, mPage, dataCount[0].count)
+                            );
                         }
                     }
                     else {

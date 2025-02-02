@@ -6,7 +6,7 @@ import { Survey } from '../db/models/Survey';
 import sequelize from '../db/config';
 import { SurveyQuestion } from '../db/models/SurveyQuestion';
 import { QueryTypes } from 'sequelize';
-import { saveSurveyData } from '../utils/common';
+import { pagination, saveSurveyData } from '../utils/common';
 
 class SurveyController {
 
@@ -75,6 +75,8 @@ class SurveyController {
     /**
      * Получить список анкет
      * 
+     * /survey?userId=:id
+     * 
      * @query {number} userId
      * 
      * @throws {Error} e
@@ -82,39 +84,72 @@ class SurveyController {
     async getAll(req: Request, res: Response) {
         try {
             const { userId } = req.query;
+            const { page, size } = req.query;
+
+            const mPage = page ? Number(page) : 1;
+            const mSize = size ? Number(size) : 20;
 
             const surveys = userId ?
-                await sequelize.query(`--sql
-                SELECT
-                    surveys.*,
-                    CONCAT(users.name, ' ', users."lastName") as "userName",
-                    users.email as "userEmail"
-                FROM surveys
-                        LEFT JOIN users ON surveys."userId" = users.id
-                WHERE surveys."userId" = :userId
-                ORDER BY surveys.id DESC`,
-                {
-                    replacements: { userId: userId },
-                    type: QueryTypes.SELECT,
-                    model: Survey,
-                    mapToModel: true,
-                })
-                :
-                await sequelize.query(`--sql
-                SELECT
-                    surveys.*,
-                    CONCAT(users.name, ' ', users."lastName") as "userName",
-                    users.email as "userEmail"
-                FROM surveys
-                        LEFT JOIN users ON surveys."userId" = users.id
-                ORDER BY surveys.id DESC`,
-                {
-                    type: QueryTypes.SELECT,
-                    model: Survey,
-                    mapToModel: true,
-                });
+            await sequelize.query(`--sql
+            SELECT
+                surveys.*,
+                CONCAT(users.name, ' ', users."lastName") as "userName",
+                users.email as "userEmail"
+            FROM surveys
+                    LEFT JOIN users ON surveys."userId" = users.id
+            WHERE surveys."userId" = :userId
+            ORDER BY surveys.id DESC
+            OFFSET :offset
+            LIMIT :limit`,
+            {
+                replacements: {
+                    userId: userId,
+                    offset: mPage > 1 ? (mSize * (Number(page) - 1)) : 0,
+                    limit: mSize
+                },
+                type: QueryTypes.SELECT,
+                model: Survey,
+                mapToModel: true,
+            })
+            :
+            await sequelize.query(`--sql
+            SELECT
+                surveys.*,
+                CONCAT(users.name, ' ', users."lastName") as "userName",
+                users.email as "userEmail"
+            FROM surveys
+                    LEFT JOIN users ON surveys."userId" = users.id
+            ORDER BY surveys.id DESC
+            OFFSET :offset
+            LIMIT :limit`,
+            {
+                replacements: {
+                    offset: mPage > 1 ? (mSize * (Number(page) - 1)) : 0,
+                    limit: mSize
+                },
+                type: QueryTypes.SELECT,
+                model: Survey,
+                mapToModel: true,
+            });
+
+            const dataCount = userId ?
+            await sequelize.query<any>(`--sql
+            SELECT COUNT(*) as count
+            FROM surveys
+                LEFT JOIN users ON surveys."userId" = users.id
+            WHERE surveys."userId" = :userId`,
+            {
+                replacements: { userId: userId },
+                type: QueryTypes.SELECT
+            })
+            :
+            await sequelize.query<any>(`--sql
+            SELECT COUNT(*) as count
+            FROM surveys`, { type: QueryTypes.SELECT });
         
-            res.status(200).json(surveys);
+            res.status(200).json(
+                pagination(surveys, mPage, dataCount[0].count)
+            );
         }
         catch (e: any) { returnError(e, res); }
     }
