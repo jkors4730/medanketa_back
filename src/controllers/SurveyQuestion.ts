@@ -7,6 +7,21 @@ import { saveSurveyData } from '../utils/common';
 
 class SurveyQuestionController {
 
+     /**
+     * Создать вопрос
+     * 
+     * * @route {path} /survey-question
+     * 
+     * @body {number} surveyId
+     * @body {string} question
+     * @body {string} type
+     * @body {boolean} status
+     * @body {string} description
+     * @body {string} data
+     * @body {string} sortId
+     * 
+     * @throws {Error} e
+    */
     async create(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
@@ -51,6 +66,15 @@ class SurveyQuestionController {
         catch (e: any) { returnError(e, res); }
     }
 
+    /**
+     * Получить все вопросы
+     * 
+     * @route {path} /survey-question
+     * 
+     * @query {number} surveyId
+     * 
+     * @throws {Error} e
+    */
     async getAll(req: Request, res: Response) {
         try {
             const { surveyId } = req.query;
@@ -64,7 +88,9 @@ class SurveyQuestionController {
             const result: any[] = [];
 
             surveyQuestions.forEach((item, i) => {
-                item.sortId = i + 1;
+                if (item.sortId) {
+                    item.sortId = i + 1;
+                }
                 result.push(item);
             });
 
@@ -73,6 +99,15 @@ class SurveyQuestionController {
         catch (e: any) { returnError(e, res); }
     }
 
+    /**
+     * Получить один вопрос
+     * 
+     * * @route {path} /survey-question/:id
+     * 
+     * @param {number} id
+     * 
+     * @throws {Error} e
+    */
     async getOne(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
@@ -95,6 +130,23 @@ class SurveyQuestionController {
         catch (e: any) { returnError(e, res); }
     }
 
+    /**
+     * Обновить один вопрос
+     * 
+     * @route {path} /survey-question/:id
+     * 
+     * @param {number} id
+     * 
+     * @body {number} surveyId
+     * @body {string} question
+     * @body {string} type
+     * @body {boolean} status
+     * @body {string} description
+     * @body {string} data
+     * @body {string} sortId
+     * 
+     * @throws {Error} e
+    */
     async update(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
@@ -116,7 +168,7 @@ class SurveyQuestionController {
 
                     sQ.description = typeof description == 'string' ? description : sQ.description;
                     sQ.data = typeof data == 'string' ? data : sQ.data;
-                    sQ.sortId = typeof sortId == 'string' ? sortId : sQ.sortId;
+                    sQ.sortId = typeof sortId == 'number' ? sortId : sQ.sortId;
 
                     await sQ.save();
 
@@ -130,6 +182,15 @@ class SurveyQuestionController {
         catch (e: any) { returnError(e, res); }
     }
 
+    /**
+     * Удалить один вопрос
+     * 
+     * @route {path} /survey-question/:id
+     * 
+     * @param {number} id
+     * 
+     * @throws {Error} e
+    */
     async delete(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
