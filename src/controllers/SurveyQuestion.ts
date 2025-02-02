@@ -21,7 +21,7 @@ class SurveyQuestionController {
 
                     for ( const q of questions ) {
 
-                        const { surveyId, question, type, status, description, data } = q;
+                        const { surveyId, question, type, status, description, data, sortId } = q;
                         
                         if ( typeof surveyId == 'number' 
                             && typeof question == 'string'
@@ -29,7 +29,7 @@ class SurveyQuestionController {
                             && typeof status == 'boolean' ) {
                             
                             const surveyQuestion = await SurveyQuestion.create<any>({
-                                surveyId, question, type, status, description, data
+                                surveyId, question, type, status, description, data, sortId
                             });
 
                             await saveSurveyData( data, surveyQuestion.id );
@@ -55,13 +55,20 @@ class SurveyQuestionController {
         try {
             const { surveyId } = req.query;
             
-            const surveyQuestions = await SurveyQuestion.findAll( 
+            const surveyQuestions = await SurveyQuestion.findAll<any>( 
             surveyId
                 ? { where: { surveyId }, order: [["id", "ASC"]] }
                 : { order: [["id", "ASC"]] }
             );
 
-            res.json(surveyQuestions);
+            const result: any[] = [];
+
+            surveyQuestions.forEach((item, i) => {
+                item.sortId = i + 1;
+                result.push(item);
+            });
+
+            res.json(result);
         }
         catch (e: any) { returnError(e, res); }
     }
@@ -100,7 +107,7 @@ class SurveyQuestionController {
                 if (sQ === null) {
                     returnError(null, res, [`SurveyQuestion with id = ${id} not found`]);
                 } else {
-                    const { surveyId, question, type, status, description, data } = req.body;
+                    const { surveyId, question, type, status, description, data, sortId } = req.body;
                     
                     sQ.surveyId = typeof surveyId == 'number' ? surveyId : sQ.surveyId;
                     sQ.question = typeof question == 'string' ? question : sQ.question;
@@ -109,6 +116,7 @@ class SurveyQuestionController {
 
                     sQ.description = typeof description == 'string' ? description : sQ.description;
                     sQ.data = typeof data == 'string' ? data : sQ.data;
+                    sQ.sortId = typeof sortId == 'string' ? sortId : sQ.sortId;
 
                     await sQ.save();
 

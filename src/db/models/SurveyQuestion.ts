@@ -11,5 +11,6 @@ export const SurveyQuestion = sequelize.define(
         
         description: { type: DataTypes.STRING, defaultValue: '', },
         data: { type: DataTypes.TEXT, defaultValue: '', },
+        sortId: { type: DataTypes.INTEGER, defaultValue: 0, },
     }
 );

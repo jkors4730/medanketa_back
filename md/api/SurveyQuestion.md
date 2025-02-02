@@ -9,6 +9,7 @@ SurveyQuestion model and methods
 ```
 
 POST params (JSON-body):
+
 ```js
 {
     // typeof Array, [Required*]
@@ -21,6 +22,7 @@ POST params (JSON-body):
 
             "description": "test", // typeof <String>, [Optional] Min 1 symbol
             "data": ""             // typeof <String>, [Optional]
+            "sortId": 0            // typeof <Number>, [Optional]
         }
     ]
 }
@@ -55,6 +57,7 @@ GET params: Not provided
 ```
 
 params (JSON-body):
+
 ```js
 {
     "surveyId": 1,         // typeof <Number>, [Optional]
@@ -64,6 +67,7 @@ params (JSON-body):
 
     "description": "test", // typeof <String>, [Optional] Min 1 symbol
     "data": ""             // typeof <String>, [Optional] Min 1 symbol
+    "sortId": 0            // typeof <Number>, [Optional] Min 1 symbol
 }
 ```
 
