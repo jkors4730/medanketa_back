@@ -44,8 +44,12 @@ class SurveyQuestionController {
                             && typeof status == 'boolean' ) {
                             
                             const surveyQuestion = await SurveyQuestion.create<any>({
-                                surveyId, question, type, status, description, data, sortId
+                                surveyId, question, type, status, description, data
                             });
+
+                            // set sortId as entity_id
+                            surveyQuestion.sortId = !sortId ? surveyQuestion.id : !sortId;
+                            await surveyQuestion.save();
 
                             await saveSurveyData( data, surveyQuestion.id );
 
@@ -85,16 +89,7 @@ class SurveyQuestionController {
                 : { order: [["id", "ASC"]] }
             );
 
-            const result: any[] = [];
-
-            surveyQuestions.forEach((item, i) => {
-                if (item.sortId) {
-                    item.sortId = i + 1;
-                }
-                result.push(item);
-            });
-
-            res.json(result);
+            res.json(surveyQuestions);
         }
         catch (e: any) { returnError(e, res); }
     }
@@ -173,6 +168,55 @@ class SurveyQuestionController {
                     await sQ.save();
 
                     res.status(200).json(sQ.toJSON());
+                }
+            }
+            else {
+                returnError(null, res, errors.array() );
+            }
+        }
+        catch (e: any) { returnError(e, res); }
+    }
+
+    /**
+     * Свапнуть sortId вопросов местами
+     * 
+     * @route {path} /survey-question/swap/:id1/:id2
+     * 
+     * @param {number} id1
+     * @param {number} id2
+     * 
+     * @throws {Error} e
+    */
+    async swap(req: Request, res: Response) {
+        try {
+            const errors = validationResult(req);
+            
+            if ( errors.isEmpty() ) {
+                const { id1, id2 } = req.params;
+                
+                const sQ1 = await SurveyQuestion.findByPk<any>( id1 );
+                const sQ2 = await SurveyQuestion.findByPk<any>( id2 );
+
+                if (sQ1 === null) {
+                    returnError(null, res, [`SurveyQuestion with id = ${id1} not found`]);
+                }
+                else if (sQ2 === null) {
+                    returnError(null, res, [`SurveyQuestion with id = ${id2} not found`]);
+                }
+                else {
+                    const sId1 = sQ1.sortId;
+                    const sId2 = sQ2.sortId;
+
+                    sQ1.sortId = sId2;
+                    sQ2.sortId = sId1;
+
+                    await sQ1.save();
+                    await sQ2.save();
+
+                    res.status(200).json([
+                        sQ1.toJSON(),
+                        sQ2.toJSON(),
+                    ]);
                 }
             }
             else {
