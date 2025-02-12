@@ -6,12 +6,14 @@ const emailRoutes = Router();
 
 emailRoutes.post('/support',
     body('message').isString(),
+    body('email').isString(),
     emailController.support
 );
 
 emailRoutes.post('/password-recovery',
     body('login').isString(),
-    emailController.support
+    body('email').isString(),
+    emailController.passwordRecovery
 );
 
 export default emailRoutes;

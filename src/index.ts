@@ -5,7 +5,7 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import dbRoutes from './routes/db';
-import emailRoutes from './routes/db';
+import emailRoutes from './routes/Email';
 import userRoutes from './routes/User';
 import roleRoutes from './routes/Role';
 import surveyRoutes from './routes/Survey';
