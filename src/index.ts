@@ -5,6 +5,7 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import dbRoutes from './routes/db';
+import emailRoutes from './routes/db';
 import userRoutes from './routes/User';
 import roleRoutes from './routes/Role';
 import surveyRoutes from './routes/Survey';
@@ -25,6 +26,7 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/db', dbRoutes);
+app.use('/email', emailRoutes);
 app.use('/user', userRoutes);
 app.use('/role', roleRoutes);
 app.use('/survey', surveyRoutes);
