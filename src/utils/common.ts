@@ -96,4 +96,16 @@ export const pagination = (items: any[], page: number, total: number): Paginator
         page: Number(page),
         total: Number(total)
     };
-}
+};
+
+export const generatePassword = (length: number = 8) => {
+    let val = "";
+
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    for ( let i = 0, n = charset.length; i < length; ++i ) {
+        val += charset.charAt(Math.floor(Math.random() * n));
+    }
+
+    return val;
+};

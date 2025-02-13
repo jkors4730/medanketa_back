@@ -17,16 +17,30 @@ class MailService {
         });
     }
 
-    async sendSupportMail(from: string, message: string) {
+    async sendSupportMail(to: string, message: string) {
         await this.transporter.sendMail({
-            from: from,
-            to: process.env.SMTP_USER,
+            from: process.env.SMTP_USER,
+            to: to,
             subject: `Меданкета - поддержка`,
             text: '',
             html: 
             `<div>
                 <h4>Запрос в поддержку</h4>
                 ${message}
+            </div>`
+        });
+    }
+
+    async sendPasswordRecovery(email: string, password: string) {
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to: email,
+            subject: `Меданкета - восстановление пароля`,
+            text: '',
+            html: 
+            `<div>
+                <h4>Ваш новый пароль</h4>
+                ${password}
             </div>`
         });
     }

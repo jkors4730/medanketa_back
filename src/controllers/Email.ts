@@ -2,7 +2,10 @@
 import { Request, Response } from 'express';
 import { returnError } from '../utils/error';
 import { validationResult } from 'express-validator';
+import { User } from '../db/models/User';
+import { passwordHash } from '../utils/hash';
 import { mailService } from '../services/Mail';
+import { generatePassword } from '../utils/common';
 
 class EmailController {
 
@@ -45,9 +48,28 @@ class EmailController {
             const errors = validationResult(req);
             
             if ( errors.isEmpty() ) {
-                const { login } = req.body;
+                const { email } = req.body;
 
-                res.status(200).json( login );
+                const exists = await User.findOne<any>({ where: { email: email } });
+                console.log('exists', exists);
+
+                if (!exists) {
+                    res.status(404).json({
+                        success: false,
+                        error: "Пользователь не найден"
+                    });
+                }
+                else {
+                    const newPassword = generatePassword();
+                    exists.password = passwordHash(newPassword);
+                    await exists.save();
+                    
+                    mailService.sendPasswordRecovery(email, newPassword);
+
+                    res.status(200).json( {
+                        success: true
+                    } );
+                }
             }
             else {
                 returnError(null, res, errors.array() );

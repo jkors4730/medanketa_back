@@ -11,7 +11,6 @@ emailRoutes.post('/support',
 );
 
 emailRoutes.post('/password-recovery',
-    body('login').isString(),
     body('email').isString(),
     emailController.passwordRecovery
 );
