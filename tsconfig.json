@@ -1,12 +1,17 @@
 {
     "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
+      "target": "ESNext",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
       "outDir": "./dist",
       "strict": true,
+      "strictNullChecks": false,
       "esModuleInterop": true,
       "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true
+      "strictPropertyInitialization": false,
+      "forceConsistentCasingInFileNames": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules"]

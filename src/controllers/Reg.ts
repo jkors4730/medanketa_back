@@ -1,83 +1,87 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from 'express';
-import { returnError } from '../utils/error';
+import type { Request, Response } from 'express';
+import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
-import { Region } from '../db/models/Region';
-import { City } from '../db/models/City';
-import { Spec } from '../db/models/Spec';
+import { Region } from '../db/models/Region.js';
+import { City } from '../db/models/City.js';
+import { Service } from 'typedi';
+@Service()
+export class RegController {
+  /**
+   * Получить список регионов
+   *
+   * @route {path} /reg/regions
+   *
+   * @throws {Error} e
+   */
+  async getRegions(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
 
-class RegController {
+      if (errors.isEmpty()) {
+        const regions = await Region.findAll();
 
-    /**
-     * Получить список регионов
-     * 
-     * @route {path} /reg/regions
-     * 
-     * @throws {Error} e
-    */
-    async getRegions(req: Request, res: Response) {
-        try {
-            const errors = validationResult(req);
-            
-            if ( errors.isEmpty() ) {
-                const regions = await Region.findAll();
-
-                res.json( regions.map( i => i.toJSON()?.title ) );
-            }
-            else {
-                returnError(null, res, errors.array() );
-            }
-        }
-        catch (e: any) { returnError(e, res); }
+        res.json(
+          regions.map(
+            (i: { toJSON: () => { (): any; new (): any; title: any } }) =>
+              i.toJSON()?.title,
+          ),
+        );
+      } else {
+        returnError(null, res, errors.array());
+      }
+    } catch (e: any) {
+      returnError(e, res);
     }
-    /**
-     * Получить список городов
-     * 
-     * @route {path} /reg/cities
-     * 
-     * @throws {Error} e
-    */
-    async getCities(req: Request, res: Response) {
-        try {
-            const errors = validationResult(req);
-            
-            if ( errors.isEmpty() ) {
-                const cities = await City.findAll();
+  }
+  /**
+   * Получить список городов
+   *
+   * @route {path} /reg/cities
+   *
+   * @throws {Error} e
+   */
+  async getCities(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
 
-                res.json( cities.map( i => i.toJSON()?.title ) );
-            }
-            else {
-                returnError(null, res, errors.array() );
-            }
-        }
-        catch (e: any) { returnError(e, res); }
-    }
-    /**
-     * Получить список специальностей
-     * 
-     * @route {path} /reg/spec
-     * 
-     * @throws {Error} e
-    */
-    async getSpec(req: Request, res: Response) {
-        try {
-            try {
-                const errors = validationResult(req);
-                
-                if ( errors.isEmpty() ) {
-                    const specs = await Spec.findAll();
-    
-                    res.json( specs.map( i => i.toJSON()?.title ) );
-                }
-                else {
-                    returnError(null, res, errors.array() );
-                }
-            }
-            catch (e: any) { returnError(e, res); }
-        }
-        catch (e: any) { returnError(e, res); }
-    }
+      if (errors.isEmpty()) {
+        const cities = await City.findAll();
 
+        res.json(
+          cities.map(
+            (i: { toJSON: () => { (): any; new (): any; title: any } }) =>
+              i.toJSON()?.title,
+          ),
+        );
+      } else {
+        returnError(null, res, errors.array());
+      }
+    } catch (e: any) {
+      returnError(e, res);
+    }
+  }
+  /**
+   * Получить список специальностей
+   *
+   * @route {path} /reg/spec
+   *
+   * @throws {Error} e
+   */
+  async getSpec(req: Request, res: Response) {
+    try {
+      try {
+        const errors = validationResult(req);
+
+        if (errors.isEmpty()) {
+          res.json(200);
+        } else {
+          returnError(null, res, errors.array());
+        }
+      } catch (e: any) {
+        returnError(e, res);
+      }
+    } catch (e: any) {
+      returnError(e, res);
+    }
+  }
 }
-
-export const regController = new RegController();
