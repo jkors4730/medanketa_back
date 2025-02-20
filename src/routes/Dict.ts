@@ -1,52 +1,29 @@
 import { Router } from 'express';
-import { body, param, query } from 'express-validator';
-import { dictsController } from '../controllers/Dict';
-
-const dictRoutes = Router();
-
-// (C) CREATE
-dictRoutes.post('/',
-    body('title').isString().notEmpty(),
-    body('description').optional().isString(),
-    body('common').isBoolean(),
-    body('status').isBoolean(),
-    body('userId').isNumeric(),
-    body('values').optional().isArray(),
-    dictsController.create
-);
-// (R) GET_VALUES_FILTER
-dictRoutes.get('/:id',
-    param('id').isNumeric(),
-    dictsController.getOne
-);
-// (R) GET_VALUES_FILTER
-dictRoutes.get('/values/:id',
-    param('id').isNumeric(),
-    query('q').isString(),
-    dictsController.getValuesById
-);
-// (R) GET_BY_USER
-dictRoutes.get('/user/:id',
-    param('id').isNumeric(),
-    query('common').isBoolean().optional(),
-    query('page').optional().isNumeric(),
-    query('size').optional().isNumeric(),
-    dictsController.getByUser
-);
-// (U) UPDATE
-dictRoutes.put('/:id',
-    param('id').isNumeric(),
-
-    body('title').optional().isString(),
-    body('common').optional().isBoolean(),
-    body('status').optional().isBoolean(),
-    body('userId').optional().isNumeric(),
-    dictsController.update
-);
-// (D) DELETE
-dictRoutes.delete('/:id',
-    param('id').isNumeric(),
-    dictsController.delete
-);
-
-export default dictRoutes
+import { DictsController } from '../controllers/Dict.js';
+import { Container } from 'typedi';
+import { validateDto } from '../middleware/dto.validate.js';
+import { CreateDictDto } from '../dto/dict/create.dict.dto.js';
+class DictRoutes {
+  router = Router();
+  controller = Container.get(DictsController);
+  constructor() {
+    this.initializeRoutes();
+  }
+  initializeRoutes() {
+    this.router.post('/', validateDto(CreateDictDto, 'body'), (req, res) =>
+      this.controller.create(req, res),
+    );
+    this.router.get('/:id', (req, res) => this.controller.getOne(req, res));
+    this.router.get('/values/:id', (req, res) =>
+      this.controller.getValuesById(req, res),
+    );
+    this.router.get('/user/:id', (req, res) =>
+      this.controller.getByUser(req, res),
+    );
+    this.router.put('/user/:id', (req, res) =>
+      this.controller.update(req, res),
+    );
+    this.router.delete('/:id', (req, res) => this.controller.delete(req, res));
+  }
+}
+export default new DictRoutes().router;

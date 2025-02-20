@@ -1,125 +1,126 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { returnError } from '../utils/error';
+import { returnError } from '../utils/error.js';
 import path from 'path';
 import fs from 'fs';
+import { Service } from 'typedi';
+@Service()
+export class UploadController {
+  async create(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
 
-class UploadController {
+      if (errors.isEmpty()) {
+        if (req.files) {
+          const file: any = req.files?.file;
 
-    async create(req: Request, res: Response) {
-        try {
-            const errors = validationResult(req);
-            
-            if ( errors.isEmpty() ) {
-                if ( req.files ) {
-                    const file: any = req.files?.file;
-        
-                    if ( file ) {
-                        const imgDir = path.join(__dirname, '../assets/img');
-                        const filePath = path.join(imgDir, file.name);
+          if (file) {
+            const imgDir = path.join(__dirname, '../assets/img');
+            const filePath = path.join(imgDir, file.name);
 
-                        fs.mkdirSync(imgDir, { recursive: true });
+            fs.mkdirSync(imgDir, { recursive: true });
 
-                        if (!fs.existsSync( filePath )) {
-                            file.mv(filePath, (err: any) => {
-                                if (err) { console.error(err); }
-            
-                                res.json({
-                                    file: `/img/${file.name}`
-                                });
-                            });
-                        }
-                        else {
-                            res.json({
-                                file: `/img/${file.name}`,
-                                exists: true
-                            });
-                        }
-                    }
-                    else {
-                        returnError(null, res, ['You must provide required field "file"'] );
-                    }
+            if (!fs.existsSync(filePath)) {
+              file.mv(filePath, (err: any) => {
+                if (err) {
+                  console.error(err);
                 }
-                else {
-                    returnError(null, res, ['You must provide required field "file"'] );
-                }
+
+                res.json({
+                  file: `/img/${file.name}`,
+                });
+              });
+            } else {
+              res.json({
+                file: `/img/${file.name}`,
+                exists: true,
+              });
             }
-            else {
-                returnError(null, res, errors.array() );
-            }
+          } else {
+            returnError(null, res, ['You must provide required field "file"']);
+          }
+        } else {
+          returnError(null, res, ['You must provide required field "file"']);
         }
-        catch (e: any) { returnError(e, res); }
+      } else {
+        returnError(null, res, errors.array());
+      }
+    } catch (e: any) {
+      returnError(e, res);
     }
+  }
 
-    async base64(req: Request, res: Response) {
-        try {
-            const errors = validationResult(req);
-            
-            if ( errors.isEmpty() ) {
-                const { file, name } = req.body;
+  async base64(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
 
-                if ( typeof file == 'string' && typeof name == 'string' ) {
-                    const assetsDir = path.join(__dirname, '../assets');
-                    const imgDir = path.join(__dirname, '../assets/img');
-                    const filePath = path.join(__dirname, '../assets/img', name);
+      if (errors.isEmpty()) {
+        const { file, name } = req.body;
 
-                    if (!fs.existsSync( assetsDir )) {
-                        fs.mkdirSync(assetsDir);
-    
-                        if (!fs.existsSync( imgDir )) { fs.mkdirSync(imgDir); }
-                    }
+        if (typeof file == 'string' && typeof name == 'string') {
+          const assetsDir = path.join(__dirname, '../assets');
+          const imgDir = path.join(__dirname, '../assets/img');
+          const filePath = path.join(__dirname, '../assets/img', name);
 
-                    if (!fs.existsSync( filePath )) {
-                        const fileContent = file.replace(/^.*base64,/, "").replace(/ /g, '+');
+          if (!fs.existsSync(assetsDir)) {
+            fs.mkdirSync(assetsDir);
 
-                        fs.writeFileSync(filePath, Buffer.from(fileContent, 'base64'));
-
-                        res.json({
-                            file: `/img/${name}`
-                        });
-                    }
-                    else {
-                        returnError(null, res, ['File already exists!'] );
-                    }
-                }
-                else {
-                    returnError(null, res, ['You must provide required field "file" and "name"'] );
-                }
+            if (!fs.existsSync(imgDir)) {
+              fs.mkdirSync(imgDir);
             }
-            else {
-                returnError(null, res, errors.array() );
-            }
+          }
+
+          if (!fs.existsSync(filePath)) {
+            const fileContent = file
+              .replace(/^.*base64,/, '')
+              .replace(/ /g, '+');
+
+            fs.writeFileSync(filePath, Buffer.from(fileContent, 'base64'));
+
+            res.json({
+              file: `/img/${name}`,
+            });
+          } else {
+            returnError(null, res, ['File already exists!']);
+          }
+        } else {
+          returnError(null, res, [
+            'You must provide required field "file" and "name"',
+          ]);
         }
-        catch (e: any) { returnError(e, res); }
+      } else {
+        returnError(null, res, errors.array());
+      }
+    } catch (e: any) {
+      returnError(e, res);
     }
+  }
 
-    async delete(req: Request, res: Response) {
-        try {
-            const errors = validationResult(req);
-            
-            if ( errors.isEmpty() ) {
-                const { url } = req.params;
+  async delete(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
 
-                const filePath = path.join(__dirname, '../assets/img', url );
+      if (errors.isEmpty()) {
+        const { url } = req.params;
 
-                if (fs.existsSync( filePath )) {
-                    fs.unlinkSync(filePath);
-                    res.json({
-                        success: `File ${url} successfully removed!`
-                    });
-                }
-                else {
-                    returnError(null, res, [`File ${url} not found!`] );
-                }
-            }
-            else {
-                returnError(null, res, errors.array() );
-            }
+        const filePath = path.join(__dirname, '../assets/img', url);
+
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          res.json({
+            success: `File ${url} successfully removed!`,
+          });
+        } else {
+          returnError(null, res, [`File ${url} not found!`]);
         }
-        catch (e: any) { returnError(e, res); }
+      } else {
+        returnError(null, res, errors.array());
+      }
+    } catch (e: any) {
+      returnError(e, res);
     }
-
+  }
 }
 
 export const uploadController = new UploadController();

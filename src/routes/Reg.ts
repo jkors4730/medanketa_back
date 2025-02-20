@@ -1,21 +1,20 @@
 import { Router } from 'express';
-import { regController } from '../controllers/Reg';
+import { RegController } from '../controllers/Reg.js';
+import { Container } from 'typedi';
 
-const regRoutes = Router();
-
-// (R) GET_ALL (REGIONS)
-regRoutes.get('/regions',
-    regController.getRegions
-);
-
-// (R) GET_ALL (CITIES)
-regRoutes.get('/cities',
-    regController.getCities
-);
-
-// (R) GET_ALL (SPECS)
-regRoutes.get('/spec',
-    regController.getSpec
-);
-
-export default regRoutes
+class RegRoutes {
+  router = Router();
+  controller = Container.get(RegController);
+  constructor() {
+    this.initializeRoutes();
+  }
+  initializeRoutes() {
+    this.router.get('/regions', (req, res) =>
+      this.controller.getRegions(req, res),
+    );
+    this.router.get('/cities', (req, res) =>
+      this.controller.getCities(req, res),
+    );
+  }
+}
+export default new RegRoutes().router;

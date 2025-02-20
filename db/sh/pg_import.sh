@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
 # Load variables from .env file.
+# shellcheck disable=SC2046
+# shellcheck disable=SC2002
 export $(cat ../../.env | grep -v ^# | xargs) >/dev/null
 
 # drop and create schema

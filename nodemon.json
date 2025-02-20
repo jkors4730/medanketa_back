@@ -4,6 +4,5 @@
     "ext": "ts,json",
     "inspect": true,
     "verbose": true,
-    "exec": "ts-node src/index.ts"
+    "exec": "node --no-warnings src/index.js "
   }
-  
