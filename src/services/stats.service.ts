@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import sequelize from '../db/config.js';
 import { QueryTypes } from 'sequelize';
 import type {
   StatsAMapped,
   StatsAnswer,
   StatsDMapped,
-  StatsQAMapped,
   StatsQuestion,
 } from '../controllers/Stats.js';
 
@@ -46,7 +46,7 @@ export class StatsService {
       },
     );
 
-    const mappedQS = new Map<number, StatsQAMapped>();
+    const mappedQS = new Map<number, any>();
 
     for (const q of questions) {
       const qData = [] as StatsDMapped[];
@@ -56,7 +56,7 @@ export class StatsService {
 
         if (data.answers && Array.isArray(data.answers)) {
           for (const item of data.answers) {
-            qData.push({ ...item, id: q.id } as StatsDMapped);
+            qData.push({ ...item, id: q.id } as any);
           }
         }
       }
@@ -66,8 +66,8 @@ export class StatsService {
         question: q.question,
         type: q.type,
         data: qData,
-        answers: new Map<string, StatsAMapped>(),
-      } as StatsQAMapped);
+        answers: new Map<string, any>(),
+      } as any);
     }
 
     for (const a of answers) {

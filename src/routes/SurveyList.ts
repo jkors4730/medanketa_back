@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import {
-  SurveyListController,
-  surveyListController,
-} from '../controllers/SurveyList.js';
+import { SurveyListController } from '../controllers/SurveyList.js';
 import { CreateSurveysListDto } from '../dto/survey-list/create.survey-list.dto.js';
 import { validateDto } from '../middleware/dto.validate.js';
 import { Container } from 'typedi';
@@ -23,23 +20,3 @@ class SurveyListRoutes {
   }
 }
 export default new SurveyListRoutes().router;
-// const surveyListRoutes = Router();
-//
-// // (C) CREATE
-// surveyListRoutes.post('/',
-//
-//     surveyListController.create
-// );
-// // (R) GET_ALL
-// surveyListRoutes.get('/',
-//     query('userId').optional().isNumeric(),
-//     surveyListController.getAll
-// );
-// // (R) GET_ONE
-// surveyListRoutes.get('/user/:id',
-//     param('id').isNumeric(),
-//     query('surveyId').isNumeric(),
-//     surveyListController.getOne
-// );
-//
-// export default surveyListRoutes;

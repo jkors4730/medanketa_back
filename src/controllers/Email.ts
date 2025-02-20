@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response } from 'express';
 import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';

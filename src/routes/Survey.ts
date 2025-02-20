@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { SurveyController, surveyController } from '../controllers/Survey.js';
+import { SurveyController } from '../controllers/Survey.js';
 import { CreateSurveyDto } from '../dto/survey/create.survey.dto.js';
 import { validateDto } from '../middleware/dto.validate.js';
 import { UpdateSurveyDto } from '../dto/survey/update.survey.dto.js';
@@ -31,49 +31,3 @@ class SurveyRoutes {
   }
 }
 export default new SurveyRoutes().router;
-// const surveyRoutes = Router();
-//
-// // (C) CREATE
-// surveyRoutes.post('/',
-//
-//     surveyController.create
-// );
-// // (R) GET_ALL
-// surveyRoutes.get('/',
-//     query('userId').optional().isNumeric(),
-//     surveyController.getAll);
-// // (R) GET_ONE
-// surveyRoutes.get('/:id',
-//     param('id').isNumeric(),
-//     query('answers').optional().isBoolean(),
-//     surveyController.getOne
-// );
-// // (R) GET_BY_USER_ID (completed)
-// surveyRoutes.get('/completed/user/:id',
-//     param('id').isNumeric(),
-//     surveyController.getByUserId
-// );
-// surveyRoutes.get('/answers/:id',
-//     surveyController.getUsersBySurveyId
-// );
-// // (U) UPDATE
-// surveyRoutes.put('/:id',
-//     param('id').isNumeric(),
-//
-//     body('userId').optional().isNumeric(),
-//     body('image').optional().isString(),
-//     body('title').optional().isString(),
-//     body('slug').optional().isString(),
-//     body('status').optional().isBoolean(),
-//     body('access').optional().isBoolean(),
-//     body('description').optional().isString(),
-//     body('expireDate').optional().isDate(),
-//     surveyController.update
-// );
-// // (D) DELETE
-// surveyRoutes.delete('/:id',
-//     param('id').isNumeric(),
-//     surveyController.delete
-// );
-//
-// export default surveyRoutes;

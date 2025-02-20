@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 @Service()
 export class DbController {
   constructor(private readonly dbService: DbService) {}
-  dropDb(req: Request, res: Response) {
+  dropDb(_req: Request, res: Response) {
     try {
       return this.dbService.dropDB();
     } catch (e) {

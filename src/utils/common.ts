@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SurveyAnswer } from '../db/models/SurveyAnswer.js';
 import { SurveyData } from '../db/models/SurveyData.js';
 

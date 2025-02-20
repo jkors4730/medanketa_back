@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ROLE_INT, ROLE_RESP } from '../utils/common.js';
 import { passwordHash } from '../utils/hash.js';
 import { Role } from './models/Role.js';

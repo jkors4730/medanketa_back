@@ -3,6 +3,7 @@ import type { Response } from 'express';
 export const returnError = (
   err: Error | null,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messages: any[] = [],
   status: number = 404,
 ) => {
