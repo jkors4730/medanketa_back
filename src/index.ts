@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import 'reflect-metadata';
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import bodyParser from 'body-parser';
@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 async function bootstrap() {
   const app = express();
   const port = process.env.PORT || 5000;

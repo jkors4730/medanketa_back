@@ -1,16 +1,16 @@
 import type { Application } from 'express';
-import dbRoutes from './db.js';
-import emailRoutes from './Email.js';
-import userRoutes from './User.js';
-import roleRoutes from './Role.js';
-import surveyRoutes from './Survey.js';
-import surveyQuestionRoutes from './SurveyQuestion.js';
-import surveyListRoutes from './SurveyList.js';
-import uploadRoutes from './Upload.js';
-import statsRoutes from './Stats.js';
-import dictRoutes from './Dict.js';
-import dictValueRoutes from './DictValue.js';
-import regRoutes from './Reg.js';
+import dbRoutes from './database/db.js';
+import emailRoutes from './email/Email.js';
+import userRoutes from './users/User.js';
+import roleRoutes from './roles/Role.js';
+import surveyRoutes from './survey/Survey.js';
+import surveyQuestionRoutes from './survey/SurveyQuestion.js';
+import surveyListRoutes from './survey/SurveyList.js';
+import uploadRoutes from './files/Upload.js';
+import statsRoutes from './statistics/Stats.js';
+import dictRoutes from './dictionary/Dict.js';
+import dictValueRoutes from './dictionary/DictValue.js';
+import regRoutes from './regions/Reg.js';
 
 export default class Routes {
   constructor(app: Application) {

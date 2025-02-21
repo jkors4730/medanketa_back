@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
 import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
-import { Region } from '../db/models/Region.js';
-import { City } from '../db/models/City.js';
+import { Region } from '../db/models/regions/Region.js';
+import { City } from '../db/models/regions/City.js';
 import { Service } from 'typedi';
 @Service()
 export class RegController {

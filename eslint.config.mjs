@@ -68,7 +68,7 @@ export default [...fixupConfigRules(compat.extends(
         }],
 
         "import/no-self-import": "error",
-        "import/no-cycle": "error",
+        "import/no-cycle": "off",
 
         "@typescript-eslint/no-unused-vars": ["warn", {
             args: "after-used",

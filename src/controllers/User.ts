@@ -1,91 +1,25 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response } from 'express';
-import { User } from '../db/models/User.js';
-import { Role } from '../db/models/Role.js';
+import { UserModel } from '../db/models/User.js';
+import { RoleModel } from '../db/models/Role.js';
 import { comparePassword, passwordHash } from '../utils/hash.js';
 import { returnError } from '../utils/error.js';
 import { generateAuthToken } from '../utils/jwt.js';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
-import { ROLE_ADMIN, ROLE_INT, ROLE_RESP } from '../utils/common.js';
+import { ROLE_ADMIN } from '../utils/common.js';
 import { Service } from 'typedi';
+import { UsersService } from '../services/users.service.js';
+
 @Service()
 export class UserController {
+  constructor(private readonly userService: UsersService) {}
   async create(req: Request, res: Response) {
     try {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const {
-          name,
-          lastName,
-          surname,
-          email,
-          password,
-          roleName,
-          phone,
-          birthDate,
-          region,
-          city,
-          workPlace,
-          specialization,
-          position,
-          workExperience,
-          pdAgreement,
-          newsletterAgreement,
-        } = req.body;
-
-        const exists = await User.findOne({ where: { email: email } });
-        console.log('exists', exists);
-
-        if (!exists) {
-          const mapping: Record<string, string> = {
-            Интервьюер: ROLE_INT,
-            Респондент: ROLE_RESP,
-          };
-
-          // find or create role
-          const [role] = await Role.findOrCreate<any>({
-            where: { guardName: mapping[roleName] },
-            defaults: {
-              name: roleName,
-              guardName: mapping[roleName],
-            },
-          });
-
-          console.log('Role', role.toJSON(), role.id);
-
-          const hash = passwordHash(password);
-
-          const user = User.build({
-            name,
-            email,
-            lastName,
-            surname,
-            password: hash, // store hashed password in db
-            roleId: role.id, // connect with role
-            phone,
-            birthDate,
-            region,
-            city,
-            workPlace,
-            specialization,
-            position,
-            workExperience,
-            pdAgreement,
-            newsletterAgreement,
-          });
-
-          console.log('User', user.toJSON());
-
-          await user.save();
-
-          res.status(201).json(user.toJSON());
-        } else {
-          returnError(null, res, [
-            'Пользователь с таким email уже существует!',
-          ]);
-        }
+        const user = await this.userService.createUser(req.body);
+        res.send(201).json(`user created`);
       } else {
         returnError(null, res, errors.array());
       }
@@ -96,8 +30,7 @@ export class UserController {
 
   async getAll(_req: Request, res: Response) {
     try {
-      const users = await User.findAll();
-
+      const users = await this.userService.getAllUsers();
       res.json(users);
     } catch (e: any) {
       returnError(e, res);
@@ -111,12 +44,12 @@ export class UserController {
       if (errors.isEmpty()) {
         const { id } = req.params;
 
-        const user = await User.findByPk<any>(id, {
+        const user = await this.userService.getOneUser(parseInt(id), {
           attributes: { exclude: ['password'] },
         });
 
-        if (user === null) {
-          returnError(null, res, [`User with id = ${id} not found`]);
+        if (!user) {
+          returnError(null, res, [`UserModel with id = ${id} not found`]);
         } else {
           res.status(200).json(user.toJSON());
         }
@@ -134,64 +67,12 @@ export class UserController {
 
       if (errors.isEmpty()) {
         const { id } = req.params;
-        const {
-          name,
-          lastName,
-          surname,
-          email,
-          password,
-          roleName,
-          phone,
-          birthDate,
-          region,
-          city,
-          workPlace,
-          specialization,
-          position,
-          workExperience,
-          pdAgreement,
-          newsletterAgreement,
-        } = req.body;
+        const user = await this.userService.getOneUser(parseInt(id));
 
-        const user = await User.findByPk<any>(parseInt(id));
-
-        if (user === null) {
-          returnError(null, res, [`User with id = ${id} not found`]);
+        if (!user) {
+          returnError(null, res, [`UserModel with id = ${id} not found`]);
         } else {
-          user.name = typeof name == 'string' ? name : user.name;
-          user.lastName =
-            typeof lastName == 'string' ? lastName : user.lastName;
-          user.surname = typeof surname == 'string' ? surname : user.surname;
-          user.email = typeof email == 'string' ? email : user.email;
-          user.password =
-            typeof password == 'string' ? password : user.password;
-          user.roleName =
-            typeof roleName == 'string' ? roleName : user.roleName;
-          user.phone = typeof phone == 'string' ? phone : user.phone;
-          user.birthDate =
-            typeof birthDate == 'string' ? birthDate : user.birthDate;
-          user.region = typeof region == 'string' ? region : user.region;
-          user.city = typeof city == 'string' ? city : user.city;
-          user.workPlace =
-            typeof workPlace == 'string' ? workPlace : user.workPlace;
-          user.specialization =
-            typeof specialization == 'string'
-              ? specialization
-              : user.specialization;
-          user.position =
-            typeof position == 'string' ? position : user.position;
-          user.workExperience =
-            typeof workExperience == 'number'
-              ? workExperience
-              : user.workExperience;
-          user.pdAgreement =
-            typeof pdAgreement == 'boolean' ? pdAgreement : user.pdAgreement;
-          user.newsletterAgreement =
-            typeof newsletterAgreement == 'boolean'
-              ? newsletterAgreement
-              : user.newsletterAgreement;
-
-          await user.save();
+          await this.userService.updateUser(parseInt(id), { ...req.body });
 
           res.status(200).json(user.toJSON());
         }
@@ -210,12 +91,12 @@ export class UserController {
       if (errors.isEmpty()) {
         const { id } = req.params;
 
-        const user = await User.findByPk(parseInt(id));
+        const user = await this.userService.getOneUser(parseInt(id));
 
-        if (user === null) {
-          returnError(null, res, ['Not found']);
+        if (!user) {
+          returnError(null, res, ['Not found'], 404);
         } else {
-          await user.destroy();
+          await this.userService.deleteUser(+id);
           res.status(204).send();
         }
       } else {
@@ -233,13 +114,13 @@ export class UserController {
       if (errors.isEmpty()) {
         const { email, password } = req.body;
 
-        const adminRole = await Role.findOne<any>({
+        const adminRole = await RoleModel.findOne<any>({
           where: {
             guardName: ROLE_ADMIN,
           },
         });
 
-        const exists = await User.findOne<any>({
+        const exists = await UserModel.findOne<any>({
           where: {
             email: email,
             roleId: { [!admin ? Op.not : Op.eq]: adminRole.id },
@@ -251,7 +132,7 @@ export class UserController {
           const validPassword = comparePassword(password, exists.password);
 
           if (validPassword) {
-            const role = await Role.findByPk<any>(parseInt(exists.roleId));
+            const role = await RoleModel.findByPk<any>(parseInt(exists.roleId));
 
             if (role) {
               res.send({
@@ -279,5 +160,3 @@ export class UserController {
     }
   }
 }
-
-export const userController = new UserController();

@@ -1,9 +1,10 @@
-import { SurveyAnswer } from '../db/models/SurveyAnswer.js';
-import { SurveyData } from '../db/models/SurveyData.js';
+import { SurveyAnswer } from '../db/models/survey/SurveyAnswer.js';
+import { SurveyData } from '../db/models/survey/SurveyData.js';
 
 export const ROLE_RESP = 'respondent';
 export const ROLE_INT = 'interviewer';
 export const ROLE_ADMIN = 'admin';
+export const ROLE_QUEST = 'quest';
 
 interface Answer {
   id?: number;

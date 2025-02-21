@@ -15,9 +15,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   password: string;
-  @IsNotEmpty()
-  @IsString()
-  roleName: string;
+  roleId: number;
   @IsNotEmpty()
   @IsBoolean()
   pdAgreement: boolean;
