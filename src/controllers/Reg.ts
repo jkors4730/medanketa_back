@@ -4,6 +4,7 @@ import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
 import { Region } from '../db/models/Region.js';
 import { City } from '../db/models/City.js';
+import { Spec } from '../db/models/Spec.js';
 import { Service } from 'typedi';
 @Service()
 export class RegController {
@@ -74,7 +75,14 @@ export class RegController {
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-          res.json(200);
+          const specs = await Spec.findAll();
+
+          res.json(
+            specs.map(
+              (i: { toJSON: () => { (): any; new (): any; title: any } }) =>
+                i.toJSON()?.title,
+            ),
+          );
         } else {
           returnError(null, res, errors.array());
         }
