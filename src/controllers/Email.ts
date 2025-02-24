@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response } from 'express';
 import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
-import { User } from '../db/models/User.js';
+
 import { passwordHash } from '../utils/hash.js';
 import { mailService } from '../services/Mail.js';
 import { generatePassword } from '../utils/common.js';
 import { Service } from 'typedi';
+import { UserModel } from '../db/models/User.js';
 @Service()
 export class EmailController {
   /**
@@ -49,7 +51,9 @@ export class EmailController {
       if (errors.isEmpty()) {
         const { email } = req.body;
 
-        const exists = await User.findOne<any>({ where: { email: email } });
+        const exists = await UserModel.findOne<any>({
+          where: { email: email },
+        });
         console.log('exists', exists);
 
         if (!exists) {

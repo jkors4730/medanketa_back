@@ -11,20 +11,12 @@ import { Region } from './models/regions/Region.js';
 import { City } from './models/regions/City.js';
 import { RoleModel } from './models/Role.js';
 import { UserModel } from './models/User.js';
+import sequelize from './config.js';
 
 export const dbSyncAll = async () => {
   const opt = { alter: true };
-  await UserModel.sync(opt);
-  await RoleModel.sync(opt);
-  await Survey.sync(opt);
-  await SurveyQuestion.sync(opt);
-  await SurveyList.sync(opt);
-  await SurveyData.sync(opt);
-  await SurveyAnswer.sync(opt);
-  await Dict.sync(opt);
-  await DictValue.sync(opt);
-  await Region.sync(opt);
-  await City.sync(opt);
+  await sequelize.authenticate();
+  await sequelize.sync(opt);
 
   // TODO: Миграции должны накатываться итеративно
   //#region Миграции

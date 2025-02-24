@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { EmailController, emailController } from '../../controllers/Email.js';
+import { EmailController } from '../../controllers/Email.js';
 import { Container } from 'typedi';
 class EmailRoutes {
   router = Router();

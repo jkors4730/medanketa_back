@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'dotenv/config';
 import { RoleModel } from './models/Role.js';
 import { UserModel } from './models/User.js';

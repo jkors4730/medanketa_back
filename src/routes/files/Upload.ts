@@ -1,9 +1,5 @@
 import { Router } from 'express';
-
-import {
-  UploadController,
-  uploadController,
-} from '../../controllers/Upload.js';
+import { UploadController } from '../../controllers/Upload.js';
 import { Container } from 'typedi';
 import { CreateUploadFile64Dto } from '../../dto/create.uploadFile64.dto.js';
 import { validateDto } from '../../middleware/dto.validate.js';
@@ -25,22 +21,3 @@ class UploadRoutes {
   }
 }
 export default new UploadRoutes().router;
-// const uploadRoutes = Router();
-//
-// // (C) CREATE
-// uploadRoutes.post('/',
-//     uploadController.create
-// );
-// // (C) CREATE BASE64
-// uploadRoutes.post('/base64',
-//     body('file').isString().notEmpty(),
-//     body('name').isString().notEmpty(),
-//     uploadController.base64
-// );
-// // DELETE
-// uploadRoutes.delete('/:url',
-//     param('url').notEmpty(),
-//     uploadController.delete
-// );
-//
-// export default uploadRoutes
