@@ -6,6 +6,10 @@ import { SurveyList } from '../db/models/SurveyList.js';
 import md5 from 'md5';
 import { saveSurveyAnswers } from '../utils/common.js';
 import { Service } from 'typedi';
+import { UserController } from './User.js';
+import { User } from '../db/models/User.js';
+import { getFinishTime } from './Stats.js';
+import { SurveyListService } from '../services/survey.service.js';
 @Service()
 export class SurveyListController {
   async create(req: Request, res: Response) {
@@ -74,10 +78,10 @@ export class SurveyListController {
   async getAll(req: Request, res: Response) {
     try {
       const { userId } = req.query;
-
-      const surveyList = await SurveyList.findAll(
-        userId ? { where: { userId } } : {},
-      );
+      if (!userId) {
+        returnError(null, res, [`user_id not valid`]);
+      }
+      const surveyList = await SurveyListService.getAll(userId);
 
       res.json(surveyList);
     } catch (e: any) {

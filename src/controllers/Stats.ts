@@ -201,7 +201,7 @@ async function getChart5(id: any) {
   );
 }
 
-async function getFinishTime(id: any) {
+export async function getFinishTime(id: any) {
   return returnFromArr(
     await sequelize.query<any>(
       `--sql

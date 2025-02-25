@@ -11,20 +11,12 @@ import { Dict } from './models/Dict.js';
 import { DictValue } from './models/DictValue.js';
 import { Region } from './models/Region.js';
 import { City } from './models/City.js';
+import sequelize from './config.js';
 
 export const dbSyncAll = async () => {
   const opt = { alter: true };
-  await User.sync(opt);
-  await Role.sync(opt);
-  await Survey.sync(opt);
-  await SurveyQuestion.sync(opt);
-  await SurveyList.sync(opt);
-  await SurveyData.sync(opt);
-  await SurveyAnswer.sync(opt);
-  await Dict.sync(opt);
-  await DictValue.sync(opt);
-  await Region.sync(opt);
-  await City.sync(opt);
+  await sequelize.authenticate()
+  await sequelize.sync(opt)
 
   // TODO: Миграции должны накатываться итеративно
   //#region Миграции
