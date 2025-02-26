@@ -258,7 +258,6 @@ export class StatsController {
           chart3: await getChart3(id),
           chart4: await getChart4(id),
           chart5: await getChart5(id),
-
           finishTime: await getFinishTime(id),
         });
       } else {
