@@ -6,7 +6,7 @@ import { SurveyList } from '../../db/models/survey/SurveyList.js';
 import md5 from 'md5';
 import { saveSurveyAnswers } from '../../utils/common.js';
 import { Service } from 'typedi';
-import { SurveyListService } from '../../services/survey.service.js';
+import { SurveyListService } from '../../services/survey-list.service.js';
 @Service()
 export class SurveyListController {
   async create(req: Request, res: Response) {

@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { Request, Response } from 'express';
 import { returnError } from '../../utils/error.js';
 import { validationResult } from 'express-validator';
 import { Survey } from '../../db/models/survey/Survey.js';
 import sequelize from '../../db/config.js';
-import { SurveyQuestion } from '../../db/models/survey/SurveyQuestion.js';
 import { QueryTypes } from 'sequelize';
-import { pagination, saveSurveyData } from '../../utils/common.js';
-import { Service } from 'typedi';
-@Service()
+import { pagination } from '../../utils/common.js';
+import { SurveyService } from '../../services/survey.service.js';
 export class SurveyController {
   /**
    * Создать анкету
@@ -28,7 +27,6 @@ export class SurveyController {
   async create(req: Request, res: Response) {
     try {
       const errors = validationResult(req);
-
       if (errors.isEmpty()) {
         const {
           userId,
@@ -38,53 +36,25 @@ export class SurveyController {
           status,
           access,
           description,
-          expireDate,
+          expireDat,
           questions,
         } = req.body;
 
-        const survey = await Survey.create<any>({
-          userId,
-          image,
-          title,
-          slug,
-          status,
-          access,
-          description,
-          expireDate,
-        });
-
-        const questionsArr = [];
+        const survey = await SurveyService.createSurvey(req.body);
 
         if (Array.isArray(questions)) {
-          for (const q of questions) {
-            const { question, type, status, description, data } = q;
-
-            if (
-              typeof question == 'string' &&
-              typeof type == 'string' &&
-              typeof status == 'boolean'
-            ) {
-              const surveyQuestion = await SurveyQuestion.create<any>({
-                surveyId: survey.id,
-                question,
-                type,
-                status,
-                description,
-                data,
-              });
-              questionsArr.push(surveyQuestion.toJSON());
-              // сохраняем data (json)
-              await saveSurveyData(data, surveyQuestion.id);
-            } else {
-              returnError(null, res, [
-                'You must provide required fields "question", "type", "status" to create SurveyQuestion',
-              ]);
-            }
+          const bindSurveyQ =
+            await SurveyService.validateAndGenerateQuestionsData(
+              survey,
+              questions,
+            );
+          if (!bindSurveyQ) {
+            returnError(null, res, [
+              'You must provide required fields `question`, `type`, `status` to create SurveyQuestion',
+            ]);
           }
+          survey.dataValues.questions = bindSurveyQ;
         }
-
-        survey.questions = questionsArr;
-
         res.status(201).json(survey.toJSON());
       } else {
         returnError(null, res, errors.array());
@@ -193,7 +163,7 @@ export class SurveyController {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const { id } = req.params;
+        const id = parseInt(req.params.id);
 
         const survey = await sequelize.query(
           `--sql
@@ -433,5 +403,42 @@ export class SurveyController {
     } catch (e: any) {
       returnError(e, res);
     }
+  }
+
+  /** Генерация черновика анкеты
+   *
+   * @param {number} id: surveyID
+   * @throws {Error} e
+   */
+  async generateDraftAnket(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const draft = await SurveyService.cloneSurvey(id);
+    res.json(draft).status(200);
+  }
+
+  /** Получение "Чистовика" из черновика анкеты
+   *
+   * @param {number} id: surveyID
+   * @throws {Error} e
+   */
+  async generateFromDraft(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const clone = await SurveyService.createFromDraft(id);
+    res.json(clone).status(200);
+  }
+
+  /** Получение всех черновиков пользователся с пагинацией
+   *
+   * @body {number} id: surveyId
+   * @throws {Error} e
+   */
+  async getAllDrafts(req: Request, res: Response) {
+    const { userId } = req.query;
+    const { page, size } = req.query;
+
+    const allDrafts = await SurveyService.getAllDrafts(userId, page, size);
+    res
+      .json(pagination(allDrafts.surveys, allDrafts.mPage, allDrafts.dataCount))
+      .status(200);
   }
 }
