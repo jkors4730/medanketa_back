@@ -25,4 +25,5 @@ export const User = sequelize.define('user', {
   twoFactorConfirmedAt: DataTypes.DATE,
   rememberToken: { type: DataTypes.STRING, defaultValue: '' },
   avatar: { type: DataTypes.STRING, defaultValue: '' },
+  isBlocked: { type: DataTypes.BOOLEAN, defaultValue: false },
 });

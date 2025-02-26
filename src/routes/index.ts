@@ -11,10 +11,11 @@ import statsRoutes from './statistics/Stats.js';
 import dictRoutes from './dictionary/Dict.js';
 import dictValueRoutes from './dictionary/DictValue.js';
 import regRoutes from './regions/Reg.js';
-
+import authRoutes from './Auth.js';
 export default class Routes {
   constructor(app: Application) {
     app.use('/db', dbRoutes);
+    app.use('/', authRoutes);
     app.use('/email', emailRoutes);
     app.use('/user', userRoutes);
     app.use('/role', roleRoutes);

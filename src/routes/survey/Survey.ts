@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { SurveyController } from '../controllers/Survey.js';
-import { CreateSurveyDto } from '../dto/survey/create.survey.dto.js';
-import { validateDto } from '../middleware/dto.validate.js';
-import { UpdateSurveyDto } from '../dto/survey/update.survey.dto.js';
+import { SurveyController } from '../../controllers/survey/Survey.js';
+import { CreateSurveyDto } from '../../dto/survey/create.survey.dto.js';
+import { validateDto } from '../../middleware/dto.validate.js';
+import { UpdateSurveyDto } from '../../dto/survey/update.survey.dto.js';
 
 //TODO обновить валидацию параметров и query
 class SurveyRoutes {

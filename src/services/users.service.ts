@@ -6,6 +6,7 @@ import { User } from '../db/models/User.js';
 import { FindOptions } from 'sequelize';
 import { RolesService } from './roles.service.js';
 import { Service } from 'typedi';
+import { validateBirthDate } from '../utils/validate.birthDate.js';
 @Service()
 export class UsersService {
   static async createUser(createUserDto: CreateUserDto) {
@@ -17,11 +18,7 @@ export class UsersService {
         Интервьюер: ROLE_INT,
         Респондент: ROLE_RESP,
       };
-      const role = await RolesService.getRoleById(createUserDto.roleId);
       const user = await User.create({ ...createUserDto });
-      //TODO добавление логики присваивания роли на основе выбора прирегистрации
-      // await user.$set('roleId', role.id);
-      // await user.save();
       return user;
     }
   }

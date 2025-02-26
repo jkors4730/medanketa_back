@@ -5,8 +5,6 @@ import { UserController } from '../../controllers/User.js';
 import { validateDto } from '../../middleware/dto.validate.js';
 import { CreateUserDto } from '../../dto/users/create.user.dto.js';
 import { UpdateUserDto } from '../../dto/users/update.user.dto.js';
-import { LoginUserDto } from '../../dto/users/login.user.dto.js';
-
 class UserRoutes {
   router = Router();
   controller = Container.get(UserController);
@@ -32,16 +30,6 @@ class UserRoutes {
     );
     this.router.delete('/:id', (req: Request, res: Response) =>
       this.controller.delete(req, res),
-    );
-    this.router.post(
-      '/login',
-      validateDto(LoginUserDto, 'body'),
-      (req: Request, res: Response) => this.controller.login(req, res, false),
-    );
-    this.router.post(
-      '/admin',
-      validateDto(LoginUserDto, 'body'),
-      (req: Request, res: Response) => this.controller.login(req, res, true),
     );
   }
 }
