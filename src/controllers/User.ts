@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
-import { UserModel } from '../db/models/User.js';
-import { RoleModel } from '../db/models/Role.js';
+import { User } from '../db/models/User.js';
+import { Role } from '../db/models/Role.js';
 import { comparePassword, passwordHash } from '../utils/hash.js';
 import { returnError } from '../utils/error.js';
 import { generateAuthToken } from '../utils/jwt.js';
@@ -12,13 +12,12 @@ import { UsersService } from '../services/users.service.js';
 
 @Service()
 export class UserController {
-  constructor(private readonly userService: UsersService) {}
   async create(req: Request, res: Response) {
     try {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const user = await this.userService.createUser(req.body);
+        const user = await UsersService.createUser(req.body);
         res.send(201).json(`user created`);
       } else {
         returnError(null, res, errors.array());
@@ -30,7 +29,7 @@ export class UserController {
 
   async getAll(_req: Request, res: Response) {
     try {
-      const users = await this.userService.getAllUsers();
+      const users = await UsersService.getAllUsers();
       res.json(users);
     } catch (e: any) {
       returnError(e, res);
@@ -44,12 +43,12 @@ export class UserController {
       if (errors.isEmpty()) {
         const { id } = req.params;
 
-        const user = await this.userService.getOneUser(parseInt(id), {
+        const user = await UsersService.getOneUser(parseInt(id), {
           attributes: { exclude: ['password'] },
         });
 
         if (!user) {
-          returnError(null, res, [`UserModel with id = ${id} not found`]);
+          returnError(null, res, [`User with id = ${id} not found`]);
         } else {
           res.status(200).json(user.toJSON());
         }
@@ -67,12 +66,12 @@ export class UserController {
 
       if (errors.isEmpty()) {
         const { id } = req.params;
-        const user = await this.userService.getOneUser(parseInt(id));
+        const user = await UsersService.getOneUser(parseInt(id));
 
         if (!user) {
-          returnError(null, res, [`UserModel with id = ${id} not found`]);
+          returnError(null, res, [`User with id = ${id} not found`]);
         } else {
-          await this.userService.updateUser(parseInt(id), { ...req.body });
+          await UsersService.updateUser(parseInt(id), { ...req.body });
 
           res.status(200).json(user.toJSON());
         }
@@ -91,12 +90,12 @@ export class UserController {
       if (errors.isEmpty()) {
         const { id } = req.params;
 
-        const user = await this.userService.getOneUser(parseInt(id));
+        const user = await UsersService.getOneUser(parseInt(id));
 
         if (!user) {
           returnError(null, res, ['Not found'], 404);
         } else {
-          await this.userService.deleteUser(+id);
+          await UsersService.deleteUser(+id);
           res.status(204).send();
         }
       } else {
@@ -114,13 +113,13 @@ export class UserController {
       if (errors.isEmpty()) {
         const { email, password } = req.body;
 
-        const adminRole = await RoleModel.findOne<any>({
+        const adminRole = await Role.findOne<any>({
           where: {
             guardName: ROLE_ADMIN,
           },
         });
 
-        const exists = await UserModel.findOne<any>({
+        const exists = await User.findOne<any>({
           where: {
             email: email,
             roleId: { [!admin ? Op.not : Op.eq]: adminRole.id },
@@ -132,7 +131,7 @@ export class UserController {
           const validPassword = comparePassword(password, exists.password);
 
           if (validPassword) {
-            const role = await RoleModel.findByPk<any>(parseInt(exists.roleId));
+            const role = await Role.findByPk<any>(parseInt(exists.roleId));
 
             if (role) {
               res.send({

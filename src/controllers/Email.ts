@@ -7,7 +7,7 @@ import { passwordHash } from '../utils/hash.js';
 import { mailService } from '../services/Mail.js';
 import { generatePassword } from '../utils/common.js';
 import { Service } from 'typedi';
-import { UserModel } from '../db/models/User.js';
+import { User } from '../db/models/User.js';
 @Service()
 export class EmailController {
   /**
@@ -51,7 +51,7 @@ export class EmailController {
       if (errors.isEmpty()) {
         const { email } = req.body;
 
-        const exists = await UserModel.findOne<any>({
+        const exists = await User.findOne<any>({
           where: { email: email },
         });
         console.log('exists', exists);

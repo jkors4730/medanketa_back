@@ -1,3 +1,5 @@
+import { Role } from './models/Role.js';
+import { User } from './models/User.js';
 import { Survey } from './models/survey/Survey.js';
 import { SurveyQuestion } from './models/survey/SurveyQuestion.js';
 import { SurveyList } from './models/survey/SurveyList.js';
@@ -9,8 +11,6 @@ import { Dict } from './models/dictionary/Dict.js';
 import { DictValue } from './models/dictionary/DictValue.js';
 import { Region } from './models/regions/Region.js';
 import { City } from './models/regions/City.js';
-import { RoleModel } from './models/Role.js';
-import { UserModel } from './models/User.js';
 import sequelize from './config.js';
 
 export const dbSyncAll = async () => {
@@ -27,8 +27,8 @@ export const dbSyncAll = async () => {
 
 export const dbDropAll = async (users = false) => {
   if (!users) {
-    await UserModel.drop();
-    await RoleModel.drop();
+    await User.drop();
+    await Role.drop();
   }
   await Survey.drop();
   await SurveyQuestion.drop();

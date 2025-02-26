@@ -33,7 +33,6 @@
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.5",
-    "sequelize-typescript": "^2.1.6",
     "typedi": "^0.10.0"
   },
   "devDependencies": {

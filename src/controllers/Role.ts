@@ -5,19 +5,18 @@ import { Service } from 'typedi';
 import { RolesService } from '../services/roles.service.js';
 @Service()
 export class RoleController {
-  constructor(private readonly roleService: RolesService) {}
   async create(req: Request, res: Response) {
     try {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const candidate = await this.roleService.getRoleByGuardName(
+        const candidate = await RolesService.getRoleByGuardName(
           req.body.quardName,
         );
         if (candidate) {
           res.status(409).json(`role already exists`);
         }
-        const role = await this.roleService.createRole(req.body);
+        const role = await RolesService.createRole(req.body);
         res.status(201).json(role.toJSON());
       } else {
         returnError(null, res, errors.array());
@@ -29,7 +28,7 @@ export class RoleController {
 
   async getAll(_req: Request, res: Response) {
     try {
-      const roles = await this.roleService.getAllRoles();
+      const roles = await RolesService.getAllRoles();
 
       res.json(roles);
     } catch (e: any) {
@@ -44,7 +43,7 @@ export class RoleController {
       if (errors.isEmpty()) {
         const { id } = req.params;
 
-        const role = await this.roleService.getRoleById(parseInt(id));
+        const role = await RolesService.getRoleById(parseInt(id));
 
         if (role === null) {
           returnError(null, res, [`RoleModel with id = ${id} not found`]);
@@ -64,14 +63,14 @@ export class RoleController {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const role = await this.roleService.getRoleById(parseInt(req.body.id));
+        const role = await RolesService.getRoleById(parseInt(req.body.id));
 
         if (role === null) {
           returnError(null, res, [
             `RoleModel with id = ${req.body.id} not found`,
           ]);
         } else {
-          await this.roleService.updateRole(req.body.id, req.body);
+          await RolesService.updateRole(req.body.id, req.body);
 
           res.status(200).json(role.toJSON());
         }
@@ -92,12 +91,12 @@ export class RoleController {
       if (errors.isEmpty()) {
         const { id } = req.params;
 
-        const role = await this.roleService.getRoleById(parseInt(id));
+        const role = await RolesService.getRoleById(parseInt(id));
 
         if (role === null) {
           returnError(null, res, [`RoleModel with id = ${id} not found`]);
         } else {
-          await this.roleService.deleteRole(parseInt(id));
+          await RolesService.deleteRole(parseInt(id));
           res.status(204).send();
         }
       } else {

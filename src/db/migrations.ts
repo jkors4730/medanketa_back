@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'dotenv/config';
-import { RoleModel } from './models/Role.js';
-import { UserModel } from './models/User.js';
+import { Role } from './models/Role.js';
+import { User } from './models/User.js';
 import { passwordHash } from '../utils/hash.js';
 import { ROLE_ADMIN } from '../utils/common.js';
 
 export const adminRoleMigration = async () => {
-  const exists = await RoleModel.findOne<any>({
+  const exists = await Role.findOne<any>({
     where: {
       guardName: ROLE_ADMIN,
     },
   });
 
   if (!exists) {
-    await RoleModel.create({
+    await Role.create({
       name: 'Админ',
       guardName: ROLE_ADMIN,
       rolePriority: '1',
@@ -24,13 +24,13 @@ export const adminRoleMigration = async () => {
 };
 
 export const adminEntryMigration = async () => {
-  const adminRole = await RoleModel.findOne<any>({
+  const adminRole = await Role.findOne<any>({
     where: {
       guardName: ROLE_ADMIN,
     },
   });
 
-  const exists = await UserModel.findOne<any>({
+  const exists = await User.findOne<any>({
     where: {
       name: 'Admin',
     },
@@ -41,7 +41,7 @@ export const adminEntryMigration = async () => {
       process.env.ADMIN_PASS ? process.env.ADMIN_PASS : ROLE_ADMIN,
     );
 
-    await UserModel.create({
+    await User.create({
       name: 'Admin',
       lastname: 'Admin',
       email: process.env.ADMIN_LOGIN,
