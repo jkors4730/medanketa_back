@@ -87,7 +87,7 @@ params (JSON-body):
     "status": true,     // typeof Boolean, [Optional]
     "access": true,     // typeof Boolean, [Optional]
 
-    "description": "test", // typeof <String>, [Optional]
+ [Survey.md](Survey.md)   "description": "test", // typeof <String>, [Optional]
     "expireDate": new Date(2020, 11, 31) // typeof <Date>, [Optional]
 }
 ```
@@ -99,3 +99,34 @@ params (JSON-body):
 ```
 
 GET params: Not provided
+
+## Generate Draft Anket [POST]
+### генерация черновика анкеты путём её клонирования
+```bash
+/:id/draft
+return { newDraft: value typeof Survey}
+```
+```bash
+id | req.params
+```
+
+## Generate from draft [GET]
+### генерация "чистовика" на основе черновика (шаблона)
+```bash
+/:id/draft
+return value typeof Survey
+```
+```bash
+:id | req.params
+```
+
+## Get all drafts with pagination [GET]
+# отдача всех черновиков (шаблонов) с пагинацией
+
+```bash
+/draft
+return value[] typeof Survey
+```
+### param:
+- #### `userId` - req.params
+- #### `page, size` - req.query
