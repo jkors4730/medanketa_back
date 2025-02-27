@@ -3,12 +3,11 @@ import { SurveyController } from '../controllers/Survey.js';
 import { CreateSurveyDto } from '../dto/survey/create.survey.dto.js';
 import { validateDto } from '../middleware/dto.validate.js';
 import { UpdateSurveyDto } from '../dto/survey/update.survey.dto.js';
-import { Container } from 'typedi';
 
 //TODO обновить валидацию параметров и query
 class SurveyRoutes {
   router = Router();
-  controller = Container.get(SurveyController);
+  controller = new SurveyController();
   constructor() {
     this.initializeRoutes();
   }
@@ -17,17 +16,29 @@ class SurveyRoutes {
       this.controller.create(req, res),
     );
     this.router.get('/', (req, res) => this.controller.getAll(req, res));
-    this.router.get('/:id', (req, res) => this.controller.getOne(req, res));
+    this.router.get('/getOne/:id', (req, res) =>
+      this.controller.getOne(req, res),
+    );
     this.router.get('/completed/user/:id', (req, res) =>
       this.controller.getByUserId(req, res),
     );
     this.router.get('/answers/:id', (req, res) =>
       this.controller.getUsersBySurveyId(req, res),
     );
+
     this.router.put('/:id', validateDto(UpdateSurveyDto, 'body'), (req, res) =>
       this.controller.update(req, res),
     );
     this.router.delete('/:id', (req, res) => this.controller.delete(req, res));
+    this.router.post('/:id/draft', (req, res) =>
+      this.controller.generateDraftAnket(req, res),
+    );
+    this.router.get('/:id/draft', (req, res) =>
+      this.controller.generateFromDraft(req, res),
+    );
+    this.router.get('/draft', (req, res) =>
+      this.controller.getAllDrafts(req, res),
+    );
   }
 }
 export default new SurveyRoutes().router;
