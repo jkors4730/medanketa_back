@@ -107,6 +107,11 @@ export class SurveyService {
             limit: mSize,
           }
         : {
+            include: {
+              model: SurveyQuestion,
+              as: 'questions',
+              association: 'survey_questions',
+            },
             offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
             limit: mSize,
           },
