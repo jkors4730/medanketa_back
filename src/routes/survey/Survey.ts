@@ -16,9 +16,7 @@ class SurveyRoutes {
       this.controller.create(req, res),
     );
     this.router.get('/', (req, res) => this.controller.getAll(req, res));
-    this.router.get('/getOne/:id', (req, res) =>
-      this.controller.getOne(req, res),
-    );
+    this.router.get('/:id', (req, res) => this.controller.getOne(req, res));
     this.router.get('/completed/user/:id', (req, res) =>
       this.controller.getByUserId(req, res),
     );

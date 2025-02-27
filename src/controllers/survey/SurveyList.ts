@@ -7,6 +7,7 @@ import md5 from 'md5';
 import { saveSurveyAnswers } from '../../utils/common.js';
 import { Service } from 'typedi';
 import { SurveyListService } from '../../services/survey-list.service.js';
+import { SurveyQuestion } from '../../db/models/survey/SurveyQuestion.js';
 @Service()
 export class SurveyListController {
   async create(req: Request, res: Response) {
@@ -75,11 +76,7 @@ export class SurveyListController {
   async getAll(req: Request, res: Response) {
     try {
       const { userId } = req.query;
-      if (!userId) {
-        returnError(null, res, [`user_id not valid`]);
-      }
       const surveyList = await SurveyListService.getAll(userId);
-
       res.json(surveyList);
     } catch (e: any) {
       returnError(e, res);
@@ -91,13 +88,31 @@ export class SurveyListController {
       const { id } = req.params;
       const { surveyId } = req.query;
 
-      const surveyList = await SurveyList.findAll({
+      const surveyList = await SurveyList.findOne({
         where: { uIndex: md5(String(surveyId) + String(id)) },
       });
-
-      res.json(surveyList.length ? surveyList[0] : {});
+      const surveyQuestions = await SurveyQuestion.findAll<any>({
+        where: { surveyId: surveyId },
+      });
+      const questionsMap = Object.fromEntries(
+        surveyQuestions.map((q) => [q.id, q.question]),
+      );
+      surveyList.dataValues.answers = surveyList.dataValues.answers.map(
+        (answer: typeof surveyList.dataValues.answers) => ({
+          ...answer,
+          question: questionsMap[answer.id] || 'Неизвестный вопрос',
+        }),
+      );
+      const responseDataQuestionnary =
+        await SurveyListService.getOneStatisticBySurvey(id);
+      res.json({
+        UserData: responseDataQuestionnary[0],
+        surveyList: surveyList,
+      });
     } catch (e: any) {
       returnError(e, res);
     }
   }
 }
+
+export const surveyListController = new SurveyListController();
