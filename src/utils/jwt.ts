@@ -5,6 +5,7 @@ import 'dotenv/config';
 interface JWTData {
   id: string;
   email: string;
+  role: string;
 }
 
 const jwtKey = process.env.JWT_TOKEN as string;
@@ -14,6 +15,7 @@ export const generateAuthToken = (user: any): string => {
     {
       id: user.id,
       email: user.email,
+      role: user.role,
     },
     jwtKey,
     {

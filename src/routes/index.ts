@@ -11,9 +11,11 @@ import statsRoutes from './Stats.js';
 import dictRoutes from './Dict.js';
 import dictValueRoutes from './DictValue.js';
 import regRoutes from './Reg.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 export default class Routes {
   constructor(app: Application) {
+    // app.use(authMiddleware)
     app.use('/db', dbRoutes);
     app.use('/email', emailRoutes);
     app.use('/user', userRoutes);

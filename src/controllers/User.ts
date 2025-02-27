@@ -64,6 +64,7 @@ export class UserController {
             surname,
             password: hash, // store hashed password in db
             roleId: role.id, // connect with role
+            role: role.name,
             phone,
             birthDate,
             region,
@@ -238,7 +239,6 @@ export class UserController {
             guardName: ROLE_ADMIN,
           },
         });
-
         const exists = await User.findOne<any>({
           where: {
             email: email,

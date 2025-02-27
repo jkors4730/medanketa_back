@@ -1,12 +1,13 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config.js';
+import { Role } from './Role.js';
 
 export const User = sequelize.define('user', {
   name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
   email: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
   password: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
   roleId: { type: DataTypes.INTEGER, allowNull: false }, // required
-
+  role: { type: DataTypes.STRING },
   lastName: { type: DataTypes.STRING, defaultValue: '' },
   surname: { type: DataTypes.STRING, defaultValue: '' },
   emailVerifiedAt: DataTypes.DATE,
@@ -26,3 +27,5 @@ export const User = sequelize.define('user', {
   rememberToken: { type: DataTypes.STRING, defaultValue: '' },
   avatar: { type: DataTypes.STRING, defaultValue: '' },
 });
+User.hasOne(Role);
+Role.belongsTo(User);
