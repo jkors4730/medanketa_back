@@ -33,16 +33,6 @@ class UserRoutes {
     this.router.delete('/:id', (req: Request, res: Response) =>
       this.controller.delete(req, res),
     );
-    this.router.post(
-      '/login',
-      validateDto(LoginUserDto, 'body'),
-      (req: Request, res: Response) => this.controller.login(req, res, false),
-    );
-    this.router.post(
-      '/admin',
-      validateDto(LoginUserDto, 'body'),
-      (req: Request, res: Response) => this.controller.login(req, res, true),
-    );
   }
 }
 export default new UserRoutes().router;

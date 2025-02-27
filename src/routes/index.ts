@@ -11,7 +11,7 @@ import statsRoutes from './Stats.js';
 import dictRoutes from './Dict.js';
 import dictValueRoutes from './DictValue.js';
 import regRoutes from './Reg.js';
-
+import authRoutes from './Auth.js';
 export default class Routes {
   constructor(app: Application) {
     app.use('/db', dbRoutes);
@@ -26,5 +26,6 @@ export default class Routes {
     app.use('/dicts', dictRoutes);
     app.use('/dict-values', dictValueRoutes);
     app.use('/reg', regRoutes);
+    app.use('/auth', authRoutes);
   }
 }
