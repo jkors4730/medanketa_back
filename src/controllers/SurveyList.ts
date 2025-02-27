@@ -80,11 +80,7 @@ export class SurveyListController {
   async getAll(req: Request, res: Response) {
     try {
       const { userId } = req.query;
-      if (!userId) {
-        returnError(null, res, [`user_id not valid`]);
-      }
       const surveyList = await SurveyListService.getAll(userId);
-
       res.json(surveyList);
     } catch (e: any) {
       returnError(e, res);
