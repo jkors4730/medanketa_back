@@ -10,6 +10,8 @@ import { UserController } from './User.js';
 import { User } from '../db/models/User.js';
 import { getFinishTime } from './Stats.js';
 import { SurveyListService } from '../services/survey.service.js';
+import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
+import surveyList from '../routes/SurveyList.js';
 @Service()
 export class SurveyListController {
   async create(req: Request, res: Response) {
@@ -94,11 +96,27 @@ export class SurveyListController {
       const { id } = req.params;
       const { surveyId } = req.query;
 
-      const surveyList = await SurveyList.findAll({
+      const surveyList = await SurveyList.findOne({
         where: { uIndex: md5(String(surveyId) + String(id)) },
       });
-
-      res.json(surveyList.length ? surveyList[0] : {});
+      const surveyQuestions = await SurveyQuestion.findAll<any>({
+        where: { surveyId: surveyId },
+      });
+      const questionsMap = Object.fromEntries(
+        surveyQuestions.map((q) => [q.id, q.question]),
+      );
+      surveyList.dataValues.answers = surveyList.dataValues.answers.map(
+        (answer: typeof surveyList.dataValues.answers) => ({
+          ...answer,
+          question: questionsMap[answer.id] || 'Неизвестный вопрос',
+        }),
+      );
+      const responseDataQuestionnary =
+        await SurveyListService.getOneStatisticBySurvey(id);
+      res.json({
+        UserData: responseDataQuestionnary[0],
+        surveyList: surveyList,
+      });
     } catch (e: any) {
       returnError(e, res);
     }

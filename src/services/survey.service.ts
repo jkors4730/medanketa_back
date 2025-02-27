@@ -15,6 +15,9 @@ type ResultDataAnswersResponse = Array<ResultDataItem | undefined>;
 
 export class SurveyListService {
   static async getAll(userId: any) {
+    return SurveyList.findAll(userId ? { where: { userId: userId } } : {});
+  }
+  static async getOneStatisticBySurvey(userId: any) {
     const resultDataResponse: ResultDataAnswersResponse = [];
     const surveyLists = await SurveyList.findAll({ where: { userId: userId } });
     for (const surveyList of surveyLists) {
