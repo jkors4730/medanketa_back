@@ -121,7 +121,7 @@ return value typeof Survey
 ```
 
 ## Get all drafts with pagination [GET]
-# отдача всех черновиков (шаблонов) с пагинацией
+#### отдача всех черновиков (шаблонов) с пагинацией
 
 ```bash
 /draft
