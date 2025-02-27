@@ -440,7 +440,6 @@ export class SurveyController {
   async getAllDrafts(req: Request, res: Response) {
     const { userId } = req.query;
     const { page, size } = req.query;
-
     const allDrafts = await SurveyService.getAllDrafts(userId, page, size);
     res
       .json(pagination(allDrafts.surveys, allDrafts.mPage, allDrafts.dataCount))

@@ -91,19 +91,26 @@ export class SurveyService {
     return clone;
   }
   // TODO заменить на универсальные типы под query
-  static async getAllDrafts(userId: any, page: any, size: any) {
+  static async getAllDrafts(page: any, size: any, userId?: any) {
     const mPage = page ? Number(page) : 1;
     const mSize = size ? Number(size) : 20;
-    const surveys = await Survey.findAll({
-      where: { userId: userId, isDraft: true },
-      include: {
-        model: SurveyQuestion,
-        as: 'questions',
-        association: 'survey_questions',
-      },
-      offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
-      limit: mSize,
-    });
+    const surveys = await Survey.findAll(
+      userId
+        ? {
+            where: { userId: userId, isDraft: true },
+            include: {
+              model: SurveyQuestion,
+              as: 'questions',
+              association: 'survey_questions',
+            },
+            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+            limit: mSize,
+          }
+        : {
+            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+            limit: mSize,
+          },
+    );
     const dataCount = userId
       ? await sequelize.query<any>(
           `--sql
