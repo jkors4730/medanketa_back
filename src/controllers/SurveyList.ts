@@ -9,9 +9,8 @@ import { Service } from 'typedi';
 import { UserController } from './User.js';
 import { User } from '../db/models/User.js';
 import { getFinishTime } from './Stats.js';
-import { SurveyListService } from '../services/survey.service.js';
+import { SurveyListService } from '../services/survey-list.service.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
-import surveyList from '../routes/SurveyList.js';
 @Service()
 export class SurveyListController {
   async create(req: Request, res: Response) {
