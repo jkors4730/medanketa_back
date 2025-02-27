@@ -5,7 +5,7 @@ import { validateDto } from '../middleware/dto.validate.js';
 import { Container } from 'typedi';
 class SurveyListRoutes {
   router = Router();
-  controller = Container.get(SurveyListController);
+  controller = new SurveyListController();
   constructor() {
     this.initializeRoutes();
   }
@@ -16,7 +16,9 @@ class SurveyListRoutes {
       (req, res) => this.controller.create(req, res),
     );
     this.router.get('/', (req, res) => this.controller.getAll(req, res));
-    this.router.get('user/:id', (req, res) => this.controller.getOne(req, res));
+    this.router.get('/user/:id', (req, res) =>
+      this.controller.getOne(req, res),
+    );
   }
 }
 export default new SurveyListRoutes().router;

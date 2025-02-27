@@ -43,3 +43,13 @@ GET (query params):
 # filter by userId
 ?userId=1
 ```
+
+## GET ONE [GET]:
+```
+/survey-list/user/[:userId]?surveyId=[:surveyId]
+```
+```
+# /:userId | req.params | typeof <Number>
+# ?surveyId | req.query | typeof <Number>
+# filter by surveyId
+```
