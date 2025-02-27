@@ -6,9 +6,6 @@ import { SurveyList } from '../db/models/SurveyList.js';
 import md5 from 'md5';
 import { saveSurveyAnswers } from '../utils/common.js';
 import { Service } from 'typedi';
-import { UserController } from './User.js';
-import { User } from '../db/models/User.js';
-import { getFinishTime } from './Stats.js';
 import { SurveyListService } from '../services/survey-list.service.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 @Service()
