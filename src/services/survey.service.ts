@@ -84,7 +84,9 @@ export class SurveyService {
     );
     newDraft.setDataValue('questions', questions);
     await newDraft.save();
-    return { newDraft: newDraft };
+    const responseDraft = newDraft.toJSON();
+    delete responseDraft.questions;
+    return { newDraft: responseDraft };
   }
   static async createFromDraft(surveyId: number) {
     const clone = await this.cloneSurvey(surveyId);
