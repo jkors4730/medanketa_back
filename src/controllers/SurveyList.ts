@@ -82,7 +82,7 @@ export class SurveyListController {
       returnError(e, res);
     }
   }
-
+  //TODO переделать логику на метод getAll with userId кто прошел анкету и подгружать их инфу
   async getOne(req: Request, res: Response) {
     try {
       const { id } = req.params;
