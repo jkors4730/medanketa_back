@@ -95,7 +95,7 @@ export class SurveyController {
                 users.email as "userEmail"
             FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
-            WHERE surveys."userId" = :userId
+            WHERE surveys."userId" = :userId AND surveys."isDraft" = false
             ORDER BY surveys.id DESC
             OFFSET :offset
             LIMIT :limit`,
@@ -118,6 +118,7 @@ export class SurveyController {
                 users.email as "userEmail"
             FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
+            WHERE surveys."isDraft" = false
             ORDER BY surveys.id DESC
             OFFSET :offset
             LIMIT :limit`,
@@ -138,7 +139,7 @@ export class SurveyController {
             SELECT COUNT(*) as count
             FROM surveys
                 LEFT JOIN users ON surveys."userId" = users.id
-            WHERE surveys."userId" = :userId`,
+            WHERE surveys."userId" = :userId AND surveys."isDraft" = false`,
             {
               replacements: { userId: userId },
               type: QueryTypes.SELECT,
@@ -147,7 +148,8 @@ export class SurveyController {
         : await sequelize.query<any>(
             `--sql
             SELECT COUNT(*) as count
-            FROM surveys`,
+            FROM surveys
+            WHERE surveys."isDraft" = false`,
             { type: QueryTypes.SELECT },
           );
 
@@ -427,8 +429,8 @@ export class SurveyController {
    * @throws {Error} e
    */
   async generateFromDraft(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const clone = await SurveyService.createFromDraft(id);
+    const { userId } = req.body;
+    const clone = await SurveyService.createFromDraft(Number(userId));
     res.json(clone).status(200);
   }
 
@@ -438,10 +440,8 @@ export class SurveyController {
    * @throws {Error} e
    */
   async getAllDrafts(req: Request, res: Response) {
-    const { userId } = req.query;
-    const { page, size } = req.query;
-
-    const allDrafts = await SurveyService.getAllDrafts(userId, page, size);
+    const { userId, page, size } = req.query;
+    const allDrafts = await SurveyService.getAllDrafts(page, size, userId);
     res
       .json(pagination(allDrafts.surveys, allDrafts.mPage, allDrafts.dataCount))
       .status(200);

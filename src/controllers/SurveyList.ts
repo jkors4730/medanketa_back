@@ -75,40 +75,21 @@ export class SurveyListController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const { userId } = req.query;
-      const surveyList = await SurveyListService.getAll(userId);
+      const { surveyId } = req.query;
+      const surveyList = await SurveyListService.getAll(surveyId);
       res.json(surveyList);
     } catch (e: any) {
       returnError(e, res);
     }
   }
-
+  //TODO переделать логику на метод getAll with userId кто прошел анкету и подгружать их инфу
   async getOne(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const { surveyId } = req.query;
 
-      const surveyList = await SurveyList.findOne({
-        where: { uIndex: md5(String(surveyId) + String(id)) },
-      });
-      const surveyQuestions = await SurveyQuestion.findAll<any>({
-        where: { surveyId: surveyId },
-      });
-      const questionsMap = Object.fromEntries(
-        surveyQuestions.map((q) => [q.id, q.question]),
-      );
-      surveyList.dataValues.answers = surveyList.dataValues.answers.map(
-        (answer: typeof surveyList.dataValues.answers) => ({
-          ...answer,
-          question: questionsMap[answer.id] || 'Неизвестный вопрос',
-        }),
-      );
-      const responseDataQuestionnary =
-        await SurveyListService.getOneStatisticBySurvey(id);
-      res.json({
-        UserData: responseDataQuestionnary[0],
-        surveyList: surveyList,
-      });
+      const surveyList = await SurveyListService.getOne(id, surveyId);
+      res.json(surveyList).status(200);
     } catch (e: any) {
       returnError(e, res);
     }

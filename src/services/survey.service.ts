@@ -7,6 +7,7 @@ import { saveSurveyData } from '../utils/common.js';
 import { returnError } from '../utils/error.js';
 import surveyQuestion from '../routes/SurveyQuestion.js';
 import sequelize from '../db/config.js';
+import { User } from '../db/models/User.js';
 
 export class SurveyService {
   static async createSurvey(createSurveyDto: CreateSurveyDto) {
@@ -81,36 +82,75 @@ export class SurveyService {
       newDraft,
       newQuestions,
     );
-    newDraft.dataValues.questions = questions;
+    newDraft.setDataValue('questions', questions);
     await newDraft.save();
-    return { newDraft: newDraft };
+    const responseDraft = newDraft.toJSON();
+    delete responseDraft.questions;
+    return { newDraft: responseDraft };
   }
   static async createFromDraft(surveyId: number) {
     const clone = await this.cloneSurvey(surveyId);
-    clone.dataValues.isDraft = false;
+    clone.setDataValue('isDraft', false);
+    await clone.save();
     return clone;
   }
   // TODO заменить на универсальные типы под query
-  static async getAllDrafts(userId: any, page: any, size: any) {
+  static async getAllDrafts(page: any, size: any, userId?: any) {
     const mPage = page ? Number(page) : 1;
     const mSize = size ? Number(size) : 20;
-    const surveys = await Survey.findAll({
-      where: { userId: userId, isDraft: true },
-      include: {
-        model: SurveyQuestion,
-        as: 'questions',
-        association: 'survey_questions',
-      },
-      offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
-      limit: mSize,
-    });
+    const surveys = userId
+      ? await sequelize.query(
+          `--sql
+            SELECT
+                surveys.*,
+                CONCAT(users.name, ' ', users."lastName") as "userName",
+                users.email as "userEmail"
+            FROM surveys
+                    LEFT JOIN users ON surveys."userId" = users.id
+            WHERE surveys."userId" = :userId AND surveys."isDraft" = true
+            ORDER BY surveys.id DESC
+            OFFSET :offset
+            LIMIT :limit`,
+          {
+            replacements: {
+              userId: userId,
+              offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+              limit: mSize,
+            },
+            type: QueryTypes.SELECT,
+            model: Survey,
+            mapToModel: true,
+          },
+        )
+      : await sequelize.query(
+          `--sql
+            SELECT
+                surveys.*,
+                CONCAT(users.name, ' ', users."lastName") as "userName",
+                users.email as "userEmail"
+            FROM surveys
+                    LEFT JOIN users ON surveys."userId" = users.id
+            WHERE surveys."isDraft" = true
+            ORDER BY surveys.id DESC
+            OFFSET :offset
+            LIMIT :limit`,
+          {
+            replacements: {
+              offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+              limit: mSize,
+            },
+            type: QueryTypes.SELECT,
+            model: Survey,
+            mapToModel: true,
+          },
+        );
     const dataCount = userId
       ? await sequelize.query<any>(
           `--sql
       SELECT COUNT(*) as count
       FROM surveys
         LEFT JOIN users ON surveys."userId"= users.id
-      WHERE surveys."userId" = :userId
+      WHERE surveys."userId" = :userId AND surveys."isDraft" = true
     `,
           {
             replacements: { userId: userId },
@@ -120,7 +160,8 @@ export class SurveyService {
       : await sequelize.query(
           `--sql
     SELECT COUNT(*) as count
-    FROM surveys`,
+    FROM surveys
+    WHERE surveys."isDraft" = true`,
           { type: QueryTypes.SELECT },
         );
     return { surveys: surveys, mPage: mPage, dataCount: dataCount[0].count };
