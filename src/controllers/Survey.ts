@@ -95,7 +95,7 @@ export class SurveyController {
                 users.email as "userEmail"
             FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
-            WHERE surveys."userId" = :userId
+            WHERE surveys."userId" = :userId AND surveys."isDraft" = false
             ORDER BY surveys.id DESC
             OFFSET :offset
             LIMIT :limit`,
@@ -118,6 +118,7 @@ export class SurveyController {
                 users.email as "userEmail"
             FROM surveys
                     LEFT JOIN users ON surveys."userId" = users.id
+            WHERE surveys."isDraft" = false
             ORDER BY surveys.id DESC
             OFFSET :offset
             LIMIT :limit`,
@@ -147,7 +148,8 @@ export class SurveyController {
         : await sequelize.query<any>(
             `--sql
             SELECT COUNT(*) as count
-            FROM surveys`,
+            FROM surveys
+            WHERE surveys."isDraft" = false`,
             { type: QueryTypes.SELECT },
           );
 
