@@ -26,6 +26,6 @@ export default class Routes {
     app.use('/dicts', dictRoutes);
     app.use('/dict-values', dictValueRoutes);
     app.use('/reg', regRoutes);
-    app.use('/auth', authRoutes);
+    app.use('/', authRoutes);
   }
 }
