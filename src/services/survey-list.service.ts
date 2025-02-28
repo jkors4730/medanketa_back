@@ -45,10 +45,14 @@ export class SurveyListService {
     const questionsMap = Object.fromEntries(
       surveyQuestions.map((q) => [q.id, q.question]),
     );
+    const questionsMapType = Object.fromEntries(
+      surveyQuestions.map((type) => [type.id, type.type]),
+    );
     surveyList.dataValues.answers = surveyList.dataValues.answers.map(
       (answer: typeof surveyList.dataValues.answers) => ({
         ...answer,
         question: questionsMap[answer.id] || 'Неизвестный вопрос',
+        type: questionsMapType[answer.id] || 'Неизвестный тип вопроса',
       }),
     );
     return surveyList;

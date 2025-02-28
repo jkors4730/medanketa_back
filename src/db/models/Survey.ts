@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config.js';
 import { SurveyQuestion } from './SurveyQuestion.js';
+import { User } from './User.js';
 
 export const Survey = sequelize.define('survey', {
   userId: { type: DataTypes.INTEGER, allowNull: false }, // required

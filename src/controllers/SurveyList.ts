@@ -89,9 +89,7 @@ export class SurveyListController {
       const { surveyId } = req.query;
 
       const surveyList = await SurveyListService.getOne(id, surveyId);
-      res.json({
-        surveyListByUserCreater: surveyList,
-      });
+      res.json(surveyList).status(200);
     } catch (e: any) {
       returnError(e, res);
     }

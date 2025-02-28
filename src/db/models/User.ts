@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config.js';
+import { Survey } from './Survey.js';
 
 export const User = sequelize.define('user', {
   name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
@@ -25,4 +26,9 @@ export const User = sequelize.define('user', {
   twoFactorConfirmedAt: DataTypes.DATE,
   rememberToken: { type: DataTypes.STRING, defaultValue: '' },
   avatar: { type: DataTypes.STRING, defaultValue: '' },
+});
+User.hasMany(Survey);
+Survey.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'userName',
 });

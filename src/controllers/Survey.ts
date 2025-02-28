@@ -429,8 +429,8 @@ export class SurveyController {
    * @throws {Error} e
    */
   async generateFromDraft(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const clone = await SurveyService.createFromDraft(id);
+    const { userId } = req.body;
+    const clone = await SurveyService.createFromDraft(Number(userId));
     res.json(clone).status(200);
   }
 
