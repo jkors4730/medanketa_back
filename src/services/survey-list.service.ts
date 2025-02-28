@@ -14,9 +14,9 @@ type ResultDataItem = {
 type ResultDataAnswersResponse = Array<ResultDataItem | undefined>;
 
 export class SurveyListService {
-  static async getAll(surveyId?: any) {
+  static async getAll(userId?: any) {
     const surveyList = await SurveyList.findAll(
-      surveyId ? { where: { surveyId: surveyId } } : {},
+      userId ? { where: { surveyId: userId } } : {},
     );
     const user_ids: string[] = [
       ...new Set(surveyList.map((value) => String(value.dataValues.userId))),
