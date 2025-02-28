@@ -138,7 +138,7 @@ export class SurveyController {
             SELECT COUNT(*) as count
             FROM surveys
                 LEFT JOIN users ON surveys."userId" = users.id
-            WHERE surveys."userId" = :userId`,
+            WHERE surveys."userId" = :userId AND surveys."isDraft" = false`,
             {
               replacements: { userId: userId },
               type: QueryTypes.SELECT,
@@ -438,9 +438,8 @@ export class SurveyController {
    * @throws {Error} e
    */
   async getAllDrafts(req: Request, res: Response) {
-    const { userId } = req.query;
-    const { page, size } = req.query;
-    const allDrafts = await SurveyService.getAllDrafts(userId, page, size);
+    const { userId, page, size } = req.query;
+    const allDrafts = await SurveyService.getAllDrafts(page, size, userId);
     res
       .json(pagination(allDrafts.surveys, allDrafts.mPage, allDrafts.dataCount))
       .status(200);
