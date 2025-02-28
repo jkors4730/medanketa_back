@@ -57,6 +57,9 @@ export class SurveyListService {
     const resultDataResponse: ResultDataAnswersResponse = [];
     const surveyList = await SurveyList.findOne({ where: { userId: userId } });
     const userInfo = await User.findOne({ where: { id: userId } });
+    if (!userInfo) {
+      return null;
+    }
     const timeCompleted = await getFinishTime(surveyList.dataValues.id);
     const survey_questions = await SurveyQuestion.findAll({
       where: { surveyId: surveyList.dataValues.surveyId },
