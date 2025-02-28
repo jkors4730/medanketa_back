@@ -110,10 +110,11 @@ return { newDraft: value typeof Survey}
 id | req.params
 ```
 
-## Generate from draft [GET]
+## Generate from draft [POST]
 ### генерация "чистовика" на основе черновика (шаблона)
 ```bash
-/:id/draft
+/draft
+:id | req.body
 return value typeof Survey
 ```
 ```bash
