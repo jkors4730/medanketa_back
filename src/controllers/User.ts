@@ -9,6 +9,7 @@ import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { ROLE_ADMIN, ROLE_INT, ROLE_RESP } from '../utils/common.js';
 import { Service } from 'typedi';
+import { validateBirthDate } from '../utils/validateBirthDate.js';
 @Service()
 export class UserController {
   async create(req: Request, res: Response) {
@@ -34,7 +35,10 @@ export class UserController {
           pdAgreement,
           newsletterAgreement,
         } = req.body;
-
+        if ((await validateBirthDate(birthDate)) === false) {
+          res.send(403).json(`Сайт предназначен для лиц старше 18 лет`);
+          return;
+        }
         const exists = await User.findOne({ where: { email: email } });
         console.log('exists', exists);
 
