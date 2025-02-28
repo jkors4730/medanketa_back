@@ -94,35 +94,24 @@ export class SurveyService {
   static async getAllDrafts(page: any, size: any, userId?: any) {
     const mPage = page ? Number(page) : 1;
     const mSize = size ? Number(size) : 20;
-    const surveys = await Survey.findAll(
-      userId
-        ? {
-            where: { userId: userId, isDraft: true },
-            include: {
-              model: SurveyQuestion,
-              as: 'questions',
-              association: 'survey_questions',
-            },
-            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
-            limit: mSize,
-          }
-        : {
-            include: {
-              model: SurveyQuestion,
-              as: 'questions',
-              association: 'survey_questions',
-            },
-            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
-            limit: mSize,
-          },
-    );
+    const surveys = userId
+      ? await Survey.findAll({
+          where: { userId: userId, isDraft: true },
+          offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+          limit: mSize,
+        })
+      : await Survey.findAll({
+          where: { isDraft: true },
+          offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+          limit: mSize,
+        });
     const dataCount = userId
       ? await sequelize.query<any>(
           `--sql
       SELECT COUNT(*) as count
       FROM surveys
         LEFT JOIN users ON surveys."userId"= users.id
-      WHERE surveys."userId" = :userId
+      WHERE surveys."userId" = :userId AND surveys."isDraft" = true
     `,
           {
             replacements: { userId: userId },
@@ -132,7 +121,8 @@ export class SurveyService {
       : await sequelize.query(
           `--sql
     SELECT COUNT(*) as count
-    FROM surveys`,
+    FROM surveys
+    WHERE surveys."isDraft" = true`,
           { type: QueryTypes.SELECT },
         );
     return { surveys: surveys, mPage: mPage, dataCount: dataCount[0].count };
