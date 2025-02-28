@@ -8,6 +8,7 @@ import { Op } from 'sequelize';
 import { comparePassword } from '../utils/hash.js';
 import { generateAuthToken } from '../utils/jwt.js';
 import { returnError } from '../utils/error.js';
+import { AuthService } from '../services/auth.service.js';
 
 @Service()
 export class AuthController {
@@ -17,7 +18,7 @@ export class AuthController {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const { email, password } = req.body;
+        const { email, password, device } = req.body;
 
         const adminRole = await Role.findOne<any>({
           where: {
@@ -28,7 +29,6 @@ export class AuthController {
         const exists = await User.findOne<any>({
           where: {
             email: email,
-            roleId: { [!admin ? Op.not : Op.eq]: adminRole.id },
           },
         });
         console.log('exists', exists?.toJSON());
@@ -38,7 +38,7 @@ export class AuthController {
 
           if (validPassword) {
             const role = await Role.findByPk<any>(parseInt(exists.roleId));
-
+            await AuthService.checkAndAddOrRemoveDevice(exists.id, device);
             if (role) {
               res.send({
                 token: generateAuthToken(exists),
