@@ -44,11 +44,13 @@ GET (query params):
 ?userId=1
 ```
 
-## GET ONE [GET]:
-```
+## GET ONE [GET]
+
+```bash
 /survey-list/user/[:userId]?surveyId=[:surveyId]
 ```
-```
+
+```bash
 # /:userId | req.params | typeof <Number>
 # ?surveyId | req.query | typeof <Number>
 # filter by surveyId
