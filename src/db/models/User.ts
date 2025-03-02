@@ -27,8 +27,3 @@ export const User = sequelize.define('user', {
   rememberToken: { type: DataTypes.STRING, defaultValue: '' },
   avatar: { type: DataTypes.STRING, defaultValue: '' },
 });
-User.hasMany(Survey);
-Survey.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'userName',
-});
