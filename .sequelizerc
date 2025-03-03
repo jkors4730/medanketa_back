@@ -1,9 +1,10 @@
-require('dotenv').config();
+require('dotenv').config()
 const path = require('path');
 
 module.exports = {
-  url: process.env.SEQUELIZE_DB_STR,
-  'models-path': path.resolve('db', 'models'),
-  'seeders-path': path.resolve('db', 'seeders'),
-  'migrations-path': path.resolve('db', 'migrations'),
+   url: process.env.SEQUELIZE_DB_STR as string;
+  config: path.resolve('src','db', 'config.ts'),
+  'models-path': path.resolve('src','db', 'models'),
+  'seeders-path': path.resolve('migrations', 'seeders'),
+  'migrations-path': path.resolve('migrations'),
 };
