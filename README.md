@@ -3,6 +3,7 @@
 Medanketa - a healthcare project that aims to make it easier for patients to complete surveys.
 
 ## Tech stack
+
 This project (backend) works on Node js / Express / TypeScript / Postgresql / Sequelize ORM.
 
 ## Development
@@ -34,6 +35,7 @@ npm run build
 Please build project first, then use /dist directory and index.js file (please don't use ts-node in production, it's bad for performance)
 
 For example:
+
 ```bash
 pm2 /dist/index.js
 ```
