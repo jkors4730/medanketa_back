@@ -3,6 +3,13 @@ import sequelize from '../config.js';
 import { Survey } from './Survey.js';
 
 export const User = sequelize.define('user', {
+  id: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true,
+    unique: true,
+  },
   name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
   email: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
   password: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required

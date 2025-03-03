@@ -12,6 +12,7 @@ import { pagination, saveSurveyData } from '../utils/common.js';
 import { SurveyService } from '../services/survey.service.js';
 import { autoInjectable, container, injectable, registry } from 'tsyringe';
 import { Inject } from 'typedi';
+import { SurveyQuestionService } from '../services/survey-question.service.js';
 
 export class SurveyController {
   /**
@@ -48,11 +49,7 @@ export class SurveyController {
         const survey = await SurveyService.createSurvey(req.body);
 
         if (Array.isArray(questions)) {
-          const bindSurveyQ =
-            await SurveyService.validateAndGenerateQuestionsData(
-              survey,
-              questions,
-            );
+          const bindSurveyQ = await SurveyQuestionService.create(questions);
           if (!bindSurveyQ) {
             returnError(null, res, [
               'You must provide required fields `question`, `type`, `status` to create SurveyQuestion',
@@ -418,8 +415,8 @@ export class SurveyController {
    * @throws {Error} e
    */
   async generateDraftAnket(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const draft = await SurveyService.cloneSurvey(id);
+    const { id } = req.params;
+    const draft = await SurveyService.cloneSurvey(Number(id));
     res.json(draft).status(200);
   }
 

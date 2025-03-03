@@ -30,7 +30,7 @@ class SurveyRoutes {
       this.controller.update(req, res),
     );
     this.router.delete('/:id', (req, res) => this.controller.delete(req, res));
-    // сохранение (копирование) query id
+    // сохранение (копирование) param id
     this.router.post('/:id/draft', (req, res) =>
       this.controller.generateDraftAnket(req, res),
     );

@@ -5,6 +5,7 @@ import { returnError } from '../utils/error.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { saveSurveyData } from '../utils/common.js';
 import { Service } from 'typedi';
+import { SurveyQuestionService } from '../services/survey-question.service.js';
 @Service()
 export class SurveyQuestionController {
   /**
@@ -22,6 +23,7 @@ export class SurveyQuestionController {
    *
    * @throws {Error} e
    */
+  //TODO убрать 2 блока catch, объеденив проверку на типы полей в другую ошибку
   async create(req: Request, res: Response) {
     try {
       const errors = validationResult(req);
@@ -29,51 +31,14 @@ export class SurveyQuestionController {
       if (errors.isEmpty()) {
         const { questions } = req.body;
 
-        const questionsArr = [];
-
         if (questions) {
-          for (const q of questions) {
-            const {
-              surveyId,
-              question,
-              type,
-              status,
-              description,
-              data,
-              sortId,
-            } = q;
-
-            if (
-              typeof surveyId == 'number' &&
-              typeof question == 'string' &&
-              typeof type == 'string' &&
-              typeof status == 'boolean'
-            ) {
-              const surveyQuestion = await SurveyQuestion.create<any>({
-                surveyId,
-                question,
-                type,
-                status,
-                description,
-                data,
-              });
-
-              // set sortId as entity_id
-              surveyQuestion.sortId = !sortId ? surveyQuestion.id : !sortId;
-              await surveyQuestion.save();
-
-              await saveSurveyData(data, surveyQuestion.id);
-
-              questionsArr.push(surveyQuestion.toJSON());
-            } else {
-              returnError(null, res, [
-                'You must provide required fields "surveyId", "question", "type", "status" to create SurveyQuestion',
-              ]);
-            }
+          try {
+            const questionsArr = await SurveyQuestionService.create(questions);
+            res.status(201).json(questionsArr);
+          } catch (error) {
+            returnError(null, res, [error]);
           }
         }
-
-        res.status(201).json(questionsArr);
       } else {
         returnError(null, res, errors.array());
       }

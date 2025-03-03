@@ -3,93 +3,54 @@ import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import type { CreateSurveyDto } from '../dto/survey/create.survey.dto.js';
 import type { Model } from 'sequelize';
 import { QueryTypes } from 'sequelize';
-import { saveSurveyData } from '../utils/common.js';
-import { returnError } from '../utils/error.js';
-import surveyQuestion from '../routes/SurveyQuestion.js';
 import sequelize from '../db/config.js';
-import { User } from '../db/models/User.js';
+import { SurveyQuestionService } from './survey-question.service.js';
 
 export class SurveyService {
   static async createSurvey(createSurveyDto: CreateSurveyDto) {
     const survey = await Survey.create({ ...createSurveyDto });
     return survey;
   }
-  static async validateAndGenerateQuestionsData(
-    survey: Model<any, any>,
-    questions: any[],
-  ) {
-    const questionsArr = [];
-    for (const q of questions) {
-      const { question, type, status, description, data } = q;
-      if (
-        typeof question == 'string' &&
-        typeof type == 'string' &&
-        typeof status == 'boolean'
-      ) {
-        const surveyQuestion = await SurveyQuestion.create({
-          surveyId: survey.dataValues.id,
-          question,
-          type,
-          status,
-          description,
-          data,
-        });
-        questionsArr.push(surveyQuestion.toJSON());
-        // сохраняем data (json)
-        await saveSurveyData(data, surveyQuestion.dataValues.id);
-      } else {
-        return null;
-      }
-    }
-    return questionsArr;
-  }
+
   static async cloneSurvey(id: number) {
     const targetSurvey = await Survey.findOne({
       where: { id: id },
-      include: {
-        model: SurveyQuestion,
-        as: 'survey_questions',
-      },
     });
-    if (!targetSurvey) {
+    const targetQuestion = await SurveyQuestion.findAll({
+      where: { surveyId: id },
+    });
+    if (!targetSurvey || !targetQuestion) {
       return null;
     }
     const newDraft = await this.createSurvey({
       ...targetSurvey.dataValues,
-      isDraft: true,
       id: undefined,
+      isDraft: true,
     });
-    await this.bindQuestionsFromSurvey(newDraft, targetSurvey);
+    await this.bindQuestionsFromSurvey(newDraft.dataValues.id, targetQuestion);
     return newDraft;
   }
   static async bindQuestionsFromSurvey(
-    newDraft: Model<any, any>,
-    targetSurvey: Model<any, any>,
+    draftId: number,
+    questions: Model<any, any>[],
   ) {
-    if (!Array.isArray(targetSurvey.dataValues.survey_questions)) {
+    if (!Array.isArray(questions)) {
       throw new Error('survey_questions is not an array');
     }
     const newQuestions = await Promise.all(
-      targetSurvey.dataValues.survey_questions.map(async (question: any) => {
-        return await SurveyQuestion.create({
-          ...question.dataValues,
-          id: undefined,
-          surveyId: newDraft.dataValues.id,
-        });
-      }),
+      questions.map(async (question: any) => ({
+        ...question.dataValues,
+        id: undefined,
+        surveyId: draftId,
+      })),
     );
-    const questions = await this.validateAndGenerateQuestionsData(
-      newDraft,
-      newQuestions,
-    );
-    newDraft.setDataValue('questions', questions);
-    await newDraft.save();
-    const responseDraft = newDraft.toJSON();
-    delete responseDraft.questions;
-    return { newDraft: responseDraft };
+    await SurveyQuestionService.create(newQuestions);
   }
   static async createFromDraft(surveyId: number) {
     const clone = await this.cloneSurvey(surveyId);
+    if (!clone) {
+      return Error('failed to create');
+    }
     clone.setDataValue('isDraft', false);
     await clone.save();
     return clone;
