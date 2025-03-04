@@ -1,11 +1,12 @@
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { saveSurveyData } from '../utils/common.js';
+import type { Model } from 'sequelize';
 
 //param: (typeof SurveyQuestion)[]
 export class SurveyQuestionService {
   static async create(questions: any[]) {
-    const questionsArr = [];
-    console.log(questions);
+    const questionsArr: Model<any, any>[] = [];
+
     for (const q of questions) {
       const { surveyId, question, type, status, description, data, sortId } = q;
 
@@ -22,19 +23,14 @@ export class SurveyQuestionService {
           status,
           description,
           data,
+          sortId,
         });
-        // set sortId as entity_id
-        surveyQuestion.setDataValue(
-          'sortId',
-          sortId ? surveyQuestion.dataValues.id : sortId,
-        );
-        await surveyQuestion.save();
 
         await saveSurveyData(data, surveyQuestion.dataValues.id);
 
-        questionsArr.push(surveyQuestion.toJSON());
+        questionsArr.push(surveyQuestion);
       } else {
-        return Error(
+        throw Error(
           `You must provide required fields "surveyId", "question", "type", "status" to create SurveyQuestion`,
         );
       }

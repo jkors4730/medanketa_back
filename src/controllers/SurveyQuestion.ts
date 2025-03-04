@@ -25,25 +25,18 @@ export class SurveyQuestionController {
    */
   //TODO убрать 2 блока catch, объеденив проверку на типы полей в другую ошибку
   async create(req: Request, res: Response) {
-    try {
-      const errors = validationResult(req);
+    const errors = validationResult(req);
 
-      if (errors.isEmpty()) {
-        const { questions } = req.body;
-
-        if (questions) {
-          try {
-            const questionsArr = await SurveyQuestionService.create(questions);
-            res.status(201).json(questionsArr);
-          } catch (error) {
-            returnError(null, res, [error]);
-          }
-        }
-      } else {
-        returnError(null, res, errors.array());
+    if (errors.isEmpty()) {
+      const { questions } = req.body;
+      const questionsArr = await SurveyQuestionService.create(questions);
+      for (const q of questionsArr) {
+        q.setDataValue('sortId', q.dataValues.id);
       }
-    } catch (e: any) {
-      returnError(e, res);
+      await Promise.all(questionsArr.map((q) => q.save()));
+      res.status(201).json(questionsArr);
+    } else {
+      returnError(null, res, errors.array());
     }
   }
 

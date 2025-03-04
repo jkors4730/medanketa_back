@@ -14,9 +14,9 @@ type ResultDataItem = {
 type ResultDataAnswersResponse = Array<ResultDataItem | undefined>;
 
 export class SurveyListService {
-  static async getAll(userId?: any) {
+  static async getAll(surveyId?: any) {
     const surveyList = await SurveyList.findAll(
-      userId ? { where: { surveyId: userId } } : {},
+      surveyId ? { where: { surveyId: surveyId } } : {},
     );
     const user_ids: string[] = [
       ...new Set(surveyList.map((value) => String(value.dataValues.userId))),
@@ -68,8 +68,12 @@ export class SurveyListService {
     const survey_questions = await SurveyQuestion.findAll({
       where: { surveyId: surveyList.dataValues.surveyId },
     });
+    const filteredSurveyQuestion = survey_questions.filter(
+      (q) => q.dataValues.type !== 'infoblock',
+    );
     const percentComplete =
-      (survey_questions.length / surveyList.dataValues.answers.length) * 100;
+      (filteredSurveyQuestion.length / surveyList.dataValues.answers.length) *
+      100;
     const accessType = 'по ссылке';
     if (timeCompleted != null && percentComplete !== Infinity) {
       resultDataResponse.push({
