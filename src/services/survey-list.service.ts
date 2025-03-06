@@ -46,6 +46,9 @@ export class SurveyListService {
     const surveyList = await SurveyList.findOne({
       where: { uIndex: md5(String(surveyId) + String(userId)) },
     });
+    if (!surveyList) {
+      return null;
+    }
     const surveyQuestions = await SurveyQuestion.findAll<any>({
       where: { surveyId: surveyId },
     });

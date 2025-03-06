@@ -102,7 +102,7 @@ export class UserController {
     try {
       const users = await User.findAll();
 
-      res.json(users);
+      res.json(users).status(200);
     } catch (e: any) {
       returnError(e, res);
     }
@@ -197,7 +197,8 @@ export class UserController {
 
           await user.save();
 
-          res.status(200).json(user.toJSON());
+          res.status(204).json(user.toJSON());
+          return user;
         }
       } else {
         returnError(null, res, errors.array());

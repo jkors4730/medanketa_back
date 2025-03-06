@@ -52,22 +52,21 @@ export class SurveyService {
         type: QueryTypes.SELECT,
       },
     );
-    return surveys
-    // const usersData = await Promise.all(
-    //   surveys.map(async (userData) => {
-    //     return await SurveyListService.getOne(userData.id, surveyId);
-    //   }),
-    // );
-    // const combinedData = surveys.map((survey) => {
-    //   const matchingUser = usersData.find(
-    //     (user) => user.dataValues.userId === survey.userId,
-    //   );
-    //   return {
-    //     ...survey,
-    //     ...(matchingUser || {}),
-    //   };
-    // });
-    // return combinedData;
+    const usersData = await Promise.all(
+      surveys.map(async (userData) => {
+        return await SurveyListService.getOne(userData.userId, surveyId);
+      }),
+    );
+    const combinedData = surveys.map((survey) => {
+      const matchingUser = usersData.find(
+        (user) => user.dataValues.userId === survey.userId,
+      );
+      return {
+        ...survey,
+        ...(matchingUser?.dataValues || {}),
+      };
+    });
+    return combinedData;
   }
   static async createSurvey(createSurveyDto: CreateSurveyDto) {
     const survey = await Survey.create({ ...createSurveyDto });

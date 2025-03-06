@@ -76,7 +76,7 @@ export class SurveyListController {
   async getAll(req: Request, res: Response) {
     try {
       const { surveyId } = req.query;
-      const { page, size } = req.query
+      const { page, size } = req.query;
       const surveyList = await SurveyListService.getAll(surveyId, page, size);
       res.json(surveyList);
     } catch (e: any) {
@@ -89,6 +89,9 @@ export class SurveyListController {
       const { surveyId } = req.query;
 
       const surveyList = await SurveyListService.getOne(id, surveyId);
+      if (!surveyList) {
+        res.status(404).send('survey list not found');
+      }
       res.json(surveyList).status(200);
     } catch (e: any) {
       returnError(e, res);
