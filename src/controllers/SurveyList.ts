@@ -76,13 +76,13 @@ export class SurveyListController {
   async getAll(req: Request, res: Response) {
     try {
       const { surveyId } = req.query;
-      const surveyList = await SurveyListService.getAll(surveyId);
+      const { page, size } = req.query
+      const surveyList = await SurveyListService.getAll(surveyId, page, size);
       res.json(surveyList);
     } catch (e: any) {
       returnError(e, res);
     }
   }
-  //TODO переделать логику на метод getAll with userId кто прошел анкету и подгружать их инфу
   async getOne(req: Request, res: Response) {
     try {
       const { id } = req.params;

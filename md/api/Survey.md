@@ -69,7 +69,11 @@ GET (query params):
 ```bash
 /survey/completed/user/:id
 ```
-
+## GET answered-users by survey
+```bash
+/survey/answered-users/:id
+id: req.param | number
+```
 ## Update [PUT]
 
 ```bash

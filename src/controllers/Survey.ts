@@ -202,15 +202,17 @@ export class SurveyController {
   /**
    * Получить список анкет пользователя (завершённых)
    *
-   * @param {number} id surveyId
+   * @param {number} id userId
    * @throws {Error} e
    */
   async getByUserId(req: Request, res: Response) {
     const errors = validationResult(req);
-
     if (errors.isEmpty()) {
       const { id } = req.params;
+      const { page, size } = req.query;
 
+      const mPage = page ? Number(page) : 1;
+      const mSize = size ? Number(size) : 20;
       const surveys = await sequelize.query(
         `--sql
             SELECT surveys.*,
@@ -220,16 +222,22 @@ export class SurveyController {
                     JOIN survey_lists ON surveys."id" = survey_lists."surveyId"
                     LEFT JOIN users ON surveys."userId" = users.id
             WHERE surveys.status = true
-                AND survey_lists."userId" = :userId`,
+                AND survey_lists."userId" = :userId
+            ORDER BY surveys.id DESC
+            LIMIT :limit
+            OFFSET :offset`,
         {
-          replacements: { userId: id },
+          replacements: {
+            userId: id,
+            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+            limit: mSize,
+          },
           type: QueryTypes.SELECT,
           model: Survey,
           mapToModel: true,
         },
       );
-
-      res.json(surveys);
+      res.status(200).json(surveys);
     } else {
       returnError(null, res, errors.array());
     }
@@ -243,43 +251,9 @@ export class SurveyController {
    */
   async getUsersBySurveyId(req: Request, res: Response) {
     const { id } = req.params;
-
+    const { page, size } = req.query;
     try {
-      const data = await sequelize.query<any>(
-        `--sql
-            SELECT DISTINCT
-            sl."userId" as "userId",
-            u.name as "userName",
-            u."lastName" as "userLastName",
-            TO_CHAR(sl."tsEnd", 'DD.MM.YYYY') as "dateEnd",
-            (sl."tsEnd" - sl."tsStart") as time,
-            sl."tsStart",
-            sl."tsEnd",
-            ROUND( ( (
-                ( SELECT COUNT(sl_id)::float
-                        FROM survey_answers
-                        WHERE "isSkip" = false
-                        AND "userId" = sl."userId"
-                        AND "surveyId" = :id ) /
-                (
-                    ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers
-                        WHERE "isSkip" = false
-                        AND "userId" = sl."userId"
-                        AND "surveyId" = :id)
-                )::float) * 100)::numeric, 2) as complete
-            FROM survey_answers sa
-                               JOIN survey_lists sl
-                                    ON sa.sl_id = sl.id
-                               LEFT JOIN users u
-                                         ON sl."userId" = u.id
-            WHERE sl."surveyId" = :id`,
-        {
-          replacements: { id: id },
-          type: QueryTypes.SELECT,
-        },
-      );
-
+      const data = await SurveyService.getUsersBySurveyId(id, page, size);
       res.status(200).json(data);
     } catch (e: any) {
       returnError(e, res);

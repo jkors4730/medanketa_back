@@ -5,8 +5,70 @@ import type { Model } from 'sequelize';
 import { QueryTypes } from 'sequelize';
 import sequelize from '../db/config.js';
 import { SurveyQuestionService } from './survey-question.service.js';
+import { SurveyListService } from './survey-list.service.js';
 
 export class SurveyService {
+  static async getUsersBySurveyId(surveyId: string, page?: any, size?: any) {
+    const mPage = page ? Number(page) : 1;
+    const mSize = size ? Number(size) : 20;
+    const surveys = await sequelize.query<any>(
+      `--sql
+            SELECT DISTINCT
+            sl."userId" as "userId",
+            u.name as "userName",
+            u."lastName" as "userLastName",
+            TO_CHAR(sl."tsEnd", 'DD.MM.YYYY') as "dateEnd",
+            (sl."tsEnd" - sl."tsStart") as time,
+            sl."tsStart",
+            sl."tsEnd",
+            ROUND( ( (
+                ( SELECT COUNT(sl_id)::float
+                        FROM survey_answers
+                        WHERE "isSkip" = false
+                        AND "userId" = sl."userId"
+                        AND "surveyId" = :id ) /
+                (
+                    ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
+                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers
+                        WHERE sa."isSkip" = false
+                        AND sa."userId" = sl."userId"
+                        AND sa."surveyId" = :id)
+                )::float) * 100)::numeric, 2) as complete
+            FROM survey_answers sa
+                               JOIN survey_lists sl
+                                    ON sa.sl_id = sl.id
+                               LEFT JOIN users u
+                                         ON sl."userId" = u.id
+            WHERE sl."surveyId" = :id
+            ORDER BY sl."tsEnd" DESC
+            OFFSET :offset
+            LIMIT :limit`,
+      {
+        replacements: {
+          id: surveyId,
+          offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+          limit: mSize,
+        },
+        type: QueryTypes.SELECT,
+      },
+    );
+    return surveys
+    // const usersData = await Promise.all(
+    //   surveys.map(async (userData) => {
+    //     return await SurveyListService.getOne(userData.id, surveyId);
+    //   }),
+    // );
+    // const combinedData = surveys.map((survey) => {
+    //   const matchingUser = usersData.find(
+    //     (user) => user.dataValues.userId === survey.userId,
+    //   );
+    //   return {
+    //     ...survey,
+    //     ...(matchingUser || {}),
+    //   };
+    // });
+    // return combinedData;
+  }
   static async createSurvey(createSurveyDto: CreateSurveyDto) {
     const survey = await Survey.create({ ...createSurveyDto });
     return survey;

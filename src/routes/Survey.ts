@@ -22,7 +22,7 @@ class SurveyRoutes {
     this.router.get('/completed/user/:id', (req, res) =>
       this.controller.getByUserId(req, res),
     );
-    this.router.get('/answers/:id', (req, res) =>
+    this.router.get('/answered-users/:id', (req, res) =>
       this.controller.getUsersBySurveyId(req, res),
     );
 

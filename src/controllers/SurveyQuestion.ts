@@ -23,7 +23,6 @@ export class SurveyQuestionController {
    *
    * @throws {Error} e
    */
-  //TODO убрать 2 блока catch, объеденив проверку на типы полей в другую ошибку
   async create(req: Request, res: Response) {
     const errors = validationResult(req);
 
