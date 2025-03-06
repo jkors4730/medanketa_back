@@ -7,12 +7,13 @@ import { Survey } from '../db/models/Survey.js';
 import sequelize from '../db/config.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { QueryTypes } from 'sequelize';
-import { pagination, saveSurveyData } from '../utils/common.js';
+import { paginateNoSQL, pagination, saveSurveyData } from '../utils/common.js';
 
 import { SurveyService } from '../services/survey.service.js';
 import { autoInjectable, container, injectable, registry } from 'tsyringe';
 import { Inject } from 'typedi';
 import { SurveyQuestionService } from '../services/survey-question.service.js';
+import { SurveyAnswer } from '../db/models/SurveyAnswer.js';
 
 export class SurveyController {
   /**
@@ -205,7 +206,7 @@ export class SurveyController {
    * @param {number} id userId
    * @throws {Error} e
    */
-  async getByUserId(req: Request, res: Response) {
+  async getSurveyByUserId(req: Request, res: Response) {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
       const { id } = req.params;
@@ -237,7 +238,14 @@ export class SurveyController {
           mapToModel: true,
         },
       );
-      res.status(200).json(surveys);
+      const where = id
+        ? { userId: Number(id), status: true }
+        : { status: true };
+      const pagination = await paginateNoSQL(Survey, page, size, where);
+      res.status(200).json({
+        surveys,
+        ...pagination,
+      });
     } else {
       returnError(null, res, errors.array());
     }
@@ -254,7 +262,12 @@ export class SurveyController {
     const { page, size } = req.query;
     try {
       const data = await SurveyService.getUsersBySurveyId(id, page, size);
-      res.status(200).json(data);
+      const where = id ? { surveyId: id } : {};
+      const pagination = await paginateNoSQL(SurveyAnswer, page, size, where);
+      res.status(200).json({
+        data,
+        ...pagination,
+      });
     } catch (e: any) {
       returnError(e, res);
     }

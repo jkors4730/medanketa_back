@@ -15,8 +15,8 @@ import sequelize from './config.js';
 
 export const dbSyncAll = async () => {
   const opt = { alter: true };
-  await sequelize.authenticate()
-  await sequelize.sync(opt)
+  await sequelize.authenticate();
+  await sequelize.sync();
 
   // TODO: Миграции должны накатываться итеративно
   //#region Миграции

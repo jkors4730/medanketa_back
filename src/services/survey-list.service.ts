@@ -17,9 +17,7 @@ type ResultDataItem = {
 type ResultDataAnswersResponse = Array<ResultDataItem | undefined>;
 
 export class SurveyListService {
-  static async getAll(surveyId?: any, page?: any, size?: any) {
-    const mPage = page ? Number(page) : 1;
-    const mSize = size ? Number(size) : 20;
+  static async getAll(surveyId?: any, mPage?: any, mSize?: any) {
     const surveyList = await SurveyList.findAll(
       surveyId
         ? { where: { surveyId: surveyId }, offset: mPage, limit: mSize }
@@ -71,6 +69,9 @@ export class SurveyListService {
     const resultDataResponse: ResultDataAnswersResponse = [];
     const surveyList = await SurveyList.findOne({ where: { userId: userId } });
     const userInfo = await User.findOne({ where: { id: userId } });
+    if (!userInfo) {
+      return null;
+    }
     const timeCompleted = await getFinishTime(surveyList.dataValues.id);
     const survey_questions = await SurveyQuestion.findAll({
       where: { surveyId: surveyList.dataValues.surveyId },
