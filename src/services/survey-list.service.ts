@@ -4,6 +4,9 @@ import { getFinishTime } from '../controllers/Stats.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { log } from 'node:util';
 import md5 from 'md5';
+import { QueryTypes, Sequelize } from 'sequelize';
+import sequelize from '../db/config.js';
+import { Survey } from '../db/models/Survey.js';
 
 type ResultDataItem = {
   fullNameResp: string;
@@ -14,9 +17,13 @@ type ResultDataItem = {
 type ResultDataAnswersResponse = Array<ResultDataItem | undefined>;
 
 export class SurveyListService {
-  static async getAll(userId?: any) {
+  static async getAll(surveyId?: any, page?: any, size?: any) {
+    const mPage = page ? Number(page) : 1;
+    const mSize = size ? Number(size) : 20;
     const surveyList = await SurveyList.findAll(
-      userId ? { where: { surveyId: userId } } : {},
+      surveyId
+        ? { where: { surveyId: surveyId }, offset: mPage, limit: mSize }
+        : {},
     );
     const user_ids: string[] = [
       ...new Set(surveyList.map((value) => String(value.dataValues.userId))),
@@ -39,6 +46,9 @@ export class SurveyListService {
     const surveyList = await SurveyList.findOne({
       where: { uIndex: md5(String(surveyId) + String(userId)) },
     });
+    if (!surveyList) {
+      return null;
+    }
     const surveyQuestions = await SurveyQuestion.findAll<any>({
       where: { surveyId: surveyId },
     });
@@ -61,15 +71,16 @@ export class SurveyListService {
     const resultDataResponse: ResultDataAnswersResponse = [];
     const surveyList = await SurveyList.findOne({ where: { userId: userId } });
     const userInfo = await User.findOne({ where: { id: userId } });
-    if (!userInfo) {
-      return null;
-    }
     const timeCompleted = await getFinishTime(surveyList.dataValues.id);
     const survey_questions = await SurveyQuestion.findAll({
       where: { surveyId: surveyList.dataValues.surveyId },
     });
+    const filteredSurveyQuestion = survey_questions.filter(
+      (q) => q.dataValues.type !== 'infoblock',
+    );
     const percentComplete =
-      (survey_questions.length / surveyList.dataValues.answers.length) * 100;
+      (filteredSurveyQuestion.length / surveyList.dataValues.answers.length) *
+      100;
     const accessType = 'по ссылке';
     if (timeCompleted != null && percentComplete !== Infinity) {
       resultDataResponse.push({

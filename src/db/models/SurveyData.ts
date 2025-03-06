@@ -8,8 +8,5 @@ export const SurveyData = sequelize.define(
     uid: { type: DataTypes.BIGINT },
     sortId: { type: DataTypes.INTEGER },
     value: { type: DataTypes.TEXT },
-  },
-  {
-    tableName: 'survey_data',
-  },
+  }
 );

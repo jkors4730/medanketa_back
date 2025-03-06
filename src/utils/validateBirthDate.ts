@@ -1,4 +1,9 @@
-export async function validateBirthDate(birthDate: Date): Promise<boolean> {
+export async function validateBirthDate(
+  birthDate: Date | string,
+): Promise<boolean> {
+  if (typeof birthDate === 'string') {
+    birthDate = new Date(birthDate);
+  }
   const now = new Date();
   if (now.getFullYear() - birthDate.getFullYear() <= 18) {
     if (now.getFullYear() - birthDate.getFullYear() === 18) {

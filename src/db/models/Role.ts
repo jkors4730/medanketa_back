@@ -9,8 +9,5 @@ export const Role = sequelize.define(
 
     rolePriority: { type: DataTypes.STRING, defaultValue: '' },
     description: { type: DataTypes.STRING, defaultValue: '' },
-  },
-  {
-    tableName: 'roles',
-  },
+  }
 );

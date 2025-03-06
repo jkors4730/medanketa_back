@@ -13,8 +13,5 @@ export const SurveyList = sequelize.define(
 
     tsStart: { type: DataTypes.DATE },
     tsEnd: { type: DataTypes.DATE },
-  },
-  {
-    tableName: 'survey_lists',
-  },
+  }
 );

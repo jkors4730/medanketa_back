@@ -5,6 +5,7 @@ import { returnError } from '../utils/error.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { saveSurveyData } from '../utils/common.js';
 import { Service } from 'typedi';
+import { SurveyQuestionService } from '../services/survey-question.service.js';
 @Service()
 export class SurveyQuestionController {
   /**
@@ -23,62 +24,18 @@ export class SurveyQuestionController {
    * @throws {Error} e
    */
   async create(req: Request, res: Response) {
-    try {
-      const errors = validationResult(req);
+    const errors = validationResult(req);
 
-      if (errors.isEmpty()) {
-        const { questions } = req.body;
-
-        const questionsArr = [];
-
-        if (questions) {
-          for (const q of questions) {
-            const {
-              surveyId,
-              question,
-              type,
-              status,
-              description,
-              data,
-              sortId,
-            } = q;
-
-            if (
-              typeof surveyId == 'number' &&
-              typeof question == 'string' &&
-              typeof type == 'string' &&
-              typeof status == 'boolean'
-            ) {
-              const surveyQuestion = await SurveyQuestion.create<any>({
-                surveyId,
-                question,
-                type,
-                status,
-                description,
-                data,
-              });
-
-              // set sortId as entity_id
-              surveyQuestion.sortId = !sortId ? surveyQuestion.id : !sortId;
-              await surveyQuestion.save();
-
-              await saveSurveyData(data, surveyQuestion.id);
-
-              questionsArr.push(surveyQuestion.toJSON());
-            } else {
-              returnError(null, res, [
-                'You must provide required fields "surveyId", "question", "type", "status" to create SurveyQuestion',
-              ]);
-            }
-          }
-        }
-
-        res.status(201).json(questionsArr);
-      } else {
-        returnError(null, res, errors.array());
+    if (errors.isEmpty()) {
+      const { questions } = req.body;
+      const questionsArr = await SurveyQuestionService.create(questions);
+      for (const q of questionsArr) {
+        q.setDataValue('sortId', q.dataValues.id);
       }
-    } catch (e: any) {
-      returnError(e, res);
+      await Promise.all(questionsArr.map((q) => q.save()));
+      res.status(201).json(questionsArr);
+    } else {
+      returnError(null, res, errors.array());
     }
   }
 

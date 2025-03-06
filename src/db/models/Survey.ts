@@ -15,10 +15,7 @@ export const Survey = sequelize.define(
     isDraft: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     description: { type: DataTypes.STRING, defaultValue: '' },
     expireDate: DataTypes.DATE,
-  },
-  {
-    tableName: 'surveys',
-  },
+  }
 );
 //relations
 Survey.hasMany(SurveyQuestion);

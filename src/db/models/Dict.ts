@@ -10,8 +10,5 @@ export const Dict = sequelize.define(
     description: { type: DataTypes.STRING, defaultValue: '' },
     userId: { type: DataTypes.INTEGER },
     values: { type: DataTypes.JSON },
-  },
-  {
-    tableName: 'dict',
-  },
+  }
 );

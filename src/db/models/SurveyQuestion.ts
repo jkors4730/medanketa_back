@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config.js';
+import { Survey } from './Survey.js';
 
 export const SurveyQuestion = sequelize.define(
   'survey_question',
@@ -12,8 +13,5 @@ export const SurveyQuestion = sequelize.define(
     description: { type: DataTypes.STRING, defaultValue: '' },
     data: { type: DataTypes.TEXT, defaultValue: '' },
     sortId: { type: DataTypes.INTEGER, defaultValue: 0 },
-  },
-  {
-    tableName: 'survey_questions',
   },
 );

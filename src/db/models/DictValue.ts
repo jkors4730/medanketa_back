@@ -7,8 +7,5 @@ export const DictValue = sequelize.define(
     value: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     dictId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
     sortId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
-  },
-  {
-    tableName: 'dict_values',
-  },
+  }
 );
