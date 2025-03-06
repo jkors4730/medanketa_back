@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -49,8 +50,8 @@ export class CreateUserDto {
   @IsString()
   position?: string;
   @IsOptional()
-  @IsString()
-  workExperience?: string;
+  @IsNumber()
+  workExperience?: number;
   @IsOptional()
   @IsString()
   newsLetterAgreement?: boolean;

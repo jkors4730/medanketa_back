@@ -81,7 +81,9 @@ export class SurveyListController {
     try {
       const { surveyId } = req.query;
       const { page, size } = req.query;
-      const surveyList = await SurveyListService.getAll(surveyId, page, size);
+      const mPage = page ? Number(page) - 1 : 1;
+      const mSize = size ? Number(size) : 20;
+      const surveyList = await SurveyListService.getAll(surveyId, mPage, mSize);
       const where = surveyId ? { surveyId } : {};
       const pagination = await paginateNoSQL(SurveyList, page, size, where);
       res.json({
@@ -99,9 +101,9 @@ export class SurveyListController {
 
       const surveyList = await SurveyListService.getOne(id, surveyId);
       if (!surveyList) {
-        res.status(404).send('survey list not found');
+        return res.status(404).json('survey list not found');
       }
-      res.json(surveyList).status(200);
+      res.status(200).json(surveyList);
     } catch (e: any) {
       returnError(e, res);
     }

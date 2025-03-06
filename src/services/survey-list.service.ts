@@ -72,7 +72,7 @@ export class SurveyListService {
     if (!userInfo) {
       return null;
     }
-    const timeCompleted = await getFinishTime(surveyList.dataValues.id);
+    const timeCompleted = await getFinishTime(surveyList.dataValues.surveyId);
     const survey_questions = await SurveyQuestion.findAll({
       where: { surveyId: surveyList.dataValues.surveyId },
     });
