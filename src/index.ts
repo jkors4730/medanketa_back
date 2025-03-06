@@ -5,7 +5,6 @@ import cors from 'cors';
 import path from 'path';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
-import { dbSyncAll } from './db/init.js';
 import Routes from './routes/index.js';
 import { fileURLToPath } from 'url';
 
@@ -23,9 +22,6 @@ async function bootstrap() {
 
   new Routes(app);
 
-  dbSyncAll().then(() => {
-    console.log(`db success connected`);
-  });
   return app;
 }
 bootstrap().then((app) => {

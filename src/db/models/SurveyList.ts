@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config.js';
 
 export const SurveyList = sequelize.define(
-  'survey_list',
+  'survey_lists',
   {
     userId: { type: DataTypes.BIGINT }, // required
     surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required

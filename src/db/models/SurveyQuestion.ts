@@ -3,7 +3,7 @@ import sequelize from '../config.js';
 import { Survey } from './Survey.js';
 
 export const SurveyQuestion = sequelize.define(
-  'survey_question',
+  'survey_questions',
   {
     surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required
     question: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required

@@ -3,7 +3,7 @@ import sequelize from '../config.js';
 import { Survey } from './Survey.js';
 
 export const User = sequelize.define(
-  'user',
+  'users',
   {
     name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     email: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required

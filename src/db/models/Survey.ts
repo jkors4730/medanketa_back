@@ -4,7 +4,7 @@ import { SurveyQuestion } from './SurveyQuestion.js';
 import { User } from './User.js';
 
 export const Survey = sequelize.define(
-  'survey',
+  'surveys',
   {
     userId: { type: DataTypes.INTEGER, allowNull: false }, // required
     image: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required

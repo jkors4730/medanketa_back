@@ -10,7 +10,7 @@ import {DataTypes} from "sequelize";
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable('user', {
+    await queryInterface.createTable('users', {
       id: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true },
       name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       email: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
@@ -36,7 +36,7 @@ import {DataTypes} from "sequelize";
       rememberToken: { type: DataTypes.STRING, defaultValue: '' },
       avatar: { type: DataTypes.STRING, defaultValue: '' },
     })
-    await queryInterface.createTable('survey_question', {
+    await queryInterface.createTable('survey_questions', {
       surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required
       question: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       type: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
@@ -46,7 +46,7 @@ import {DataTypes} from "sequelize";
       data: { type: DataTypes.TEXT, defaultValue: '' },
       sortId: { type: DataTypes.INTEGER, defaultValue: 0 },
     })
-    await queryInterface.createTable('survey_list', {
+    await queryInterface.createTable('survey_lists', {
       userId: { type: DataTypes.BIGINT }, // required
       surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required
       uIndex: { type: DataTypes.TEXT, unique: true },
@@ -63,7 +63,7 @@ import {DataTypes} from "sequelize";
       sortId: { type: DataTypes.INTEGER },
       value: { type: DataTypes.TEXT },
     })
-    await queryInterface.createTable('survey_answer', {
+    await queryInterface.createTable('survey_answers', {
       sl_id: { type: DataTypes.INTEGER, allowNull: false }, // required
       sq_id: { type: DataTypes.INTEGER, allowNull: false }, // required
       surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required
@@ -71,7 +71,7 @@ import {DataTypes} from "sequelize";
       answer: { type: DataTypes.TEXT },
       isSkip: { type: DataTypes.BOOLEAN, defaultValue: false },
     })
-    await queryInterface.createTable('survey', {
+    await queryInterface.createTable('surveys', {
       userId: { type: DataTypes.INTEGER, allowNull: false }, // required
       image: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
@@ -82,25 +82,25 @@ import {DataTypes} from "sequelize";
       description: { type: DataTypes.STRING, defaultValue: '' },
       expireDate: DataTypes.DATE,
     })
-    await queryInterface.createTable('spec', {
+    await queryInterface.createTable('specs', {
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     })
-    await queryInterface.createTable('role', {
+    await queryInterface.createTable('roles', {
       name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       guardName: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
 
       rolePriority: { type: DataTypes.STRING, defaultValue: '' },
       description: { type: DataTypes.STRING, defaultValue: '' },
     })
-    await queryInterface.createTable('region', {
+    await queryInterface.createTable('regions', {
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     })
-    await queryInterface.createTable('dict_value', {
+    await queryInterface.createTable('dict_values', {
       value: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       dictId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
       sortId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
     })
-    await queryInterface.createTable('dict', {
+    await queryInterface.createTable('dicts', {
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       common: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }, // required
       status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }, // required
@@ -108,7 +108,7 @@ import {DataTypes} from "sequelize";
       userId: { type: DataTypes.INTEGER },
       values: { type: DataTypes.JSON },
     })
-    await queryInterface.createTable('city', {
+    await queryInterface.createTable('cities', {
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     })
   }
@@ -120,16 +120,16 @@ import {DataTypes} from "sequelize";
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('user', {})
-    await queryInterface.dropTable('survey_question', {})
-    await queryInterface.dropTable('survey_list', {})
+    await queryInterface.dropTable('users', {})
+    await queryInterface.dropTable('survey_questions', {})
+    await queryInterface.dropTable('survey_lists', {})
     await queryInterface.dropTable('survey_data', {})
-    await queryInterface.dropTable('survey_answer', {})
-    await queryInterface.dropTable('survey', {})
-    await queryInterface.dropTable('spec', {})
-    await queryInterface.dropTable('role', {})
-    await queryInterface.dropTable('region', {})
-    await queryInterface.dropTable('dict_value', {})
-    await queryInterface.dropTable('dict', {})
-    await queryInterface.dropTable('city', {})
+    await queryInterface.dropTable('survey_answers', {})
+    await queryInterface.dropTable('surveys', {})
+    await queryInterface.dropTable('specs', {})
+    await queryInterface.dropTable('roles', {})
+    await queryInterface.dropTable('regions', {})
+    await queryInterface.dropTable('dict_values', {})
+    await queryInterface.dropTable('dicts', {})
+    await queryInterface.dropTable('cities', {})
   }
