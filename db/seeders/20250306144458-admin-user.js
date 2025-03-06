@@ -8,19 +8,22 @@ export default {
       `SELECT id FROM "roles" WHERE "guardName" = '${ROLE_ADMIN}' LIMIT 1;`
     );
 
-    if (!adminRole.length) return; // Если роли нет, не создаем пользователя
 
-    await queryInterface.bulkInsert('users', [
-      {
-        name: 'Admin',
-        lastName: 'Admin',
-        email: process.env.ADMIN_LOGIN,
-        password: passwordHash(process.env.ADMIN_PASS || ROLE_ADMIN),
-        roleId: adminRole[0].id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+    if (!adminRole.length) {
+      await queryInterface.bulkInsert('users', [
+        {
+          name: 'Admin',
+          lastName: 'Admin',
+          email: process.env.ADMIN_LOGIN,
+          password: passwordHash(process.env.ADMIN_PASS || ROLE_ADMIN),
+          roleId: adminRole[0].id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
+    } else {
+      console.log('up to date');
+    }
   },
 
   async down(queryInterface) {
