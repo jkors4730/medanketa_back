@@ -2,35 +2,36 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config.js';
 import { Survey } from './Survey.js';
 
-export const User = sequelize.define('user', {
-  id: {
-    type: DataTypes.BIGINT,
-    allowNull: false,
-    primaryKey: true,
-    autoIncrement: true,
-    unique: true,
-  },
-  name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
-  email: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
-  password: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
-  roleId: { type: DataTypes.INTEGER, allowNull: false }, // required
+export const User = sequelize.define(
+  'users',
+  {
+    name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
+    email: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
+    password: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
+    roleId: { type: DataTypes.INTEGER, allowNull: false }, // required
 
-  lastName: { type: DataTypes.STRING, defaultValue: '' },
-  surname: { type: DataTypes.STRING, defaultValue: '' },
-  emailVerifiedAt: DataTypes.DATE,
-  birthDate: { type: DataTypes.STRING, defaultValue: '' },
-  phone: { type: DataTypes.STRING, defaultValue: '' },
-  region: { type: DataTypes.STRING, defaultValue: '' },
-  city: { type: DataTypes.STRING, defaultValue: '' },
-  workPlace: { type: DataTypes.STRING, defaultValue: '' },
-  specialization: { type: DataTypes.STRING, defaultValue: '' },
-  position: { type: DataTypes.STRING, defaultValue: '' },
-  workExperience: DataTypes.INTEGER,
-  pdAgreement: DataTypes.BOOLEAN,
-  newsletterAgreement: DataTypes.BOOLEAN,
-  twoFactorSecret: { type: DataTypes.STRING, defaultValue: '' },
-  twoFactorRecoveryCodes: { type: DataTypes.STRING, defaultValue: '' },
-  twoFactorConfirmedAt: DataTypes.DATE,
-  rememberToken: { type: DataTypes.STRING, defaultValue: '' },
-  avatar: { type: DataTypes.STRING, defaultValue: '' },
+    lastName: { type: DataTypes.STRING, defaultValue: '' },
+    surname: { type: DataTypes.STRING, defaultValue: '' },
+    emailVerifiedAt: DataTypes.DATE,
+    birthDate: { type: DataTypes.STRING, defaultValue: '' },
+    phone: { type: DataTypes.STRING, defaultValue: '' },
+    region: { type: DataTypes.STRING, defaultValue: '' },
+    city: { type: DataTypes.STRING, defaultValue: '' },
+    workPlace: { type: DataTypes.STRING, defaultValue: '' },
+    specialization: { type: DataTypes.STRING, defaultValue: '' },
+    position: { type: DataTypes.STRING, defaultValue: '' },
+    workExperience: DataTypes.INTEGER,
+    pdAgreement: DataTypes.BOOLEAN,
+    newsletterAgreement: DataTypes.BOOLEAN,
+    twoFactorSecret: { type: DataTypes.STRING, defaultValue: '' },
+    twoFactorRecoveryCodes: { type: DataTypes.STRING, defaultValue: '' },
+    twoFactorConfirmedAt: DataTypes.DATE,
+    rememberToken: { type: DataTypes.STRING, defaultValue: '' },
+    avatar: { type: DataTypes.STRING, defaultValue: '' },
+  }
+);
+User.hasMany(Survey);
+Survey.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'userName',
 });
