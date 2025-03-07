@@ -17,10 +17,16 @@ type ResultDataItem = {
 type ResultDataAnswersResponse = Array<ResultDataItem | undefined>;
 
 export class SurveyListService {
-  static async getAll(surveyId?: any, mPage?: any, mSize?: any) {
+  static async getAll(surveyId?: any, page?: any, size?: any) {
+    const mPage = page ? Number(page) : 1;
+    const mSize = size ? Number(size) : 20;
     const surveyList = await SurveyList.findAll(
       surveyId
-        ? { where: { surveyId: surveyId }, offset: mPage, limit: mSize }
+        ? {
+            where: { surveyId: surveyId },
+            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+            limit: mSize,
+          }
         : {},
     );
     const user_ids: string[] = [
