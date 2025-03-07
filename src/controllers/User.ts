@@ -35,9 +35,11 @@ export class UserController {
           pdAgreement,
           newsletterAgreement,
         } = req.body;
-        if ((await validateBirthDate(birthDate)) === false) {
-          res.send(403).json(`Сайт предназначен для лиц старше 18 лет`);
-          return;
+        if (birthDate) {
+          if ((await validateBirthDate(birthDate)) === false) {
+            res.send(403).json(`Сайт предназначен для лиц старше 18 лет`);
+            return;
+          }
         }
         const exists = await User.findOne({ where: { email: email } });
         console.log('exists', exists);
@@ -58,7 +60,7 @@ export class UserController {
           });
 
           console.log('Role', role.toJSON(), role.id);
-
+          const WorkExperience = Number(workExperience);
           const hash = passwordHash(password);
 
           const user = User.build({
@@ -75,7 +77,7 @@ export class UserController {
             workPlace,
             specialization,
             position,
-            workExperience,
+            WorkExperience,
             pdAgreement,
             newsletterAgreement,
           });
@@ -94,7 +96,7 @@ export class UserController {
         returnError(null, res, errors.array());
       }
     } catch (e: any) {
-      returnError(e, res);
+      returnError(e, res, [], 404);
     }
   }
 
@@ -231,23 +233,23 @@ export class UserController {
     }
   }
 
-  async login(req: Request, res: Response, admin = false) {
+  async login(req: Request, res: Response, admin: boolean) {
     try {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
         const { email, password } = req.body;
 
-        const adminRole = await Role.findOne<any>({
+        const adminRole = await Role.findOne({
           where: {
             guardName: ROLE_ADMIN,
           },
         });
-
+        const jsonRole = adminRole ? adminRole.toJSON() : {};
         const exists = await User.findOne<any>({
           where: {
             email: email,
-            roleId: { [!admin ? Op.not : Op.eq]: adminRole.id },
+            roleId: { [!admin ? Op.not : Op.eq]: jsonRole.id },
           },
         });
         console.log('exists', exists?.toJSON());

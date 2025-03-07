@@ -16,7 +16,7 @@ class SurveyListRoutes {
       (req, res) => this.controller.create(req, res),
     );
     this.router.get('/', (req, res) => this.controller.getAll(req, res));
-    this.router.get('/user/:id', (req, res) =>
+    this.router.get('/user/:id', (req, res): any =>
       this.controller.getOne(req, res),
     );
   }

@@ -22,7 +22,11 @@ export class SurveyListService {
     const mSize = size ? Number(size) : 20;
     const surveyList = await SurveyList.findAll(
       surveyId
-        ? { where: { surveyId: surveyId }, offset: mPage, limit: mSize }
+        ? {
+            where: { surveyId: surveyId },
+            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+            limit: mSize,
+          }
         : {},
     );
     const user_ids: string[] = [
@@ -71,7 +75,10 @@ export class SurveyListService {
     const resultDataResponse: ResultDataAnswersResponse = [];
     const surveyList = await SurveyList.findOne({ where: { userId: userId } });
     const userInfo = await User.findOne({ where: { id: userId } });
-    const timeCompleted = await getFinishTime(surveyList.dataValues.id);
+    if (!userInfo) {
+      return null;
+    }
+    const timeCompleted = await getFinishTime(surveyList.dataValues.surveyId);
     const survey_questions = await SurveyQuestion.findAll({
       where: { surveyId: surveyList.dataValues.surveyId },
     });

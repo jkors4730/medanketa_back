@@ -4,7 +4,11 @@ import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
 import { SurveyList } from '../db/models/SurveyList.js';
 import md5 from 'md5';
-import { saveSurveyAnswers } from '../utils/common.js';
+import {
+  paginateNoSQL,
+  pagination,
+  saveSurveyAnswers,
+} from '../utils/common.js';
 import { Service } from 'typedi';
 import { SurveyListService } from '../services/survey-list.service.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
@@ -78,7 +82,12 @@ export class SurveyListController {
       const { surveyId } = req.query;
       const { page, size } = req.query;
       const surveyList = await SurveyListService.getAll(surveyId, page, size);
-      res.json(surveyList);
+      const where = surveyId ? { surveyId } : {};
+      const pagination = await paginateNoSQL(SurveyList, page, size, where);
+      res.json({
+        items: surveyList,
+        ...pagination,
+      });
     } catch (e: any) {
       returnError(e, res);
     }
@@ -90,9 +99,9 @@ export class SurveyListController {
 
       const surveyList = await SurveyListService.getOne(id, surveyId);
       if (!surveyList) {
-        res.status(404).send('survey list not found');
+        return res.status(404).json('survey list not found');
       }
-      res.json(surveyList).status(200);
+      res.status(200).json(surveyList);
     } catch (e: any) {
       returnError(e, res);
     }

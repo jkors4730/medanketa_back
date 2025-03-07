@@ -29,12 +29,12 @@ export class SurveyService {
                         AND "surveyId" = :id ) /
                 (
                     ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers
+                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers AS sa
                         WHERE sa."isSkip" = false
                         AND sa."userId" = sl."userId"
                         AND sa."surveyId" = :id)
                 )::float) * 100)::numeric, 2) as complete
-            FROM survey_answers sa
+            FROM survey_answers AS sa
                                JOIN survey_lists sl
                                     ON sa.sl_id = sl.id
                                LEFT JOIN users u
