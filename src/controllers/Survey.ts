@@ -243,7 +243,7 @@ export class SurveyController {
         : { status: true };
       const pagination = await paginateNoSQL(Survey, page, size, where);
       res.status(200).json({
-        surveys,
+        items: surveys,
         ...pagination,
       });
     } else {
@@ -265,7 +265,7 @@ export class SurveyController {
       const where = id ? { surveyId: id } : {};
       const pagination = await paginateNoSQL(SurveyAnswer, page, size, where);
       res.status(200).json({
-        data,
+        items: data,
         ...pagination,
       });
     } catch (e: any) {

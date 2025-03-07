@@ -60,7 +60,7 @@ export class UserController {
           });
 
           console.log('Role', role.toJSON(), role.id);
-
+          const WorkExperience = Number(workExperience);
           const hash = passwordHash(password);
 
           const user = User.build({
@@ -77,7 +77,7 @@ export class UserController {
             workPlace,
             specialization,
             position,
-            workExperience,
+            WorkExperience,
             pdAgreement,
             newsletterAgreement,
           });
@@ -233,7 +233,7 @@ export class UserController {
     }
   }
 
-  async login(req: Request, res: Response, admin = false) {
+  async login(req: Request, res: Response, admin: boolean) {
     try {
       const errors = validationResult(req);
 

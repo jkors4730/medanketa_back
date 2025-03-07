@@ -50,8 +50,7 @@ export class CreateUserDto {
   @IsString()
   position?: string;
   @IsOptional()
-  @IsNumber()
-  workExperience?: number;
+  workExperience?: string;
   @IsOptional()
   @IsString()
   newsLetterAgreement?: boolean;

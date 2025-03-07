@@ -85,7 +85,7 @@ export class SurveyListController {
       const where = surveyId ? { surveyId } : {};
       const pagination = await paginateNoSQL(SurveyList, page, size, where);
       res.json({
-        surveyList,
+        items: surveyList,
         ...pagination,
       });
     } catch (e: any) {
