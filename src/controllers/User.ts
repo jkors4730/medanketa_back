@@ -9,6 +9,7 @@ import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { ROLE_ADMIN, ROLE_INT, ROLE_RESP } from '../utils/common.js';
 import { Service } from 'typedi';
+import { validateBirthDate } from '../utils/validateBirthDate.js';
 @Service()
 export class UserController {
   async create(req: Request, res: Response) {
@@ -34,7 +35,12 @@ export class UserController {
           pdAgreement,
           newsletterAgreement,
         } = req.body;
-
+        if (birthDate) {
+          if ((await validateBirthDate(birthDate)) === false) {
+            res.send(403).json(`Сайт предназначен для лиц старше 18 лет`);
+            return;
+          }
+        }
         const exists = await User.findOne({ where: { email: email } });
         console.log('exists', exists);
 
@@ -54,7 +60,7 @@ export class UserController {
           });
 
           console.log('Role', role.toJSON(), role.id);
-
+          const WorkExperience = Number(workExperience);
           const hash = passwordHash(password);
 
           const user = User.build({
@@ -71,7 +77,7 @@ export class UserController {
             workPlace,
             specialization,
             position,
-            workExperience,
+            WorkExperience,
             pdAgreement,
             newsletterAgreement,
           });
@@ -90,7 +96,7 @@ export class UserController {
         returnError(null, res, errors.array());
       }
     } catch (e: any) {
-      returnError(e, res);
+      returnError(e, res, [], 404);
     }
   }
 
@@ -98,7 +104,7 @@ export class UserController {
     try {
       const users = await User.findAll();
 
-      res.json(users);
+      res.json(users).status(200);
     } catch (e: any) {
       returnError(e, res);
     }
@@ -193,7 +199,8 @@ export class UserController {
 
           await user.save();
 
-          res.status(200).json(user.toJSON());
+          res.status(204).json(user.toJSON());
+          return user;
         }
       } else {
         returnError(null, res, errors.array());

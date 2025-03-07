@@ -20,9 +20,9 @@ class SurveyRoutes {
       this.controller.getOne(req, res),
     );
     this.router.get('/completed/user/:id', (req, res) =>
-      this.controller.getByUserId(req, res),
+      this.controller.getSurveyByUserId(req, res),
     );
-    this.router.get('/answers/:id', (req, res) =>
+    this.router.get('/answered-users/:id', (req, res) =>
       this.controller.getUsersBySurveyId(req, res),
     );
 
@@ -30,7 +30,7 @@ class SurveyRoutes {
       this.controller.update(req, res),
     );
     this.router.delete('/:id', (req, res) => this.controller.delete(req, res));
-    // сохранение (копирование) query id
+    // сохранение (копирование) param id
     this.router.post('/:id/draft', (req, res) =>
       this.controller.generateDraftAnket(req, res),
     );

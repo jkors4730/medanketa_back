@@ -69,7 +69,11 @@ GET (query params):
 ```bash
 /survey/completed/user/:id
 ```
-
+## GET answered-users by survey
+```bash
+/survey/answered-users/:id
+id: req.param | number
+```
 ## Update [PUT]
 
 ```bash
@@ -101,33 +105,43 @@ params (JSON-body):
 GET params: Not provided
 
 ## Generate Draft Anket [POST]
+
 ### генерация черновика анкеты путём её клонирования
+
 ```bash
 /:id/draft
 return { newDraft: value typeof Survey}
 ```
+
 ```bash
 id | req.params
 ```
 
 ## Generate from draft [POST]
+
 ### генерация "чистовика" на основе черновика (шаблона)
+
 ```bash
 /draft
 :id | req.body
 return value typeof Survey
 ```
+
 ```bash
 :id | req.params
 ```
 
 ## Get all drafts with pagination [GET]
-#### отдача всех черновиков (шаблонов) с пагинацией
+
+### отдача всех черновиков (шаблонов) с пагинацией
 
 ```bash
 /draft
 return value[] typeof Survey
 ```
-### param:
+
+### param
+
 - #### `userId` - req.params
+
 - #### `page, size` - req.query

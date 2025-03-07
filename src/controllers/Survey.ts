@@ -7,11 +7,13 @@ import { Survey } from '../db/models/Survey.js';
 import sequelize from '../db/config.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { QueryTypes } from 'sequelize';
-import { pagination, saveSurveyData } from '../utils/common.js';
+import { paginateNoSQL, pagination, saveSurveyData } from '../utils/common.js';
 
 import { SurveyService } from '../services/survey.service.js';
 import { autoInjectable, container, injectable, registry } from 'tsyringe';
 import { Inject } from 'typedi';
+import { SurveyQuestionService } from '../services/survey-question.service.js';
+import { SurveyAnswer } from '../db/models/SurveyAnswer.js';
 
 export class SurveyController {
   /**
@@ -48,11 +50,7 @@ export class SurveyController {
         const survey = await SurveyService.createSurvey(req.body);
 
         if (Array.isArray(questions)) {
-          const bindSurveyQ =
-            await SurveyService.validateAndGenerateQuestionsData(
-              survey,
-              questions,
-            );
+          const bindSurveyQ = await SurveyQuestionService.create(questions);
           if (!bindSurveyQ) {
             returnError(null, res, [
               'You must provide required fields `question`, `type`, `status` to create SurveyQuestion',
@@ -205,15 +203,17 @@ export class SurveyController {
   /**
    * Получить список анкет пользователя (завершённых)
    *
-   * @param {number} id surveyId
+   * @param {number} id userId
    * @throws {Error} e
    */
-  async getByUserId(req: Request, res: Response) {
+  async getSurveyByUserId(req: Request, res: Response) {
     const errors = validationResult(req);
-
     if (errors.isEmpty()) {
       const { id } = req.params;
+      const { page, size } = req.query;
 
+      const mPage = page ? Number(page) : 1;
+      const mSize = size ? Number(size) : 20;
       const surveys = await sequelize.query(
         `--sql
             SELECT surveys.*,
@@ -223,16 +223,29 @@ export class SurveyController {
                     JOIN survey_lists ON surveys."id" = survey_lists."surveyId"
                     LEFT JOIN users ON surveys."userId" = users.id
             WHERE surveys.status = true
-                AND survey_lists."userId" = :userId`,
+                AND survey_lists."userId" = :userId
+            ORDER BY surveys.id DESC
+            LIMIT :limit
+            OFFSET :offset`,
         {
-          replacements: { userId: id },
+          replacements: {
+            userId: id,
+            offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+            limit: mSize,
+          },
           type: QueryTypes.SELECT,
           model: Survey,
           mapToModel: true,
         },
       );
-
-      res.json(surveys);
+      const where = id
+        ? { userId: Number(id), status: true }
+        : { status: true };
+      const pagination = await paginateNoSQL(Survey, page, size, where);
+      res.status(200).json({
+        items: surveys,
+        ...pagination,
+      });
     } else {
       returnError(null, res, errors.array());
     }
@@ -246,44 +259,15 @@ export class SurveyController {
    */
   async getUsersBySurveyId(req: Request, res: Response) {
     const { id } = req.params;
-
+    const { page, size } = req.query;
     try {
-      const data = await sequelize.query<any>(
-        `--sql
-            SELECT DISTINCT
-            sl."userId" as "userId",
-            u.name as "userName",
-            u."lastName" as "userLastName",
-            TO_CHAR(sl."tsEnd", 'DD.MM.YYYY') as "dateEnd",
-            (sl."tsEnd" - sl."tsStart") as time,
-            sl."tsStart",
-            sl."tsEnd",
-            ROUND( ( (
-                ( SELECT COUNT(sl_id)::float
-                        FROM survey_answers
-                        WHERE "isSkip" = false
-                        AND "userId" = sl."userId"
-                        AND "surveyId" = :id ) /
-                (
-                    ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
-                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers
-                        WHERE "isSkip" = false
-                        AND "userId" = sl."userId"
-                        AND "surveyId" = :id)
-                )::float) * 100)::numeric, 2) as complete
-            FROM survey_answers sa
-                               JOIN survey_lists sl
-                                    ON sa.sl_id = sl.id
-                               LEFT JOIN users u
-                                         ON sl."userId" = u.id
-            WHERE sl."surveyId" = :id`,
-        {
-          replacements: { id: id },
-          type: QueryTypes.SELECT,
-        },
-      );
-
-      res.status(200).json(data);
+      const data = await SurveyService.getUsersBySurveyId(id, page, size);
+      const where = id ? { surveyId: id } : {};
+      const pagination = await paginateNoSQL(SurveyAnswer, page, size, where);
+      res.status(200).json({
+        items: data,
+        ...pagination,
+      });
     } catch (e: any) {
       returnError(e, res);
     }
@@ -418,8 +402,8 @@ export class SurveyController {
    * @throws {Error} e
    */
   async generateDraftAnket(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const draft = await SurveyService.cloneSurvey(id);
+    const { id } = req.params;
+    const draft = await SurveyService.cloneSurvey(Number(id));
     res.json(draft).status(200);
   }
 
@@ -429,8 +413,8 @@ export class SurveyController {
    * @throws {Error} e
    */
   async generateFromDraft(req: Request, res: Response) {
-    const { userId } = req.body;
-    const clone = await SurveyService.createFromDraft(Number(userId));
+    const { surveyId } = req.body;
+    const clone = await SurveyService.createFromDraft(Number(surveyId));
     res.json(clone).status(200);
   }
 

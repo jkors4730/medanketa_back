@@ -20,21 +20,22 @@ export class CreateSurveyDto {
   @IsNotEmpty()
   @IsString()
   slug: string;
+  @IsNotEmpty()
   @IsBoolean()
   status: boolean;
   @IsOptional()
   @IsBoolean()
-  access: boolean;
+  access?: boolean;
   @IsOptional()
   @IsString()
-  description: string;
+  description?: string;
   @IsOptional()
   @IsDate()
-  expireDat: Date;
+  expireDat?: Date;
   @IsOptional()
   @IsArray()
-  questions: [object];
+  questions?: [object];
   @IsOptional()
   @IsNotEmpty()
-  file: string;
+  file?: string;
 }

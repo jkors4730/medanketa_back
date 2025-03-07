@@ -3,93 +3,115 @@ import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import type { CreateSurveyDto } from '../dto/survey/create.survey.dto.js';
 import type { Model } from 'sequelize';
 import { QueryTypes } from 'sequelize';
-import { saveSurveyData } from '../utils/common.js';
-import { returnError } from '../utils/error.js';
-import surveyQuestion from '../routes/SurveyQuestion.js';
 import sequelize from '../db/config.js';
-import { User } from '../db/models/User.js';
+import { SurveyQuestionService } from './survey-question.service.js';
+import { SurveyListService } from './survey-list.service.js';
 
 export class SurveyService {
+  static async getUsersBySurveyId(surveyId: string, page?: any, size?: any) {
+    const mPage = page ? Number(page) : 1;
+    const mSize = size ? Number(size) : 20;
+    const surveys = await sequelize.query<any>(
+      `--sql
+            SELECT DISTINCT
+            sl."userId" as "userId",
+            u.name as "userName",
+            u."lastName" as "userLastName",
+            TO_CHAR(sl."tsEnd", 'DD.MM.YYYY') as "dateEnd",
+            (sl."tsEnd" - sl."tsStart") as time,
+            sl."tsStart",
+            sl."tsEnd",
+            ROUND( ( (
+                ( SELECT COUNT(sl_id)::float
+                        FROM survey_answers
+                        WHERE "isSkip" = false
+                        AND "userId" = sl."userId"
+                        AND "surveyId" = :id ) /
+                (
+                    ( SELECT COUNT(*)::float FROM survey_questions WHERE "surveyId" = :id) *
+                    ( SELECT COUNT(DISTINCT sl_id)::float FROM survey_answers AS sa
+                        WHERE sa."isSkip" = false
+                        AND sa."userId" = sl."userId"
+                        AND sa."surveyId" = :id)
+                )::float) * 100)::numeric, 2) as complete
+            FROM survey_answers AS sa
+                               JOIN survey_lists sl
+                                    ON sa.sl_id = sl.id
+                               LEFT JOIN users u
+                                         ON sl."userId" = u.id
+            WHERE sl."surveyId" = :id
+            ORDER BY sl."tsEnd" DESC
+            OFFSET :offset
+            LIMIT :limit`,
+      {
+        replacements: {
+          id: surveyId,
+          offset: mPage > 1 ? mSize * (Number(page) - 1) : 0,
+          limit: mSize,
+        },
+        type: QueryTypes.SELECT,
+      },
+    );
+    const usersData = await Promise.all(
+      surveys.map(async (userData) => {
+        return await SurveyListService.getOne(userData.userId, surveyId);
+      }),
+    );
+    const combinedData = surveys.map((survey) => {
+      const matchingUser = usersData.find(
+        (user) => user.dataValues.userId === survey.userId,
+      );
+      return {
+        ...survey,
+        ...(matchingUser?.dataValues || {}),
+      };
+    });
+    return combinedData;
+  }
   static async createSurvey(createSurveyDto: CreateSurveyDto) {
     const survey = await Survey.create({ ...createSurveyDto });
     return survey;
   }
-  static async validateAndGenerateQuestionsData(
-    survey: Model<any, any>,
-    questions: any[],
-  ) {
-    const questionsArr = [];
-    for (const q of questions) {
-      const { question, type, status, description, data } = q;
-      if (
-        typeof question == 'string' &&
-        typeof type == 'string' &&
-        typeof status == 'boolean'
-      ) {
-        const surveyQuestion = await SurveyQuestion.create({
-          surveyId: survey.dataValues.id,
-          question,
-          type,
-          status,
-          description,
-          data,
-        });
-        questionsArr.push(surveyQuestion.toJSON());
-        // сохраняем data (json)
-        await saveSurveyData(data, surveyQuestion.dataValues.id);
-      } else {
-        return null;
-      }
-    }
-    return questionsArr;
-  }
+
   static async cloneSurvey(id: number) {
     const targetSurvey = await Survey.findOne({
       where: { id: id },
-      include: {
-        model: SurveyQuestion,
-        as: 'survey_questions',
-      },
     });
-    if (!targetSurvey) {
+    const targetQuestion = await SurveyQuestion.findAll({
+      where: { surveyId: id },
+    });
+    if (!targetSurvey || !targetQuestion) {
       return null;
     }
     const newDraft = await this.createSurvey({
       ...targetSurvey.dataValues,
-      isDraft: true,
       id: undefined,
+      isDraft: true,
     });
-    await this.bindQuestionsFromSurvey(newDraft, targetSurvey);
+    await this.bindQuestionsFromSurvey(newDraft.dataValues.id, targetQuestion);
     return newDraft;
   }
   static async bindQuestionsFromSurvey(
-    newDraft: Model<any, any>,
-    targetSurvey: Model<any, any>,
+    draftId: number,
+    questions: Model<any, any>[],
   ) {
-    if (!Array.isArray(targetSurvey.dataValues.survey_questions)) {
+    if (!Array.isArray(questions)) {
       throw new Error('survey_questions is not an array');
     }
     const newQuestions = await Promise.all(
-      targetSurvey.dataValues.survey_questions.map(async (question: any) => {
-        return await SurveyQuestion.create({
-          ...question.dataValues,
-          id: undefined,
-          surveyId: newDraft.dataValues.id,
-        });
-      }),
+      questions.map(async (question: any) => ({
+        ...question.dataValues,
+        id: undefined,
+        surveyId: draftId,
+      })),
     );
-    const questions = await this.validateAndGenerateQuestionsData(
-      newDraft,
-      newQuestions,
-    );
-    newDraft.setDataValue('questions', questions);
-    await newDraft.save();
-    const responseDraft = newDraft.toJSON();
-    delete responseDraft.questions;
-    return { newDraft: responseDraft };
+    await SurveyQuestionService.create(newQuestions);
   }
   static async createFromDraft(surveyId: number) {
     const clone = await this.cloneSurvey(surveyId);
+    if (!clone) {
+      return Error('failed to create');
+    }
     clone.setDataValue('isDraft', false);
     await clone.save();
     return clone;

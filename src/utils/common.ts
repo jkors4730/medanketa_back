@@ -107,7 +107,27 @@ export const pagination = (
     total: Number(total),
   };
 };
-
+export const paginateNoSQL = async (
+  Model: any,
+  page: any,
+  size: any,
+  where: any = {},
+  order: any = [],
+) => {
+  const mPage = page ? Number(page) : 1;
+  const mSize = size ? Number(size) : 20;
+  const offset = mPage > 1 ? mSize * (Number(mPage) - 1) : 0;
+  const { count } = await Model.findAndCountAll({
+    where,
+    order,
+    mSize,
+    offset,
+  });
+  return {
+    page: mPage,
+    total: count,
+  };
+};
 export const generatePassword = (length: number = 8) => {
   let val = '';
 

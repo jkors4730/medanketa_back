@@ -9,6 +9,7 @@ File upload methods
 ```
 
 POST params (form-data):
+
 ```js
 {
     "file": "", // typeof <Binary>, [Required*]
@@ -22,6 +23,7 @@ POST params (form-data):
 ```
 
 POST params (JSON-body):
+
 ```js
 {
     "file": "", // typeof <String>, [Required*]

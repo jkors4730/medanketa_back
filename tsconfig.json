@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-      "target": "ESNext",
+      "target": "es2022",
       "module": "NodeNext",
       "moduleResolution": "NodeNext",
       "outDir": "./dist",
@@ -11,7 +11,9 @@
       "strictPropertyInitialization": false,
       "forceConsistentCasingInFileNames": true,
       "experimentalDecorators": true,
-      "emitDecoratorMetadata": true
+      "emitDecoratorMetadata": true,
+      "resolveJsonModule": true,
+      "allowJs": true,
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules"]

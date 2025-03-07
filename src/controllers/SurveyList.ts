@@ -4,7 +4,11 @@ import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
 import { SurveyList } from '../db/models/SurveyList.js';
 import md5 from 'md5';
-import { saveSurveyAnswers } from '../utils/common.js';
+import {
+  paginateNoSQL,
+  pagination,
+  saveSurveyAnswers,
+} from '../utils/common.js';
 import { Service } from 'typedi';
 import { SurveyListService } from '../services/survey-list.service.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
@@ -76,20 +80,28 @@ export class SurveyListController {
   async getAll(req: Request, res: Response) {
     try {
       const { surveyId } = req.query;
-      const surveyList = await SurveyListService.getAll(surveyId);
-      res.json(surveyList);
+      const { page, size } = req.query;
+      const surveyList = await SurveyListService.getAll(surveyId, page, size);
+      const where = surveyId ? { surveyId } : {};
+      const pagination = await paginateNoSQL(SurveyList, page, size, where);
+      res.json({
+        items: surveyList,
+        ...pagination,
+      });
     } catch (e: any) {
       returnError(e, res);
     }
   }
-  //TODO переделать логику на метод getAll with userId кто прошел анкету и подгружать их инфу
   async getOne(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const { surveyId } = req.query;
 
       const surveyList = await SurveyListService.getOne(id, surveyId);
-      res.json(surveyList).status(200);
+      if (!surveyList) {
+        return res.status(404).json('survey list not found');
+      }
+      res.status(200).json(surveyList);
     } catch (e: any) {
       returnError(e, res);
     }
