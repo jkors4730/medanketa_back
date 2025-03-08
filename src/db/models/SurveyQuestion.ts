@@ -11,5 +11,5 @@ export const SurveyQuestion = sequelize.define('survey_questions', {
   description: { type: DataTypes.STRING, defaultValue: '' },
   data: { type: DataTypes.TEXT, defaultValue: '' },
   sortId: { type: DataTypes.INTEGER, defaultValue: 0 },
-  maxCountAnswers: { type: DataTypes.INTEGER, defaultValue: 1 },
+  maxCountAnswers: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
