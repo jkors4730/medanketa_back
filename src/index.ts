@@ -16,10 +16,9 @@ async function bootstrap() {
   app.use(cors());
   app.use(express.static(path.join(__dirname, '/assets')));
   app.use(fileUpload());
-  app.use(express.json())
+  app.use(express.json());
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-
   new Routes(app);
 
   return app;

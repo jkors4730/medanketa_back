@@ -88,9 +88,9 @@ import {DataTypes} from "sequelize";
     await queryInterface.createTable('roles', {
       name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       guardName: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
-
       rolePriority: { type: DataTypes.STRING, defaultValue: '' },
       description: { type: DataTypes.STRING, defaultValue: '' },
+        permissions: { type: DataTypes.ARRAY, allowNull: false, defaultValue: [] },
     })
     await queryInterface.createTable('regions', {
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required

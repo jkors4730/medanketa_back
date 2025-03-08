@@ -3,7 +3,7 @@ import { ROLE_ADMIN} from '../../dist/utils/common.js';
 export default {
   async up(queryInterface) {
     const exists = await queryInterface.sequelize.query(`
-    SELECT id FROM roles WHERE guardName = '${ROLE_ADMIN}' LIMIT 1`)
+    SELECT id FROM roles WHERE "guardName" = '${ROLE_ADMIN}' LIMIT 1`)
    if (!exists) {
      await queryInterface.bulkInsert('roles', [
        {
@@ -14,7 +14,7 @@ export default {
        },
      ]);
    } else {
-     console.log('up to date');
+     console.log(`role ${ROLE_ADMIN} has already been updated`);
    }
   },
 
