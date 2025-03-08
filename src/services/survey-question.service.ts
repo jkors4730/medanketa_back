@@ -8,7 +8,16 @@ export class SurveyQuestionService {
     const questionsArr: Model<any, any>[] = [];
 
     for (const q of questions) {
-      const { surveyId, question, type, status, description, data, sortId } = q;
+      const {
+        surveyId,
+        question,
+        type,
+        status,
+        description,
+        data,
+        sortId,
+        maxCountAnswers,
+      } = q;
 
       if (
         typeof surveyId == 'number' &&
@@ -24,6 +33,7 @@ export class SurveyQuestionService {
           description,
           data,
           sortId,
+          maxCountAnswers,
         });
 
         await saveSurveyData(data, surveyQuestion.dataValues.id);
