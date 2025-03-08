@@ -10,8 +10,14 @@ import { Op } from 'sequelize';
 import { ROLE_ADMIN, ROLE_INT, ROLE_RESP } from '../utils/common.js';
 import { Service } from 'typedi';
 import { validateBirthDate } from '../utils/validateBirthDate.js';
+import { MailService } from '../services/Mail.js';
+import {
+  DeleteMessage,
+  UserRegistrationMessage,
+} from '../services/interfaces/mail.interface.js';
 @Service()
 export class UserController {
+  nodeMailer = new MailService();
   async create(req: Request, res: Response) {
     try {
       const errors = validationResult(req);
@@ -85,8 +91,19 @@ export class UserController {
           console.log('User', user.toJSON());
 
           await user.save();
-
           res.status(201).json(user.toJSON());
+          const message: UserRegistrationMessage = {
+            name: user.dataValues.name,
+            email: user.dataValues.email,
+            password: password,
+            platform: 'medanketa.com',
+            dateReg: user.dataValues.createdAt,
+          };
+          this.nodeMailer.sendAdminRegistrationMail(message);
+          this.nodeMailer.sendUserRegistrationMail(
+            user.dataValues.email,
+            message,
+          );
         } else {
           returnError(null, res, [
             'Пользователь с таким email уже существует!',
@@ -216,6 +233,7 @@ export class UserController {
 
       if (errors.isEmpty()) {
         const { id } = req.params;
+        const { type } = req.query;
 
         const user = await User.findByPk(parseInt(id));
 
@@ -223,6 +241,29 @@ export class UserController {
           returnError(null, res, ['Not found']);
         } else {
           await user.destroy();
+          const message: DeleteMessage = {
+            email: user.dataValues.email,
+            name: user.dataValues.name,
+            lastName: user.dataValues.lastName,
+            dateReg: user.dataValues.createdAt,
+            platform: 'medanketa.com',
+          };
+          switch (type) {
+            case 'delete':
+              await this.nodeMailer.sendAdminDeleteMail(message);
+              await this.nodeMailer.sendUserDeleteMail(
+                user.dataValues.email,
+                message,
+              );
+              break;
+            case 'processingDB':
+              await this.nodeMailer.sendAdminProcessingPdMail(message);
+              await this.nodeMailer.sendUserProcessingPdMail(
+                user.dataValues.email,
+                message,
+              );
+              break;
+          }
           res.status(204).send();
         }
       } else {
@@ -232,7 +273,6 @@ export class UserController {
       returnError(e, res);
     }
   }
-
   async login(req: Request, res: Response, admin: boolean) {
     try {
       const errors = validationResult(req);

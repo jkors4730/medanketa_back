@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import { Role } from '../db/models/Role.js';
 
 interface JWTData {
   id: string;
@@ -9,11 +10,13 @@ interface JWTData {
 
 const jwtKey = process.env.JWT_TOKEN as string;
 
-export const generateAuthToken = (user: any): string => {
+export const generateAuthToken = async (user: any): Promise<string> => {
+  const role = await Role.findOne({ where: { id: user.roleId } });
   const token = jwt.sign(
     {
       id: user.id,
       email: user.email,
+      permissions: role.dataValues.permissions,
     },
     jwtKey,
     {

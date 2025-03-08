@@ -4,11 +4,13 @@ import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
 import { User } from '../db/models/User.js';
 import { passwordHash } from '../utils/hash.js';
-import { mailService } from '../services/Mail.js';
+import { MailService, mailService } from '../services/Mail.js';
 import { generatePassword } from '../utils/common.js';
 import { Service } from 'typedi';
+import { SupportMessage } from '../services/interfaces/mail.interface.js';
 @Service()
 export class EmailController {
+  nodeMailer = new MailService();
   /**
    * Письмо в поддержку
    *
@@ -22,8 +24,19 @@ export class EmailController {
 
       if (errors.isEmpty()) {
         const { email, message } = req.body;
-
-        mailService.sendSupportMail(email, message);
+        const user = await User.findOne({ where: { email: email } });
+        const JSONuser = user.toJSON();
+        const supportMessage: SupportMessage = {
+          email: email,
+          name: JSONuser.name,
+          text: message,
+          platform: 'medanketa.com',
+          dateReg: JSONuser.createdAt,
+          dateRequest: new Date(),
+          lastName: JSONuser.lastName,
+        };
+        this.nodeMailer.sendAdminSupportMail(supportMessage);
+        this.nodeMailer.sendUserSupportMail(email, supportMessage);
 
         res.status(200).json({
           sucess: true,

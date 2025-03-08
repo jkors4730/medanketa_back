@@ -142,6 +142,9 @@ export const generatePassword = (length: number = 8) => {
   return val;
 };
 export const validateSurveyAnswers = async (answers: any) => {
+  if (answers.length < 2) {
+    return true;
+  }
   for (const answerObj of answers) {
     const { id, answer } = answerObj;
 
