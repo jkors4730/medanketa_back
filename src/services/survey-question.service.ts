@@ -35,7 +35,6 @@ export class SurveyQuestionService {
           sortId,
           maxCountAnswers,
         });
-
         await saveSurveyData(data, surveyQuestion.dataValues.id);
 
         questionsArr.push(surveyQuestion);

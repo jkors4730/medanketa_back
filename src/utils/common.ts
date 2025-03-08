@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SurveyAnswer } from '../db/models/SurveyAnswer.js';
 import { SurveyData } from '../db/models/SurveyData.js';
+import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 
 export const ROLE_RESP = 'respondent';
 export const ROLE_INT = 'interviewer';
@@ -139,4 +140,35 @@ export const generatePassword = (length: number = 8) => {
   }
 
   return val;
+};
+export const validateSurveyAnswers = async (answers: any) => {
+  for (const answerObj of answers) {
+    const { id, answer } = answerObj;
+
+    // Преобразуем строку JSON в массив
+    let parsedAnswers;
+    try {
+      parsedAnswers = JSON.parse(answer);
+    } catch (error) {
+      return new Error(`Ошибка парсинга ответа для вопроса ID: ${id}`);
+    }
+
+    if (!Array.isArray(parsedAnswers)) continue;
+    const question = await SurveyQuestion.findOne({ where: { id: id } });
+    if (!question) {
+      return new Error(`Вопрос с ID ${id} не найден.`);
+    }
+
+    if (
+      question.dataValues.type === 'multiple=select' &&
+      question.dataValues.maxCountAnswers
+    ) {
+      if (parsedAnswers.length > question.dataValues.maxCountAnswers) {
+        return new Error(
+          `Ошибка: Вопрос "${question.dataValues.text}" позволяет выбрать не более ${question.dataValues.maxCountAnswers} вариантов.`,
+        );
+      }
+    }
+  }
+  return true;
 };
