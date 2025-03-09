@@ -37,6 +37,12 @@ import {DataTypes} from "sequelize";
       avatar: { type: DataTypes.STRING, defaultValue: '' },
     })
     await queryInterface.createTable('survey_questions', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required
       question: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       type: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
@@ -47,6 +53,12 @@ import {DataTypes} from "sequelize";
       sortId: { type: DataTypes.INTEGER, defaultValue: 0 },
     })
     await queryInterface.createTable('survey_lists', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       userId: { type: DataTypes.BIGINT }, // required
       surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required
       uIndex: { type: DataTypes.TEXT, unique: true },
@@ -58,12 +70,24 @@ import {DataTypes} from "sequelize";
       tsEnd: { type: DataTypes.DATE },
     })
     await queryInterface.createTable('survey_data', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       sq_id: { type: DataTypes.INTEGER, allowNull: false }, // required
       uid: { type: DataTypes.BIGINT },
       sortId: { type: DataTypes.INTEGER },
       value: { type: DataTypes.TEXT },
     })
     await queryInterface.createTable('survey_answers', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       sl_id: { type: DataTypes.INTEGER, allowNull: false }, // required
       sq_id: { type: DataTypes.INTEGER, allowNull: false }, // required
       surveyId: { type: DataTypes.INTEGER, allowNull: false }, // required
@@ -72,6 +96,12 @@ import {DataTypes} from "sequelize";
       isSkip: { type: DataTypes.BOOLEAN, defaultValue: false },
     })
     await queryInterface.createTable('surveys', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       userId: { type: DataTypes.INTEGER, allowNull: false }, // required
       image: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
@@ -83,24 +113,53 @@ import {DataTypes} from "sequelize";
       expireDate: DataTypes.DATE,
     })
     await queryInterface.createTable('specs', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     })
     await queryInterface.createTable('roles', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       name: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       guardName: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       rolePriority: { type: DataTypes.STRING, defaultValue: '' },
       description: { type: DataTypes.STRING, defaultValue: '' },
-        permissions: { type: DataTypes.ARRAY, allowNull: false, defaultValue: [] },
     })
     await queryInterface.createTable('regions', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     })
     await queryInterface.createTable('dict_values', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       value: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       dictId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
       sortId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
     })
     await queryInterface.createTable('dicts', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       common: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }, // required
       status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }, // required
@@ -109,6 +168,12 @@ import {DataTypes} from "sequelize";
       values: { type: DataTypes.JSON },
     })
     await queryInterface.createTable('cities', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
     })
   }

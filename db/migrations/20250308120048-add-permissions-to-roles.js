@@ -1,41 +1,28 @@
 'use strict';
 
-import { DataTypes } from 'sequelize'
+import sequelize, { DataTypes } from 'sequelize';
 
 /** @type {import('sequelize-cli').Migration} */
 export default {
-  async up (queryInterface, Sequelize) {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
-
+  async up(queryInterface) {
     const [exists] = await queryInterface.sequelize.query(`
-    SELECT column_name
-    FROM information_schema.columns
-    WHERE table_name = 'roles' AND column_name = 'permissions'`)
-    if (exists.length === 0) {
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'roles' AND column_name = 'permissions';
+    `);
 
-      // await queryInterface.addColumn('roles','permissions', {
-      //   permissions: { type: DataTypes.ARRAY(DataTypes.TEXT), allowNull: false, defaultValue: [] },
-      // },{
-      //   using: 'permissions::TEXT[]'
-      // })
-      await queryInterface.sequelize.query(` ALTER TABLE roles ADD COLUMN permissions TEXT[] DEFAULT '[]'`);
+    if (exists.length === 0) {
+      await queryInterface.addColumn('roles', 'permissions', {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+        defaultValue: sequelize.literal(`ARRAY[]::TEXT[]`) // Используем правильное приведение типов
+      });
     } else {
-      console.log(`permission_column updated`)
+      console.log(`permission_column already exists`);
     }
   },
 
-  async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
-    // await queryInterface.removeColumn("roles", "permissions")
+  async down(queryInterface) {
+    await queryInterface.removeColumn('roles', 'permissions');
   }
 };
