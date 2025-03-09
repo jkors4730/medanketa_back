@@ -119,9 +119,13 @@ export class UserController {
 
   async getAll(_req: Request, res: Response) {
     try {
-      const users = await User.findAll();
-
-      res.json(users).status(200);
+      res
+        .json(
+          await User.findAll({
+            attributes: ['id', 'name', 'lastName', 'surname', 'email', 'phone'],
+          }),
+        )
+        .status(200);
     } catch (e: any) {
       returnError(e, res);
     }

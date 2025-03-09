@@ -1,5 +1,4 @@
 import type { Application } from 'express';
-import dbRoutes from './db.js';
 import emailRoutes from './Email.js';
 import userRoutes from './User.js';
 import roleRoutes from './Role.js';
@@ -14,17 +13,16 @@ import regRoutes from './Reg.js';
 
 export default class Routes {
   constructor(app: Application) {
-    app.use('/db', dbRoutes);
-    app.use('/email', emailRoutes);
     app.use('/user', userRoutes);
     app.use('/role', roleRoutes);
     app.use('/survey', surveyRoutes);
     app.use('/survey-question', surveyQuestionRoutes);
     app.use('/survey-list', surveyListRoutes);
-    app.use('/upload', uploadRoutes);
     app.use('/stats', statsRoutes);
     app.use('/dicts', dictRoutes);
     app.use('/dict-values', dictValueRoutes);
+    app.use('/email', emailRoutes);
+    app.use('/upload', uploadRoutes);
     app.use('/reg', regRoutes);
   }
 }

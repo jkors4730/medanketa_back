@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { saveSurveyData } from '../utils/common.js';
 import type { Model } from 'sequelize';

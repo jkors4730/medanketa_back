@@ -1,17 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { Request, Response } from 'express';
 import { returnError } from '../utils/error.js';
 import { validationResult } from 'express-validator';
 import { Survey } from '../db/models/Survey.js';
 import sequelize from '../db/config.js';
-import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import { QueryTypes } from 'sequelize';
-import { paginateNoSQL, pagination, saveSurveyData } from '../utils/common.js';
+import { paginateNoSQL, pagination } from '../utils/common.js';
 
 import { SurveyService } from '../services/survey.service.js';
-import { autoInjectable, container, injectable, registry } from 'tsyringe';
-import { Inject } from 'typedi';
 import { SurveyQuestionService } from '../services/survey-question.service.js';
 import { SurveyAnswer } from '../db/models/SurveyAnswer.js';
 
@@ -35,17 +31,7 @@ export class SurveyController {
     try {
       const errors = validationResult(req);
       if (errors.isEmpty()) {
-        const {
-          userId,
-          image,
-          title,
-          slug,
-          status,
-          access,
-          description,
-          expireDat,
-          questions,
-        } = req.body;
+        const { questions } = req.body;
 
         const survey = await SurveyService.createSurvey(req.body);
 

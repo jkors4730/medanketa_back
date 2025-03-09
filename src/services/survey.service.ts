@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Survey } from '../db/models/Survey.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
 import type { CreateSurveyDto } from '../dto/survey/create.survey.dto.js';
@@ -8,6 +9,11 @@ import { SurveyQuestionService } from './survey-question.service.js';
 import { SurveyListService } from './survey-list.service.js';
 
 export class SurveyService {
+  static async createSurvey(createSurveyDto: CreateSurveyDto) {
+    const survey = await Survey.create({ ...createSurveyDto });
+    return survey;
+  }
+
   static async getUsersBySurveyId(surveyId: string, page?: any, size?: any) {
     const mPage = page ? Number(page) : 1;
     const mSize = size ? Number(size) : 20;
@@ -68,14 +74,10 @@ export class SurveyService {
     });
     return combinedData;
   }
-  static async createSurvey(createSurveyDto: CreateSurveyDto) {
-    const survey = await Survey.create({ ...createSurveyDto });
-    return survey;
-  }
 
   static async cloneSurvey(id: number) {
     const targetSurvey = await Survey.findOne({
-      where: { id: id },
+      where: { id },
     });
     const targetQuestion = await SurveyQuestion.findAll({
       where: { surveyId: id },

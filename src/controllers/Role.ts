@@ -13,12 +13,10 @@ export class RoleController {
       if (errors.isEmpty()) {
         const { name, guardName } = req.body;
 
-        const role = Role.build({
+        const role = await Role.create({
           name,
           guardName,
         });
-
-        await role.save();
 
         res.status(201).json(role.toJSON());
       } else {
@@ -31,9 +29,11 @@ export class RoleController {
 
   async getAll(_req: Request, res: Response) {
     try {
-      const roles = await Role.findAll();
-
-      res.json(roles);
+      res.json(
+        await Role.findAll({
+          attributes: ['id', 'name', 'guardName'],
+        }),
+      );
     } catch (e: any) {
       returnError(e, res);
     }
@@ -74,8 +74,9 @@ export class RoleController {
         if (role === null) {
           returnError(null, res, [`Role with id = ${id} not found`]);
         } else {
-          role.name = name || role.name;
-          role.guardName = guardName || role.guardName;
+          role.name = typeof name == 'string' ? name : role.name;
+          role.guardName =
+            typeof guardName == 'string' ? guardName : role.guardName;
 
           await role.save();
 

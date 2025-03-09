@@ -1,12 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SurveyList } from '../db/models/SurveyList.js';
 import { User } from '../db/models/User.js';
 import { getFinishTime } from '../controllers/Stats.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
-import { log } from 'node:util';
 import md5 from 'md5';
-import { QueryTypes, Sequelize } from 'sequelize';
-import sequelize from '../db/config.js';
-import { Survey } from '../db/models/Survey.js';
 
 type ResultDataItem = {
   fullNameResp: string;

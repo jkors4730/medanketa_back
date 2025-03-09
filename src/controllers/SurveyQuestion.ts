@@ -3,7 +3,6 @@ import type { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { returnError } from '../utils/error.js';
 import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
-import { saveSurveyData } from '../utils/common.js';
 import { Service } from 'typedi';
 import { SurveyQuestionService } from '../services/survey-question.service.js';
 @Service()
