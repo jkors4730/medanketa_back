@@ -33,13 +33,28 @@ export class DictsController {
 
       if (errors.isEmpty()) {
         const { title, description, common, status, userId, values } = req.body;
-
+        const user = await User.findByPk(userId);
+        const role = await Role.findByPk(user.dataValues.roleId);
+        if (!user || !role) {
+          res.status(404).json('user not found');
+          return;
+        }
+        let typeDictionary: 'global' | 'personal';
+        switch (role.dataValues.guardName) {
+          case 'admin':
+            typeDictionary = 'global';
+            break;
+          default:
+            typeDictionary = 'personal';
+            break;
+        }
         const dict = await Dict.create<any>({
           title,
           description,
           common,
           status,
           userId,
+          typeDictionary,
         });
 
         const valuesArr = [];
