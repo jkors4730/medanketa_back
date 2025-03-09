@@ -6,14 +6,11 @@ import { SurveyList } from '../db/models/SurveyList.js';
 import md5 from 'md5';
 import {
   paginateNoSQL,
-  pagination,
   saveSurveyAnswers,
   validateSurveyAnswers,
 } from '../utils/common.js';
 import { Service } from 'typedi';
 import { SurveyListService } from '../services/survey-list.service.js';
-import { SurveyQuestion } from '../db/models/SurveyQuestion.js';
-import { Survey } from '../db/models/Survey.js';
 @Service()
 export class SurveyListController {
   async create(req: Request, res: Response) {
@@ -28,7 +25,6 @@ export class SurveyListController {
             uIndex: md5(String(surveyId) + String(userId)),
           },
         });
-        console.log('exists', exists);
 
         if (!exists) {
           const validateAnwers = await validateSurveyAnswers(answers);
