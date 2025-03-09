@@ -30,6 +30,7 @@ export class SurveyListController {
           const validateAnwers = await validateSurveyAnswers(answers);
           if (validateAnwers !== true) {
             res.status(400).json(validateAnwers);
+            return;
           }
           const surveyList = await SurveyList.create<any>({
             uIndex: md5(String(surveyId) + String(userId)),
@@ -44,6 +45,7 @@ export class SurveyListController {
           await saveSurveyAnswers(surveyId, userId, surveyList.id, answers);
 
           res.status(201).json(surveyList.toJSON());
+          return;
         } else {
           let count = 0;
 
@@ -69,6 +71,7 @@ export class SurveyListController {
           if (count) {
             await exists.save();
             res.status(200).json(exists.toJSON());
+            return;
           }
         }
       } else {
