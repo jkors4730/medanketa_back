@@ -84,7 +84,7 @@ export class UserController {
           if (!role) {
             return user;
           } else {
-            user.roleName = role.dataValues.name;
+            user.roleName = role.dataValues.guardName;
             user.status = user.isBlocked;
             user.dateEdit = user.updatedAt;
             delete user.updatedAt;
