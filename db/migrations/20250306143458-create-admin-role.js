@@ -11,6 +11,7 @@ export default {
          guardName: ROLE_ADMIN,
          createdAt: new Date(),
          updatedAt: new Date(),
+         permissions: ['*'],
        },
      ]);
    } else {

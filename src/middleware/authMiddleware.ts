@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
+import type { JWTData } from '../utils/jwt.js';
 import { verifyToken } from '../utils/jwt.js';
 
 export const authMiddleware = (
@@ -12,18 +13,23 @@ export const authMiddleware = (
     const token = auth.slice(7);
 
     try {
-      const tokenData = verifyToken(token);
+      const tokenData = verifyToken(token) as JWTData;
       req.body.tokenData = tokenData;
+      req.user = tokenData;
       next();
     } catch (err) {
       console.error(err);
-      res.json({
-        error: 'jwt malformed',
-      });
+      res
+        .json({
+          error: 'jwt malformed',
+        })
+        .status(403);
     }
   } else {
-    res.json({
-      error: 'no token provided',
-    });
+    res
+      .json({
+        error: 'no token provided',
+      })
+      .status(403);
   }
 };

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { RoleController } from '../controllers/Role.js';
 import { Container } from 'typedi';
+import { requirePermission } from '../middleware/role.middleware.js';
 
 class RoleRoutes {
   router = Router();
@@ -10,20 +11,36 @@ class RoleRoutes {
     this.initializeRoutes();
   }
   initializeRoutes() {
-    this.router.post('/', (req: Request, res: Response) =>
-      this.controller.create(req, res),
+    this.router.post(
+      '/',
+      requirePermission('role:create'),
+      (req: Request, res: Response) => this.controller.create(req, res),
     );
-    this.router.get('/', (req: Request, res: Response) =>
-      this.controller.getAll(req, res),
+    this.router.get(
+      '/',
+      requirePermission('roles:get'),
+      (req: Request, res: Response) => this.controller.getAll(req, res),
     );
-    this.router.get('/:id', (req: Request, res: Response) =>
-      this.controller.getOne(req, res),
+    this.router.get(
+      '/:id',
+      requirePermission('roles:get'),
+      (req: Request, res: Response) => this.controller.getOne(req, res),
     );
-    this.router.put('/:id', (req: Request, res: Response) =>
-      this.controller.update(req, res),
+    this.router.put(
+      '/:id',
+      requirePermission('role:update'),
+      (req: Request, res: Response) => this.controller.update(req, res),
     );
-    this.router.delete('/:id', (req: Request, res: Response) =>
-      this.controller.delete(req, res),
+    this.router.delete(
+      '/:id',
+      requirePermission('role:delete'),
+      (req: Request, res: Response) => this.controller.delete(req, res),
+    );
+    this.router.patch(
+      '/change',
+      requirePermission('user:update'),
+      (req: Request, res: Response) =>
+        this.controller.changeRoleOnUser(req, res),
     );
   }
 }

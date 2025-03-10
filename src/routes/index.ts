@@ -10,19 +10,22 @@ import statsRoutes from './Stats.js';
 import dictRoutes from './Dict.js';
 import dictValueRoutes from './DictValue.js';
 import regRoutes from './Reg.js';
-
+import authRoutes from './Auth.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 export default class Routes {
   constructor(app: Application) {
+    app.use('/auth', authRoutes);
+    app.use('/reg', regRoutes);
+    app.use('/stats', statsRoutes);
+    app.use('/survey-list', surveyListRoutes);
+    app.use('/upload', uploadRoutes);
+    app.use('/email', emailRoutes);
+    app.use(authMiddleware);
     app.use('/user', userRoutes);
     app.use('/role', roleRoutes);
     app.use('/survey', surveyRoutes);
     app.use('/survey-question', surveyQuestionRoutes);
-    app.use('/survey-list', surveyListRoutes);
-    app.use('/stats', statsRoutes);
     app.use('/dicts', dictRoutes);
     app.use('/dict-values', dictValueRoutes);
-    app.use('/email', emailRoutes);
-    app.use('/upload', uploadRoutes);
-    app.use('/reg', regRoutes);
   }
 }

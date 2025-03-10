@@ -5,7 +5,7 @@ import { CreateUserDto } from '../dto/users/create.user.dto.js';
 import { validateDto } from '../middleware/dto.validate.js';
 import { UpdateUserDto } from '../dto/users/update.user.dto.js';
 import { Container } from 'typedi';
-import { LoginUserDto } from '../dto/users/login.user.dto.js';
+import { requirePermission } from '../middleware/role.middleware.js';
 
 class UserRoutes {
   router = Router();
@@ -17,31 +17,29 @@ class UserRoutes {
     this.router.post(
       '/',
       validateDto(CreateUserDto, 'body'),
+      requirePermission('user:create'),
       (req: Request, res: Response) => this.controller.create(req, res),
     );
-    this.router.get('/', (req: Request, res: Response) =>
-      this.controller.getAll(req, res),
+    this.router.get(
+      '/',
+      requirePermission('users:get'),
+      (req: Request, res: Response) => this.controller.getAll(req, res),
     );
-    this.router.get('/:id', (req: Request, res: Response) =>
-      this.controller.getOne(req, res),
+    this.router.get(
+      '/:id',
+      requirePermission('users:get'),
+      (req: Request, res: Response) => this.controller.getOne(req, res),
     );
     this.router.put(
       '/:id',
       validateDto(UpdateUserDto, 'body'),
+      requirePermission('user:update'),
       (req: Request, res: Response) => this.controller.update(req, res),
     );
-    this.router.delete('/:id', (req: Request, res: Response) =>
-      this.controller.delete(req, res),
-    );
-    this.router.post(
-      '/login',
-      validateDto(LoginUserDto, 'body'),
-      (req: Request, res: Response) => this.controller.login(req, res, false),
-    );
-    this.router.post(
-      '/admin',
-      validateDto(LoginUserDto, 'body'),
-      (req: Request, res: Response) => this.controller.login(req, res, true),
+    this.router.delete(
+      '/:id',
+      requirePermission('user:delete'),
+      (req: Request, res: Response) => this.controller.delete(req, res),
     );
   }
 }

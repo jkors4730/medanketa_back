@@ -80,6 +80,7 @@ export default [...fixupConfigRules(compat.extends(
         "@typescript-eslint/no-require-imports": "off",
         "@typescript-eslint/no-explicit-any": "warn",
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-namespace": "warn",
 
         "new-cap": ["off", {
             capIsNewExceptions: ["Router", "STRING"],

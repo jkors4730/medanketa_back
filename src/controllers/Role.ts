@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator';
 import { returnError } from '../utils/error.js';
 import { Role } from '../db/models/Role.js';
 import { Service } from 'typedi';
+import { User } from '../db/models/User.js';
 @Service()
 export class RoleController {
   async create(req: Request, res: Response) {
@@ -11,11 +12,12 @@ export class RoleController {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const { name, guardName } = req.body;
+        const { name, guardName, permissions } = req.body;
 
         const role = await Role.create({
           name,
           guardName,
+          permissions,
         });
 
         res.status(201).json(role.toJSON());
@@ -45,7 +47,6 @@ export class RoleController {
 
       if (errors.isEmpty()) {
         const { id } = req.params;
-
         const role = await Role.findByPk(parseInt(id));
 
         if (role === null) {
@@ -67,18 +68,13 @@ export class RoleController {
 
       if (errors.isEmpty()) {
         const { id } = req.params;
-        const { name, guardName } = req.body;
-
-        const role = await Role.findByPk<any>(parseInt(id));
+        const { name, guardName, permissions } = req.body;
+        const role = await Role.findByPk(parseInt(id));
 
         if (role === null) {
           returnError(null, res, [`Role with id = ${id} not found`]);
         } else {
-          role.name = typeof name == 'string' ? name : role.name;
-          role.guardName =
-            typeof guardName == 'string' ? guardName : role.guardName;
-
-          await role.save();
+          await role.update({ name, guardName, permissions });
 
           res.status(200).json(role.toJSON());
         }
@@ -107,6 +103,26 @@ export class RoleController {
           await role.destroy();
           res.status(204).send();
         }
+      } else {
+        returnError(null, res, errors.array());
+      }
+    } catch (e: any) {
+      returnError(e, res);
+    }
+  }
+  async changeRoleOnUser(req: Request, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (errors.isEmpty()) {
+        const { userId, roleId } = req.body;
+        const user = await User.findOne({ where: { id: parseInt(userId) } });
+        const role = await Role.findOne({ where: { id: parseInt(roleId) } });
+        if (!user || !role) {
+          res.status(404).json(`user or role not found`);
+          return;
+        }
+        user.dataValues.roleId = role.dataValues.id;
+        res.status(204).json(user);
       } else {
         returnError(null, res, errors.array());
       }

@@ -26,6 +26,7 @@ export const User = sequelize.define('users', {
   twoFactorConfirmedAt: DataTypes.DATE,
   rememberToken: { type: DataTypes.STRING, defaultValue: '' },
   avatar: { type: DataTypes.STRING, defaultValue: '' },
+  isBlocked: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 });
 User.hasMany(Survey);
 Survey.belongsTo(User, {

@@ -1,131 +1,99 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response } from 'express';
 import { User } from '../db/models/User.js';
-import { Role } from '../db/models/Role.js';
-import { comparePassword, passwordHash } from '../utils/hash.js';
 import { returnError } from '../utils/error.js';
-import { generateAuthToken } from '../utils/jwt.js';
 import { validationResult } from 'express-validator';
-import { Op } from 'sequelize';
-import { ROLE_ADMIN, ROLE_INT, ROLE_RESP } from '../utils/common.js';
 import { Service } from 'typedi';
-import { validateBirthDate } from '../utils/validateBirthDate.js';
 import { MailService } from '../services/Mail.js';
-import {
-  DeleteMessage,
-  UserRegistrationMessage,
-} from '../services/interfaces/mail.interface.js';
+import { DeleteMessage } from '../services/interfaces/mail.interface.js';
+import { UsersService } from '../services/users.service.js';
+import { validateBirthDate } from '../utils/validateBirthDate.js';
+import { Role } from '../db/models/Role.js';
 @Service()
 export class UserController {
   nodeMailer = new MailService();
   async create(req: Request, res: Response) {
-    try {
-      const errors = validationResult(req);
-
-      if (errors.isEmpty()) {
-        const {
-          name,
-          lastName,
-          surname,
-          email,
-          password,
-          roleName,
-          phone,
-          birthDate,
-          region,
-          city,
-          workPlace,
-          specialization,
-          position,
-          workExperience,
-          pdAgreement,
-          newsletterAgreement,
-        } = req.body;
-        if (birthDate) {
-          if ((await validateBirthDate(birthDate)) === false) {
-            res.send(403).json(`Сайт предназначен для лиц старше 18 лет`);
-            return;
-          }
-        }
-        const exists = await User.findOne({ where: { email: email } });
-        console.log('exists', exists);
-
-        if (!exists) {
-          const mapping: Record<string, string> = {
-            Интервьюер: ROLE_INT,
-            Респондент: ROLE_RESP,
-          };
-
-          // find or create role
-          const [role] = await Role.findOrCreate<any>({
-            where: { guardName: mapping[roleName] },
-            defaults: {
-              name: roleName,
-              guardName: mapping[roleName],
-            },
-          });
-
-          console.log('Role', role.toJSON(), role.id);
-          const WorkExperience = Number(workExperience);
-          const hash = passwordHash(password);
-
-          const user = User.build({
-            name,
-            email,
-            lastName,
-            surname,
-            password: hash, // store hashed password in db
-            roleId: role.id, // connect with role
-            phone,
-            birthDate,
-            region,
-            city,
-            workPlace,
-            specialization,
-            position,
-            WorkExperience,
-            pdAgreement,
-            newsletterAgreement,
-          });
-
-          console.log('User', user.toJSON());
-
-          await user.save();
-          res.status(201).json(user.toJSON());
-          const message: UserRegistrationMessage = {
-            name: user.dataValues.name,
-            email: user.dataValues.email,
-            password: password,
-            platform: 'medanketa.com',
-            dateReg: user.dataValues.createdAt,
-          };
-          this.nodeMailer.sendAdminRegistrationMail(message);
-          this.nodeMailer.sendUserRegistrationMail(
-            user.dataValues.email,
-            message,
-          );
-        } else {
-          returnError(null, res, [
-            'Пользователь с таким email уже существует!',
-          ]);
-        }
-      } else {
-        returnError(null, res, errors.array());
+    const {
+      name,
+      lastName,
+      surname,
+      email,
+      password,
+      roleName,
+      phone,
+      birthDate,
+      region,
+      city,
+      workPlace,
+      specialization,
+      position,
+      workExperience,
+      pdAgreement,
+      newsLetterAgreement,
+    } = req.body;
+    if (birthDate) {
+      if ((await validateBirthDate(birthDate)) === false) {
+        res.send(403).json(`Сайт предназначен для лиц старше 18 лет`);
+        return;
       }
-    } catch (e: any) {
-      returnError(e, res, [], 404);
     }
+    const user = await UsersService.create({
+      name,
+      lastName,
+      surname,
+      email,
+      password,
+      roleName,
+      phone,
+      birthDate,
+      region,
+      city,
+      workPlace,
+      specialization,
+      position,
+      workExperience,
+      pdAgreement,
+      newsLetterAgreement,
+    });
+    res.status(200).json(user.toJSON());
   }
-
+  // TODO сделано костыльно с N+1 скоростью, по возможности сделать relations юзеров и ролей
   async getAll(_req: Request, res: Response) {
     try {
-      res
-        .json(
-          await User.findAll({
-            attributes: ['id', 'name', 'lastName', 'surname', 'email', 'phone'],
-          }),
-        )
-        .status(200);
+      const users = await User.findAll({
+        attributes: [
+          'id',
+          'name',
+          'lastName',
+          'surname',
+          'email',
+          'phone',
+          'isBlocked',
+          'updatedAt',
+          'roleId',
+        ],
+      });
+      const usersJson = users.map((user) => {
+        return user.toJSON();
+      });
+      const userWithRole = await Promise.all(
+        usersJson.map(async (user) => {
+          const role = await Role.findOne({
+            where: { id: user.roleId },
+          });
+          if (!role) {
+            return user;
+          } else {
+            user.roleName = role.dataValues.name;
+            user.status = user.isBlocked;
+            user.dateEdit = user.updatedAt;
+            delete user.updatedAt;
+            delete user.isBlocked;
+            return user;
+          }
+        }),
+      );
+      res.status(200).json(userWithRole);
     } catch (e: any) {
       returnError(e, res);
     }
@@ -269,58 +237,6 @@ export class UserController {
               break;
           }
           res.status(204).send();
-        }
-      } else {
-        returnError(null, res, errors.array());
-      }
-    } catch (e: any) {
-      returnError(e, res);
-    }
-  }
-  async login(req: Request, res: Response, admin: boolean) {
-    try {
-      const errors = validationResult(req);
-
-      if (errors.isEmpty()) {
-        const { email, password } = req.body;
-
-        const adminRole = await Role.findOne({
-          where: {
-            guardName: ROLE_ADMIN,
-          },
-        });
-        const jsonRole = adminRole ? adminRole.toJSON() : {};
-        const exists = await User.findOne<any>({
-          where: {
-            email: email,
-            roleId: { [!admin ? Op.not : Op.eq]: jsonRole.id },
-          },
-        });
-        console.log('exists', exists?.toJSON());
-
-        if (exists) {
-          const validPassword = comparePassword(password, exists.password);
-
-          if (validPassword) {
-            const role = await Role.findByPk<any>(parseInt(exists.roleId));
-
-            if (role) {
-              res.send({
-                token: generateAuthToken(exists),
-                id: exists.id,
-                name: exists.name,
-                lastName: exists.lastName,
-                email: exists.email,
-                role: role.guardName,
-              });
-            } else {
-              returnError(null, res, ['Роль пользователя не существует!']);
-            }
-          } else {
-            returnError(null, res, ['Неправильный пароль!']);
-          }
-        } else {
-          returnError(null, res, ['Пользователя с таким email не существует!']);
         }
       } else {
         returnError(null, res, errors.array());
