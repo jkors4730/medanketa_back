@@ -38,7 +38,7 @@ class UserRoutes {
     );
     this.router.delete(
       '/:id',
-      requirePermission('user:delete'),
+      // requirePermission('user:delete'),
       (req: Request, res: Response) => this.controller.delete(req, res),
     );
   }
