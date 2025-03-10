@@ -17,6 +17,7 @@ class DictRoutes {
       requirePermission('dict:create'),
       (req, res) => this.controller.create(req, res),
     );
+    this.router.get('/', (req, res) => this.controller.getAll(req, res));
     this.router.get('/:id', requirePermission('dicts:get'), (req, res) =>
       this.controller.getOne(req, res),
     );

@@ -121,8 +121,8 @@ export class RoleController {
           res.status(404).json(`user or role not found`);
           return;
         }
-        user.dataValues.roleId = role.dataValues.id;
-        res.status(204).json(user);
+        await user.update({ roleId: role.dataValues.id });
+        res.status(200).json({ status: true, text: 'role changed!' });
       } else {
         returnError(null, res, errors.array());
       }

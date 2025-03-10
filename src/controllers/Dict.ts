@@ -88,6 +88,10 @@ export class DictsController {
       returnError(e, res);
     }
   }
+  async getAll(req: Request, res: Response) {
+    const dicts = await Dict.findAll();
+    res.status(200).json(dicts);
+  }
 
   /**
    * Получить справочник по id

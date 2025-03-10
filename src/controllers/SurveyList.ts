@@ -27,11 +27,11 @@ export class SurveyListController {
         });
 
         if (!exists) {
-          const validateAnwers = await validateSurveyAnswers(answers);
-          if (validateAnwers !== true) {
-            res.status(400).json(validateAnwers);
-            return;
-          }
+          // const validateAnwers = await validateSurveyAnswers(answers);
+          // if (validateAnwers !== true) {
+          //   res.status(400).json(validateAnwers);
+          //   return;
+          // }
           const surveyList = await SurveyList.create<any>({
             uIndex: md5(String(surveyId) + String(userId)),
             userId,

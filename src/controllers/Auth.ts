@@ -137,7 +137,7 @@ export class AuthController {
                   maxAge: 3600000,
                 })
                 .json({
-                  token: token
+                  token: token,
                   id: exists.id,
                   name: exists.name,
                   lastName: exists.lastName,
