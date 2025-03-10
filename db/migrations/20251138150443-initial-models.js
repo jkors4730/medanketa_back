@@ -153,6 +153,12 @@ import {DataTypes} from "sequelize";
         },
     })
     await queryInterface.createTable('authUserDevices', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false,
+        },
         userId: { type: DataTypes.INTEGER, allowNull: false },
         devices: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
         createdAt: {

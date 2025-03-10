@@ -130,18 +130,19 @@ export class AuthController {
             const token = await generateAuthToken(exists);
             if (role) {
               res
-                .send({
-                  id: exists.id,
-                  name: exists.name,
-                  lastName: exists.lastName,
-                  email: exists.email,
-                  role: role.guardName,
-                })
                 .cookie('token', token, {
                   httpOnly: true,
                   secure: process.env.NODE_ENV === 'production',
                   sameSite: 'strict',
                   maxAge: 3600000,
+                })
+                .json({
+                  token: token
+                  id: exists.id,
+                  name: exists.name,
+                  lastName: exists.lastName,
+                  email: exists.email,
+                  role: role.guardName,
                 });
             } else {
               returnError(null, res, ['Роль пользователя не существует!']);
