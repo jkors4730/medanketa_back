@@ -26,10 +26,8 @@ class AuthRoutes {
       validateDto(LoginUserDto, 'body'),
       (req: Request, res: Response) => this.controller.login(req, res, true),
     );
-    this.router.post(
-      '/block',
-      requirePermission('user:block'),
-      (req: Request, res: Response) => this.controller.block(req, res),
+    this.router.post('/block', (req: Request, res: Response) =>
+      this.controller.block(req, res),
     );
   }
 }
