@@ -118,7 +118,10 @@ export class RoleController {
         const user = await User.findOne({ where: { id: parseInt(userId) } });
         const role = await Role.findOne({ where: { id: parseInt(roleId) } });
         if (!user || !role) {
-          res.status(404).json(`user or role not found`);
+          res.status(404).json({
+            userId: user.dataValues.id,
+            roleId: role.dataValues.roleId,
+          });
           return;
         }
         await user.update({ roleId: role.dataValues.id });
