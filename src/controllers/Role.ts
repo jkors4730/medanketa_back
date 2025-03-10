@@ -20,7 +20,7 @@ export class RoleController {
           permissions,
         });
 
-        res.status(201).json(role.toJSON());
+        res.status(201).json({ status: true, text: 'role created' });
       } else {
         returnError(null, res, errors.array());
       }
@@ -76,7 +76,7 @@ export class RoleController {
         } else {
           await role.update({ name, guardName, permissions });
 
-          res.status(200).json(role.toJSON());
+          res.status(200).json({ status: true, text: 'role updated' });
         }
 
         res.status(200).end();
@@ -101,7 +101,7 @@ export class RoleController {
           returnError(null, res, [`Role with id = ${id} not found`]);
         } else {
           await role.destroy();
-          res.status(204).json({ status: true });
+          res.status(204).json({ status: true, text: 'role deleted' });
         }
       } else {
         returnError(null, res, errors.array());

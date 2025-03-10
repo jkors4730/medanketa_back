@@ -12,6 +12,8 @@ import { validateBirthDate } from '../utils/validateBirthDate.js';
 import { UserRegistrationMessage } from '../services/interfaces/mail.interface.js';
 import { MailService } from '../services/Mail.js';
 import { UsersService } from '../services/users.service.js';
+import { AuthService } from '../services/auth.service.js';
+import { UAParser } from 'ua-parser-js';
 @Service()
 export class AuthController {
   nodeMailer = new MailService();
@@ -100,7 +102,11 @@ export class AuthController {
 
       if (errors.isEmpty()) {
         const { email, password } = req.body;
-
+        const { device } = UAParser(req.headers['user-agent']);
+        const infoDevice = {
+          deviceName: device.type + device.vendor + '',
+          deviceModel: device.model,
+        };
         const adminRole = await Role.findOne({
           where: {
             guardName: ROLE_ADMIN,
@@ -120,6 +126,7 @@ export class AuthController {
 
           if (validPassword) {
             const role = await Role.findByPk<any>(parseInt(exists.roleId));
+            await AuthService.checkAndAddOrRemoveDevice(exists.id, infoDevice);
             const token = await generateAuthToken(exists);
             if (role) {
               res.send({
