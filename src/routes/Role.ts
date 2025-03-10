@@ -32,7 +32,7 @@ class RoleRoutes {
       (req: Request, res: Response) => this.controller.update(req, res),
     );
     this.router.delete(
-      '/:id',
+      '/',
       requirePermission('role:delete'),
       (req: Request, res: Response) => this.controller.delete(req, res),
     );

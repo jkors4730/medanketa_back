@@ -93,7 +93,7 @@ export class RoleController {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-        const { id } = req.params;
+        const { id } = req.body;
 
         const role = await Role.findByPk(parseInt(id));
 
@@ -101,7 +101,7 @@ export class RoleController {
           returnError(null, res, [`Role with id = ${id} not found`]);
         } else {
           await role.destroy();
-          res.status(204).send();
+          res.status(204).json({ status: true });
         }
       } else {
         returnError(null, res, errors.array());

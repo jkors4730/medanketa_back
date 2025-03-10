@@ -12,8 +12,10 @@ import dictValueRoutes from './DictValue.js';
 import regRoutes from './Reg.js';
 import authRoutes from './Auth.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
+import { checkNotBlocked } from '../middleware/blocked.middleware.js';
 export default class Routes {
   constructor(app: Application) {
+    app.use(checkNotBlocked);
     app.use('/auth', authRoutes);
     app.use('/reg', regRoutes);
     app.use('/stats', statsRoutes);
