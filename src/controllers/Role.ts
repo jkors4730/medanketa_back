@@ -101,7 +101,7 @@ export class RoleController {
           returnError(null, res, [`Role with id = ${id} not found`]);
         } else {
           await role.destroy();
-          res.status(204).json({ status: true, text: 'role deleted' });
+          res.status(200).json({ status: true, text: 'role deleted' });
         }
       } else {
         returnError(null, res, errors.array());
