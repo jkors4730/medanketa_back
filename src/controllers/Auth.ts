@@ -160,4 +160,10 @@ export class AuthController {
       returnError(e, res);
     }
   }
+  async block(req: Request, res: Response) {
+    const { status, id } = req.body;
+    const user = await User.findOne({ where: { id: id } });
+    await user.update({ isBlocked: !status });
+    res.status(200).json({ status: true, text: `blocked` });
+  }
 }
