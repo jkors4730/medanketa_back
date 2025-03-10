@@ -166,6 +166,6 @@ export class AuthController {
     await user.update({ isBlocked: !status });
     res
       .status(200)
-      .json({ status: true, text: `blocked`, userId: user.dataValues.id });
+      .json({ status: !status, text: `blocked`, userId: user.dataValues.id });
   }
 }
