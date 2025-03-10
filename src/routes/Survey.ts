@@ -17,28 +17,28 @@ class SurveyRoutes {
     this.router.post(
       '/',
       validateDto(CreateSurveyDto, 'body'),
-      requirePermission('survey:create'),
+      // requirePermission('survey:create'),
       (req: Request, res: Response) => this.controller.create(req, res),
     );
     this.router.get(
       '/',
-      requirePermission('surveys:get'),
+      // requirePermission('surveys:get'),
       (req: Request, res: Response) => this.controller.getAll(req, res),
     );
     this.router.get(
       '/getOne/:id',
-      requirePermission('surveys:get'),
+      // requirePermission('surveys:get'),
       (req: Request, res: Response) => this.controller.getOne(req, res),
     );
     this.router.get(
       '/completed/user/:id',
-      requirePermission('surveys:get'),
+      // requirePermission('surveys:get'),
       (req: Request, res: Response) =>
         this.controller.getSurveyByUserId(req, res),
     );
     this.router.get(
       '/answered-users/:id',
-      requirePermission('surveys:get'),
+      // requirePermission('surveys:get'),
       (req: Request, res: Response) =>
         this.controller.getUsersBySurveyId(req, res),
     );
