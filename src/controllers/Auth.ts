@@ -164,6 +164,8 @@ export class AuthController {
     const { status, id } = req.body;
     const user = await User.findOne({ where: { id: id } });
     await user.update({ isBlocked: !status });
-    res.status(200).json({ status: true, text: `blocked` });
+    res
+      .status(200)
+      .json({ status: true, text: `blocked`, userId: user.dataValues.id });
   }
 }

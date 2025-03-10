@@ -118,14 +118,16 @@ export class RoleController {
         const user = await User.findOne({ where: { id: parseInt(userId) } });
         const role = await Role.findOne({ where: { id: parseInt(roleId) } });
         if (!user || !role) {
-          res.status(404).json({
-            userId: user.dataValues.id,
-            roleId: role.dataValues.roleId,
-          });
+          res.status(404).json(`user or role not found`);
           return;
         }
         await user.update({ roleId: role.dataValues.id });
-        res.status(200).json({ status: true, text: 'role changed!' });
+        res.status(200).json({
+          status: true,
+          text: 'role changed!',
+          userId: user.dataValues.id,
+          roleId: role.dataValues.roleId,
+        });
       } else {
         returnError(null, res, errors.array());
       }
