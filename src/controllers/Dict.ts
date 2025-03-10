@@ -89,7 +89,7 @@ export class DictsController {
     }
   }
   async getAll(req: Request, res: Response) {
-    const dicts = await Dict.findAll();
+    const dicts = await Dict.findAll({ where: { typeDictionary: 'global' } });
     res.status(200).json(dicts);
   }
 
