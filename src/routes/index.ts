@@ -11,14 +11,12 @@ import dictRoutes from './Dict.js';
 import dictValueRoutes from './DictValue.js';
 import regRoutes from './Reg.js';
 import authRoutes from './Auth.js';
-<<<<<<< HEAD
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { checkNotBlocked } from '../middleware/blocked.middleware.js';
-=======
->>>>>>> authorization
 export default class Routes {
   constructor(app: Application) {
     app.use(checkNotBlocked);
+    app.use('/', authRoutes);
     app.use('/auth', authRoutes);
     app.use('/reg', regRoutes);
     app.use('/stats', statsRoutes);
@@ -32,10 +30,6 @@ export default class Routes {
     app.use('/survey-question', surveyQuestionRoutes);
     app.use('/dicts', dictRoutes);
     app.use('/dict-values', dictValueRoutes);
-<<<<<<< HEAD
-=======
-    app.use('/reg', regRoutes);
-    app.use('/', authRoutes);
->>>>>>> authorization
+    app.use('/reg', regRoutes); //mr
   }
 }
