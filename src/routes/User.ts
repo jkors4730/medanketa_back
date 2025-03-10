@@ -17,23 +17,23 @@ class UserRoutes {
     this.router.post(
       '/',
       validateDto(CreateUserDto, 'body'),
-      requirePermission('user:create'),
+      // requirePermission('user:create'),
       (req: Request, res: Response) => this.controller.create(req, res),
     );
     this.router.get(
       '/',
-      requirePermission('users:get'),
+      // requirePermission('users:get'),
       (req: Request, res: Response) => this.controller.getAll(req, res),
     );
     this.router.get(
       '/:id',
-      requirePermission('users:get'),
+      // requirePermission('users:get'),
       (req: Request, res: Response) => this.controller.getOne(req, res),
     );
     this.router.put(
       '/:id',
       validateDto(UpdateUserDto, 'body'),
-      requirePermission('user:update'),
+      // requirePermission('user:update'),
       (req: Request, res: Response) => this.controller.update(req, res),
     );
     this.router.delete(

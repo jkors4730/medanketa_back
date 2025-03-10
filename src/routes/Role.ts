@@ -13,32 +13,32 @@ class RoleRoutes {
   initializeRoutes() {
     this.router.post(
       '/',
-      requirePermission('role:create'),
+      // requirePermission('role:create'),
       (req: Request, res: Response) => this.controller.create(req, res),
     );
     this.router.get(
       '/',
-      requirePermission('roles:get'),
+      // requirePermission('roles:get'),
       (req: Request, res: Response) => this.controller.getAll(req, res),
     );
     this.router.get(
       '/:id',
-      requirePermission('roles:get'),
+      // requirePermission('roles:get'),
       (req: Request, res: Response) => this.controller.getOne(req, res),
     );
     this.router.put(
       '/:id',
-      requirePermission('role:update'),
+      // requirePermission('role:update'),
       (req: Request, res: Response) => this.controller.update(req, res),
     );
     this.router.delete(
       '/',
-      requirePermission('role:delete'),
+      // requirePermission('role:delete'),
       (req: Request, res: Response) => this.controller.delete(req, res),
     );
     this.router.patch(
       '/change',
-      requirePermission('user:update'),
+      // requirePermission('user:update'),
       (req: Request, res: Response) =>
         this.controller.changeRoleOnUser(req, res),
     );

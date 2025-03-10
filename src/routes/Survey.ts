@@ -46,32 +46,32 @@ class SurveyRoutes {
     this.router.put(
       '/:id',
       validateDto(UpdateSurveyDto, 'body'),
-      requirePermission('survey:update'),
+      // requirePermission('survey:update'),
       (req: Request, res: Response) => this.controller.update(req, res),
     );
     this.router.delete(
       '/:id',
-      requirePermission('survey:delete'),
+      // requirePermission('survey:delete'),
       (req: Request, res: Response) => this.controller.delete(req, res),
     );
     // сохранение (копирование) param id
     this.router.post(
       '/:id/draft',
-      requirePermission('survey:create'),
+      // requirePermission('survey:create'),
       (req: Request, res: Response) =>
         this.controller.generateDraftAnket(req, res),
     );
     // создание из копии body id
     this.router.post(
       '/draft',
-      requirePermission('survey:create'),
+      // requirePermission('survey:create'),
       (req: Request, res: Response) =>
         this.controller.generateFromDraft(req, res),
     );
     // получение всех геттер
     this.router.get(
       '/draft',
-      requirePermission('surveys:get'),
+      // requirePermission('surveys:get'),
       (req: Request, res: Response) => this.controller.getAllDrafts(req, res),
     );
   }

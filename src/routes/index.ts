@@ -22,7 +22,7 @@ export default class Routes {
     app.use('/survey-list', surveyListRoutes);
     app.use('/upload', uploadRoutes);
     app.use('/email', emailRoutes);
-    app.use(authMiddleware);
+    // app.use(authMiddleware);
     app.use('/user', userRoutes);
     app.use('/role', roleRoutes);
     app.use('/survey', surveyRoutes);
