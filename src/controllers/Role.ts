@@ -126,7 +126,7 @@ export class RoleController {
           status: true,
           text: 'role changed!',
           userId: user.dataValues.id,
-          roleId: role.dataValues.roleId,
+          roleId: role.dataValues.id,
         });
       } else {
         returnError(null, res, errors.array());
