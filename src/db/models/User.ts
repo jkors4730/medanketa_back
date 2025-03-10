@@ -28,8 +28,8 @@ export const User = sequelize.define('users', {
   avatar: { type: DataTypes.STRING, defaultValue: '' },
   isBlocked: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 });
-User.hasMany(Survey);
-Survey.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'userName',
-});
+// User.hasMany(Survey);
+// Survey.belongsTo(User, {
+//   foreignKey: 'userId',
+//   as: 'userName',
+// });

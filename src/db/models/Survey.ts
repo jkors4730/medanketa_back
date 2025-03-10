@@ -15,5 +15,5 @@ export const Survey = sequelize.define('surveys', {
   expireDate: DataTypes.DATE,
 });
 //relations
-Survey.hasMany(SurveyQuestion);
-SurveyQuestion.belongsTo(Survey);
+// Survey.hasMany(SurveyQuestion);
+// SurveyQuestion.belongsTo(Survey);

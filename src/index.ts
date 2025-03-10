@@ -8,11 +8,14 @@ import fileUpload from 'express-fileupload';
 import Routes from './routes/index.js';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import sequelize from './db/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 async function bootstrap() {
   const app = express();
+  await sequelize.authenticate();
+  await sequelize.sync({ alter: true });
   app.use(cors());
   app.use(express.static(path.join(__dirname, '/assets')));
   app.use(fileUpload());

@@ -9,7 +9,6 @@ export const Role = sequelize.define('roles', {
   description: { type: DataTypes.STRING, defaultValue: '' },
   permissions: {
     type: DataTypes.ARRAY(DataTypes.TEXT),
-    allowNull: false,
     defaultValue: [],
   },
 });
