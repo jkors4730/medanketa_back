@@ -129,14 +129,20 @@ export class AuthController {
             await AuthService.checkAndAddOrRemoveDevice(exists.id, infoDevice);
             const token = await generateAuthToken(exists);
             if (role) {
-              res.send({
-                token: token,
-                id: exists.id,
-                name: exists.name,
-                lastName: exists.lastName,
-                email: exists.email,
-                role: role.guardName,
-              });
+              res
+                .send({
+                  id: exists.id,
+                  name: exists.name,
+                  lastName: exists.lastName,
+                  email: exists.email,
+                  role: role.guardName,
+                })
+                .cookie('token', token, {
+                  httpOnly: true,
+                  secure: process.env.NODE_ENV === 'production',
+                  sameSite: 'strict',
+                  maxAge: 3600000,
+                });
             } else {
               returnError(null, res, ['Роль пользователя не существует!']);
             }

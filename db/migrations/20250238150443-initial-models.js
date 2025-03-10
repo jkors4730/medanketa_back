@@ -27,6 +27,16 @@ import {DataTypes} from "sequelize";
 
       tsStart: { type: DataTypes.DATE },
       tsEnd: { type: DataTypes.DATE },
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
     })
     await queryInterface.createTable('survey_data', {
         id: {
@@ -39,6 +49,16 @@ import {DataTypes} from "sequelize";
       uid: { type: DataTypes.BIGINT },
       sortId: { type: DataTypes.INTEGER },
       value: { type: DataTypes.TEXT },
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
     })
     await queryInterface.createTable('survey_answers', {
         id: {
@@ -53,6 +73,16 @@ import {DataTypes} from "sequelize";
       userId: { type: DataTypes.BIGINT, allowNull: false }, // required
       answer: { type: DataTypes.TEXT },
       isSkip: { type: DataTypes.BOOLEAN, defaultValue: false },
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
     })
     await queryInterface.createTable('specs', {
         id: {
@@ -70,7 +100,17 @@ import {DataTypes} from "sequelize";
             primaryKey: true,
             allowNull: false,
         },
-      title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
+      title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },// required
     })
     await queryInterface.createTable('dict_values', {
         id: {
@@ -82,6 +122,16 @@ import {DataTypes} from "sequelize";
       value: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       dictId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
       sortId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }, // required
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
     })
     await queryInterface.createTable('cities', {
         id: {
@@ -91,10 +141,30 @@ import {DataTypes} from "sequelize";
             allowNull: false,
         },
       title: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
     })
     await queryInterface.createTable('authUserDevices', {
         userId: { type: DataTypes.INTEGER, allowNull: false },
         devices: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
     })
   }
 

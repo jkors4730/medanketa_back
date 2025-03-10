@@ -37,11 +37,21 @@ export default {
       twoFactorConfirmedAt: DataTypes.DATE,
       rememberToken: { type: DataTypes.STRING, defaultValue: '' },
       avatar: { type: DataTypes.STRING, defaultValue: '' },
-      isBlocked: {
-        type: DataTypes.BOOLEAN,
+      createdAt: {
         allowNull: false,
-        defaultValue: false,
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+    })
+    await queryInterface.addColumn('users', 'isBlocked', {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     })
     const [adminRoles] = await queryInterface.sequelize.query(`
     SELECT id FROM roles WHERE "guardName" = 'admin' LIMIT 1;
@@ -55,8 +65,6 @@ export default {
         name: 'Admin',
         guardName: 'admin',
         permissions: ['*'],
-        createdAt: new Date(),
-        updatedAt: new Date(),
       }]);
       // После вставки заново получаем id созданной роли
       const [newAdminRoles] = await queryInterface.sequelize.query(`
@@ -74,9 +82,11 @@ export default {
     // Создаем пользователя с ролью админа
     await queryInterface.bulkInsert('users', [{
       name: 'Admin',
-      email: 'admin@example.com',
+      email: 'admin@medanketa.com',
       password: hashedPassword,
       roleId: adminRoleId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }]);
   },
 

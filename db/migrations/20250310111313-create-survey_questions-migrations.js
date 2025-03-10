@@ -25,8 +25,18 @@ export default {
       description: { type: DataTypes.STRING, defaultValue: '' },
       data: { type: DataTypes.TEXT, defaultValue: '' },
       sortId: { type: DataTypes.INTEGER, defaultValue: 0 },
-      maxCountAnswers: { type: DataTypes.INTEGER, defaultValue: 1 }
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
     })
+    await queryInterface.addColumn('survey_questions', 'maxCountAnswers',{ type: DataTypes.INTEGER, defaultValue: 1 })
   },
 
   async down (queryInterface, Sequelize) {

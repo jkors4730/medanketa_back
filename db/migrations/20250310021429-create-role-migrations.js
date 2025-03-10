@@ -23,11 +23,21 @@ export default {
       guardName: { type: DataTypes.STRING, allowNull: false, defaultValue: '' }, // required
       rolePriority: { type: DataTypes.STRING, defaultValue: '' },
       description: { type: DataTypes.STRING, defaultValue: '' },
-      permissions: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+      createdAt: {
         allowNull: false,
-        defaultValue: sequelize.literal(`ARRAY[]::TEXT[]`)
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+    })
+    await queryInterface.addColumn('roles', 'permissions', {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+      defaultValue: sequelize.literal(`ARRAY[]::TEXT[]`)
     })
     const [exists] = await queryInterface.sequelize.query(`
     SELECT id FROM roles WHERE "guardName" = '${ROLE_ADMIN}' LIMIT 1`)
@@ -37,6 +47,8 @@ export default {
           name: 'Админ',
           guardName: ROLE_ADMIN,
           permissions: ['*'],
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ]);
     } else {
@@ -47,6 +59,8 @@ export default {
       guardName: 'interviewer',
       rolePriority: '',
       description: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
       permissions: Sequelize.literal(`ARRAY['user:create', 'user:update', 'users:get','user:delete', 'survey:create', 'survey:update', 'surveys:get','survey:delete', 'dict:create', 'dict:update', 'dicts:get','dict:delete', 'dict-value:create', 'dict-value:update', 'dict-values:get','dict-value:delete']::TEXT[]`),
     };
 
@@ -55,6 +69,8 @@ export default {
       guardName: 'respondent',
       rolePriority: '',
       description: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
       permissions: Sequelize.literal(`ARRAY['user:create', 'user:update', 'users:get','user:delete', 'surveys:get']::TEXT[]`),
     };
 

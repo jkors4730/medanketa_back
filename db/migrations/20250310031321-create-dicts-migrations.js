@@ -23,11 +23,21 @@ export default {
       description: { type: DataTypes.STRING, defaultValue: '' },
       userId: { type: DataTypes.INTEGER },
       values: { type: DataTypes.JSON },
-      typeDictionary: {
-        type: DataTypes.STRING,
+      createdAt: {
         allowNull: false,
-        defaultValue: '',
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+    })
+    await queryInterface.addColumn('dicts', 'typeDictionary', {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'global',
     })
   },
 

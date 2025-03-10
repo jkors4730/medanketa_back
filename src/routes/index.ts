@@ -15,9 +15,8 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 import { checkNotBlocked } from '../middleware/blocked.middleware.js';
 export default class Routes {
   constructor(app: Application) {
-    app.use(checkNotBlocked);
-    app.use('/', authRoutes);
     app.use('/auth', authRoutes);
+    app.use(checkNotBlocked);
     app.use('/reg', regRoutes);
     app.use('/stats', statsRoutes);
     app.use('/survey-list', surveyListRoutes);
